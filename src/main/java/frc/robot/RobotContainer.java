@@ -7,7 +7,7 @@ package frc.robot;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import frc.robot.commands.ArcadeDriveCommand;
-import frc.robot.subsystems.DifferentialDriveSubsystem;
+import frc.robot.subsystems.WCDriveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
 
 /**
@@ -18,7 +18,7 @@ import edu.wpi.first.wpilibj2.command.Command;
  */
 public class RobotContainer {
   // The robot's subsystems and commands are defined here...
-  private final DifferentialDriveSubsystem m_exampleSubsystem = new DifferentialDriveSubsystem();
+  private final WCDriveSubsystem m_exampleSubsystem = new WCDriveSubsystem();
 
   private final ArcadeDriveCommand m_autoCommand = new ArcadeDriveCommand(m_exampleSubsystem);
 
