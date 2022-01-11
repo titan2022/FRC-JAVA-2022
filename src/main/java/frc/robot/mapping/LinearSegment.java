@@ -78,6 +78,24 @@ public class LinearSegment implements Path {
     }
 
     /**
+     * Gets the start point of this segment.
+     * 
+     * @return The start point of this segment.
+     */
+    public Point getStart() {
+        return this.start;
+    }
+
+    /**
+     * Gets the end point of this segment.
+     * 
+     * @return The end point of this segment.
+     */
+    public Point getEnd() {
+        return this.end;
+    }
+
+    /**
      * Determines whether this path intersects another path.
      * 
      * <p>Implements {@link Path#intersects(Path)} for the case where this path

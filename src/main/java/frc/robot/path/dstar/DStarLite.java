@@ -114,26 +114,59 @@ public class DStarLite {
     /**
      * Sets the start position for the algorithm.
      * 
-     * @param start  The new start position to use.
+     * @param position  The new start position to use.
      */
-    public void setStart(Point position) {
+    public void setStart(Point position) { 
+        // Get obstacle properties
         start.sever();
         start = new Node(position, queue);
-        Path goalEdge = new LinearSegment(start, goal);
-        for(Obstacle obs : map.getObstacles()){
-            for(Point endpoint : obs.getEndpoints(start, radius)){
-                if(map.isClear(new LinearSegment(start, endpoint), radius, obs)){
-                    Node vertex = getNode(endpoint, obs, true);
-                    start.connect(vertex, new LinearSegment(position, endpoint));
-                    vertex.connect(start, new LinearSegment(endpoint, position));
+        LinearSegment sweepline = new LinearSegment(position, 
+            new Point(Double.POSITIVE_INFINITY, position.getY()));
+        AVLTree openEdges = new AVLTree();
+        Set<Point> endpoints = new Set<>();
+        Set<LinearSegment> obsEdges = new Set<>();
+        HashMap<Point, Obstacle> endptToObs = new HashMap<>();
+        HashMap<Point, Rotation2d> endptToAngle = new HashMap<>();
+        for (Obstacle obs : map.getObstacles()) {
+            for (Point endpoint : obs.getEndpoints(start, radius)) {
+                endpoints.add(endpoint);
+                endptToObs.put(endpoint, obs);
+                endptToAngle.put(endpoint, Point.getAngle(
+                    sweepline.getStart(), sweepline.getEnd(), endpoint));
+            }
+            for (LinearSegment edge : obs.getBoundary(radius))
+                obsEdges.add(edge);
+        }
+        // Sort obstacle endpoints by clockwise angle from sweepline
+        Collections.sort(endpoints, 
+            (p1, p2) -> endptToAngle.get(p1) - endptToAngle.get(p2));
+        // Initialize edge tree with edges intersected by starting position of sweepline
+        for (LinearSegment edge : obsEdges)
+            if (sweepline.intersects(edge)) 
+                openEdges.root = openEdges.insert(openEdges.root, edge);
+        // Increment sweepline through each endpoint
+        // If visible, connect start to endpoint vertex
+        // Get incedent obstacle edges to endpoint
+        // If an edge is clockwise of sweepline, insert to edge tree
+        // Else (CCW), delete from edge tree
+        for (Point endpoint : endpoints) {
+            sweepline = sweepline.rotateBy(endptToAngle.get(endpoint)
+                                            - sweepline.getRotation()); 
+            Node vertex = getNode(endpoint, endptToObs.get(endpoint), true);
+            if (map.visible(sweepline, openEdges)) {
+                start.connect(vertex, new LinearSegment(position, endpoint));
+                vertex.connect(start, new LinearSegment(endpoint, position));
+            }
+            for (Map.entry<Node, Path> connection : vertex.getConnections()) {
+                if (Point.getAngle(sweepline.getStart(), sweepline.getEnd(), 
+                connection.getKey()) > 0) {
+                    openEdges.root = openEdges.insert(
+                        openEdges.root, connection.getValue());
+                } else {
+                    openEdges.root = openEdges.deleteNode(
+                        openEdges.root, connection.getValue());
                 }
             }
-            if(goalEdge != null && !obs.isClear(goalEdge, radius))
-                goalEdge = null;
-        }
-        if(goalEdge != null){
-            start.connect(goal, goalEdge);
-            goal.connect(start, goalEdge);
         }
     }
 

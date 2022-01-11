@@ -73,11 +73,30 @@ public class ObstacleMap {
      * @return True if the path is clear of this obstacle, or false, otherwise.
      * @see Obstacle#isClear(Path)
      */
-    public boolean isClear(Path path, Obstacle... ignore) {
+    public boolean isClear(Path path, Obstacle... ignore) { 
         Set<Obstacle> ignoreSet = Set.of(ignore);
         for(Obstacle obstacle : obstacles)
             if(!(ignoreSet.contains(obstacle ) || obstacle.isClear(path)))
                 return false;
+        return true;
+    }
+
+    /**
+     * Determines whether a given sweepline state is visible in this map.
+     * 
+     * @param sweepline Given sweepline state, starting from a specific start
+     * point and extending as a ray in the direction of a specific obstacle 
+     * vertex.
+     * @param openEdges Balanced binary search tree of obstacle edges which are
+     * potentially hindering visibility.
+     * @return True if the given sweepline state is visible in this map, false
+     * otherwise.
+     */
+    public boolean visible(LinearSegment sweepline, AVLTree openEdges) {
+        if (openEdges.root == null) return true;
+        AVLNode firstEdge = openEdges.root;
+        while (firstEdge.left != null) firstEdge = firstEdge.left;
+        if (sweepline.intersects(firstEdge)) return false;
         return true;
     }
 
