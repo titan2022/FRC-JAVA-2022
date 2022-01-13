@@ -12,6 +12,7 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
 
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 import frc.robot.mapping.CompoundPath;
@@ -122,14 +123,14 @@ public class DStarLite {
         start = new Node(position, queue);
         LinearSegment sweepline = new LinearSegment(position, 
             new Point(Double.POSITIVE_INFINITY, position.getY()));
-        TreeSet<Path> openEdges = new Treeset<>((p1, p2) -> 
-            max(Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p1.getStart()).getDegrees(), 
-                Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p1.getEnd()).getDegrees())
-            - max(Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p2.getStart()).getDegrees(),
-                Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p2.getEnd()).getDegrees())); 
-        TreeSet<Point> endpoints = new TreeSet<>((p1, p2) -> 
-            Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p1).getDegrees() 
-            - Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p2).getDegrees());
+        TreeSet<Path> openEdges = new TreeSet<>((p1, p2) -> (int)Math.signum(
+            Math.max(p1.getStart().minus(position).getAngle().getDegrees(), 
+                p1.getEnd().minus(position).getAngle().getDegrees())
+            - Math.max(p2.getStart().minus(position).getAngle().getDegrees(), 
+            p2.getEnd().minus(position).getAngle().getDegrees())));
+        TreeSet<Point> endpoints = new TreeSet<>((p1, p2) -> (int)Math.signum(
+            p1.getStart().minus(position).getAngle().getDegrees()
+            - p2.getStart().minus(position).getAngle().getDegrees()));
         LinkedList<Path> obsEdges = new LinkedList<>(); 
         HashMap<Point, Obstacle> endptToObs = new HashMap<>();
         
@@ -144,7 +145,7 @@ public class DStarLite {
 
         for (Path edge : obsEdges)
             if (sweepline.intersects(edge)) 
-                openEdges.root = openEdges.insert(openEdges.root, edge);
+                openEdges.add(edge);
         for (Point endpoint : endpoints) {
             sweepline = new LinearSegment(position, endpoint); 
             Node vertex = getNode(endpoint, endptToObs.get(endpoint), true);
@@ -152,11 +153,11 @@ public class DStarLite {
                 start.connect(vertex, new LinearSegment(position, endpoint));
                 vertex.connect(start, new LinearSegment(endpoint, position));
             }
-            for (Map.entry<Node, Path> connection : vertex.getConnections()) {
+            for (Map.Entry<Node, Path> connection : vertex.getConnections()) {
                 if (connection.getKey() == start) continue; 
                 if (Point.getAngle(sweepline.getEnd(), sweepline.getStart(), 
                 connection.getKey()).getSin() > 0) {
-                    openEdges.insert(connection.getValue());
+                    openEdges.add(connection.getValue());
                 } else {
                     openEdges.remove(connection.getValue());
                 }
