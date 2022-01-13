@@ -129,8 +129,8 @@ public class DStarLite {
             - Math.max(p2.getStart().minus(position).getAngle().getDegrees(), 
             p2.getEnd().minus(position).getAngle().getDegrees())));
         TreeSet<Point> endpoints = new TreeSet<>((p1, p2) -> (int)Math.signum(
-            p1.getStart().minus(position).getAngle().getDegrees()
-            - p2.getStart().minus(position).getAngle().getDegrees()));
+            p1.minus(position).getAngle().getDegrees()
+            - p2.minus(position).getAngle().getDegrees()));
         LinkedList<Path> obsEdges = new LinkedList<>(); 
         HashMap<Point, Obstacle> endptToObs = new HashMap<>();
         
