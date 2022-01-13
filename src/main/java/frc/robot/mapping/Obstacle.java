@@ -247,4 +247,13 @@ public interface Obstacle extends Comparator<Point> {
     default public Path getBoundary() {
         return getBoundary(0);
     }
+
+    /**
+     * Gets the edges of this obstacle.
+     * 
+     * @param radius  The obstacle growth radius to use.
+     * @return A list containing the edges of this obstacle.
+     */
+    public List<Path> getEdges(double radius);
+
 }

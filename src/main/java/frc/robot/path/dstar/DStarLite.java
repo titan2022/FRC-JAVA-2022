@@ -116,55 +116,49 @@ public class DStarLite {
      * 
      * @param position  The new start position to use.
      */
-    public void setStart(Point position) { 
-        // Get obstacle properties
+    public void setStart(Point position) {
+        
         start.sever();
         start = new Node(position, queue);
         LinearSegment sweepline = new LinearSegment(position, 
             new Point(Double.POSITIVE_INFINITY, position.getY()));
-        AVLTree openEdges = new AVLTree();
-        Set<Point> endpoints = new Set<>();
-        Set<LinearSegment> obsEdges = new Set<>();
+        TreeSet<Path> openEdges = new Treeset<>((p1, p2) -> 
+            max(Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p1.getStart()).getDegrees(), 
+                Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p1.getEnd()).getDegrees())
+            - max(Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p2.getStart()).getDegrees(),
+                Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p2.getEnd()).getDegrees())); 
+        TreeSet<Point> endpoints = new TreeSet<>((p1, p2) -> 
+            Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p1).getDegrees() 
+            - Point.getAngle(sweepline.getEnd(), sweepline.getStart(), p2).getDegrees());
+        LinkedList<Path> obsEdges = new LinkedList<>(); 
         HashMap<Point, Obstacle> endptToObs = new HashMap<>();
-        HashMap<Point, Rotation2d> endptToAngle = new HashMap<>();
+        
         for (Obstacle obs : map.getObstacles()) {
             for (Point endpoint : obs.getEndpoints(start, radius)) {
                 endpoints.add(endpoint);
                 endptToObs.put(endpoint, obs);
-                endptToAngle.put(endpoint, Point.getAngle(
-                    sweepline.getStart(), sweepline.getEnd(), endpoint));
             }
-            for (LinearSegment edge : obs.getBoundary(radius))
+            for (Path edge : obs.getEdges(radius))
                 obsEdges.add(edge);
         }
-        // Sort obstacle endpoints by clockwise angle from sweepline
-        Collections.sort(endpoints, 
-            (p1, p2) -> endptToAngle.get(p1) - endptToAngle.get(p2));
-        // Initialize edge tree with edges intersected by starting position of sweepline
-        for (LinearSegment edge : obsEdges)
+
+        for (Path edge : obsEdges)
             if (sweepline.intersects(edge)) 
                 openEdges.root = openEdges.insert(openEdges.root, edge);
-        // Increment sweepline through each endpoint
-        // If visible, connect start to endpoint vertex
-        // Get incedent obstacle edges to endpoint
-        // If an edge is clockwise of sweepline, insert to edge tree
-        // Else (CCW), delete from edge tree
         for (Point endpoint : endpoints) {
-            sweepline = sweepline.rotateBy(endptToAngle.get(endpoint)
-                                            - sweepline.getRotation()); 
+            sweepline = new LinearSegment(position, endpoint); 
             Node vertex = getNode(endpoint, endptToObs.get(endpoint), true);
-            if (map.visible(sweepline, openEdges)) {
+            if (sweepline.intersects(openEdges.first())) {
                 start.connect(vertex, new LinearSegment(position, endpoint));
                 vertex.connect(start, new LinearSegment(endpoint, position));
             }
             for (Map.entry<Node, Path> connection : vertex.getConnections()) {
-                if (Point.getAngle(sweepline.getStart(), sweepline.getEnd(), 
-                connection.getKey()) > 0) {
-                    openEdges.root = openEdges.insert(
-                        openEdges.root, connection.getValue());
+                if (connection.getKey() == start) continue; 
+                if (Point.getAngle(sweepline.getEnd(), sweepline.getStart(), 
+                connection.getKey()).getSin() > 0) {
+                    openEdges.insert(connection.getValue());
                 } else {
-                    openEdges.root = openEdges.deleteNode(
-                        openEdges.root, connection.getValue());
+                    openEdges.remove(connection.getValue());
                 }
             }
         }

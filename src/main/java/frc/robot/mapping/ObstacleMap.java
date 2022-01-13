@@ -80,26 +80,7 @@ public class ObstacleMap {
                 return false;
         return true;
     }
-
-    /**
-     * Determines whether a given sweepline state is visible in this map.
-     * 
-     * @param sweepline Given sweepline state, starting from a specific start
-     * point and extending as a ray in the direction of a specific obstacle 
-     * vertex.
-     * @param openEdges Balanced binary search tree of obstacle edges which are
-     * potentially hindering visibility.
-     * @return True if the given sweepline state is visible in this map, false
-     * otherwise.
-     */
-    public boolean visible(LinearSegment sweepline, AVLTree openEdges) {
-        if (openEdges.root == null) return true;
-        AVLNode firstEdge = openEdges.root;
-        while (firstEdge.left != null) firstEdge = firstEdge.left;
-        if (sweepline.intersects(firstEdge)) return false;
-        return true;
-    }
-
+    
     /**
      * Registers a callback to be run when an obstacle is added to this map.
      * 
