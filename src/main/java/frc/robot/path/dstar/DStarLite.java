@@ -149,7 +149,7 @@ public class DStarLite {
         for (Point endpoint : endpoints) {
             sweepline = new LinearSegment(position, endpoint); 
             Node vertex = getNode(endpoint, endptToObs.get(endpoint), true);
-            if (sweepline.intersects(openEdges.first())) {
+            if (openEdges.isEmpty() || !sweepline.intersects(openEdges.first())) {
                 start.connect(vertex, new LinearSegment(position, endpoint));
                 vertex.connect(start, new LinearSegment(endpoint, position));
             }
