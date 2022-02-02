@@ -7,14 +7,17 @@ import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.*;
 
 public class IntakeSubsystem extends SubsystemBase {
 
     private static final int MOTOR_PORT = 0;
+    private static final int SENSOR_PORT = 0;
 
     private static final WPI_TalonFX motor = new WPI_TalonFX(MOTOR_PORT);
+    private static final DigitalInput beamSensor = new DigitalInput(SENSOR_PORT);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     private static final StatorCurrentLimitConfiguration MAX_AMPS_OUT = new StatorCurrentLimitConfiguration(true, 10, 0, 0);
 
@@ -28,8 +31,8 @@ public class IntakeSubsystem extends SubsystemBase {
         motor.selectProfileSlot(0, 0);
     }
 
-    public static IntakeSubsystem test() {
-        return new IntakeSubsystem();
+    public boolean hasBall() {
+        return beamSensor.get();
     }
 
     /** Run the intake motor(s) at 1000 rpm
@@ -37,6 +40,7 @@ public class IntakeSubsystem extends SubsystemBase {
      * @see https://motors.vex.com/vexpro-motors/falcon?q=&locale.name=English
      */
     public void spin(int direction) {
-        motor.set(ControlMode.Velocity, (1000 * COUNTS_PER_REVOLUTION * 0.1) / 100);
+        // (rev/min) * (tick/1rev) * (60 sec/min) * (1000 ms/sec) * 100 ms
+        motor.set(ControlMode.Velocity, 1000 * COUNTS_PER_REVOLUTION * 6);
     }
 }
