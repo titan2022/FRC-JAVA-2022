@@ -8,6 +8,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.*;
 
@@ -22,6 +23,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT);
     private static final DigitalInput intakeBeamSensor = new DigitalInput(INTAKE_SENSOR_PORT);
     private static final DigitalInput hopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT);
+    private static final Solenoid claw = new Solenoid(1);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     private static final StatorCurrentLimitConfiguration MAX_AMPS_OUT = new StatorCurrentLimitConfiguration(true, 10, 0, 0);
 
@@ -61,5 +63,8 @@ public class IntakeSubsystem extends SubsystemBase {
     }
     public void spinHopper(int direction) {
         hopperMotor.set(ControlMode.Velocity, 1000 * COUNTS_PER_REVOLUTION * 6 * direction);
+    }
+    public void setClaw(boolean open) {
+        claw.set(open);
     }
 }
