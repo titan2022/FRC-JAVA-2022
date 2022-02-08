@@ -44,11 +44,11 @@ public class RobotContainer {
   private void configureButtonBindings() {
     // OOP combined with imperitive is so scuffed!
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-      .whenPressed(() -> intake.spin(1))
-      .whenReleased(() -> intake.spin(0));
+      .whenPressed(() -> intake.spinIntake(1))
+      .whenReleased(() -> intake.spinIntake(0));
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
-      .whenPressed(() -> intake.spin(-1))
-      .whenReleased(() -> intake.spin(0));
+      .whenPressed(() -> intake.spinIntake(-1))
+      .whenReleased(() -> intake.spinIntake(0));
 
       
   }
