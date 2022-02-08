@@ -16,5 +16,5 @@ import edu.wpi.first.wpilibj.XboxController;
  */
 public final class Constants {
     public static final double COUNTS_PER_REVOLUTION = 4096;
-    public static final XboxController xboxController = new XboxController(0);
+    public static final XboxController XBOX_CONTROLLER = new XboxController(0);
 }

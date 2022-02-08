@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.commands.ExampleCommand;
-import static frc.robot.Constants.xboxController;
+import static frc.robot.Constants.XBOX_CONTROLLER;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -43,10 +43,10 @@ public class RobotContainer {
    */
   private void configureButtonBindings() {
     // OOP combined with imperitive is so scuffed!
-    new JoystickButton(xboxController, Button.kBumperLeft.value)
+    new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
       .whenPressed(() -> intake.spin(1))
       .whenReleased(() -> intake.spin(0));
-    new JoystickButton(xboxController, Button.kBumperRight.value)
+    new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
       .whenPressed(() -> intake.spin(-1))
       .whenReleased(() -> intake.spin(0));
 
