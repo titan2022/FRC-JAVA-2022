@@ -15,5 +15,5 @@ import edu.wpi.first.wpilibj.XboxController;
  * constants are needed, to reduce verbosity.
  */
 public final class Constants {
-    public static XboxController controller = new XboxController(0);
+    public static XboxController XBOX_CONTROLLER = new XboxController(0);
 }

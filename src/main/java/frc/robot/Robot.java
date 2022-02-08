@@ -10,7 +10,7 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.subsystems.ShooterSubsystem;
-import static frc.robot.Constants.controller;;
+import static frc.robot.Constants.XBOX_CONTROLLER;;
 
 
 /**
@@ -82,7 +82,7 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     
-    Trigger firstTrigger = new Trigger(controller::getAButtonPressed);
+    Trigger firstTrigger = new Trigger(XBOX_CONTROLLER::getAButtonPressed);
     firstTrigger.whenActive(new ShooterCommand(shooter));
 
     
