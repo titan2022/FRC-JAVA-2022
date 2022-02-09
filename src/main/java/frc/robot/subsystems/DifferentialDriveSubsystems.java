@@ -4,12 +4,20 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class ExampleSubsystem extends SubsystemBase {
+public class DifferentialDriveSubsystems extends SubsystemBase {
+  WPI_TalonFX left_wheel = new WPI_TalonFX(10);
+  WPI_TalonFX right_wheel = new WPI_TalonFX(12);
   /** Creates a new ExampleSubsystem. */
-  public ExampleSubsystem() {}
-
+  public ExampleSubsystem() {
+    
+  }
+  public void forward(double distance, double velocity, double angle){
+    
+  }
   @Override
   public void periodic() {
     // This method will be called once per scheduler run
