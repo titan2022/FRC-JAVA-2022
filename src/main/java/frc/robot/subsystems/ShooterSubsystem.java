@@ -24,7 +24,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final CANCoder leftEncoder = new CANCoder(LEFT_MOTOR_PORT);   
 
     public ShooterSubsystem(){
-        rightMotor.setInverted();
+        rightMotor.setInverted(true);
         rightMotor.follow(leftMotor);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);

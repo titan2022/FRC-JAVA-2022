@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
@@ -8,6 +9,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import static frc.robot.Constants.*;
 
 public class SequencerSubsystem extends SubsystemBase {
     private static final int LEFT_MOTOR_PORT = 0;
@@ -29,6 +31,7 @@ public class SequencerSubsystem extends SubsystemBase {
         leftMotor.configNeutralDeadband(0.01);
         leftMotor.selectProfileSlot(0, 0);
 
+        rightMotor.follow(leftMotor);
         rightMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
         rightMotor.setInverted(true);
@@ -42,8 +45,8 @@ public class SequencerSubsystem extends SubsystemBase {
         return sequencerBeamSensor.get();
     }
 
-    public void spinIntake(int direction) {
+    public void spin(int direction) {
         // (rev/min) * (tick/1rev) * (60 sec/min) * (1000 ms/sec) * 100 ms
-        intakeMotor.set(ControlMode.Velocity, 1000 * COUNTS_PER_REVOLUTION * 6 * direction);
+        leftMotor.set(ControlMode.Velocity, 1000 * COUNTS_PER_REVOLUTION * 6 * direction);
     }
 }

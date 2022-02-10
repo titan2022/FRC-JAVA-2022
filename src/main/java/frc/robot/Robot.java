@@ -24,8 +24,6 @@ public class Robot extends TimedRobot {
 
   private RobotContainer m_robotContainer;
 
-  ShooterSubsystem shooter = new ShooterSubsystem();
-
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -82,14 +80,11 @@ public class Robot extends TimedRobot {
     // continue until interrupted by another command, remove
     // this line or comment it out.
     
-    Trigger firstTrigger = new Trigger(XBOX_CONTROLLER::getAButtonPressed);
-    firstTrigger.whenActive(new ShooterCommand(shooter));
-
-    
     
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    //new AimCommand(new IntakeSubsystem()).schedule();
   }
 
   /** This function is called periodically during operator control. */
