@@ -108,7 +108,7 @@ public class SlothClimbSubsystem extends SubsystemBase {
    * @param angle = angle in radians, can be positive or negative
    */
   public void rotateDynamicArm(double angle) {
-    lMotor2.set(TalonFXControlMode.Position, (angle / (Math.PI * 2)) * motorTicks);
+    lMotor2.set(TalonFXControlMode.Position, (angle / (2 * Math.PI)) * motorTicks * 20);
   }
 
   @Override
