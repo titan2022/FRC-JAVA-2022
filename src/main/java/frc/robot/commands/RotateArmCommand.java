@@ -8,24 +8,22 @@ import frc.robot.subsystems.SlothClimbSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
-public class MoveStaticArmCommand extends CommandBase {
+public class RotateArmCommand extends CommandBase {
   @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private final SlothClimbSubsystem subsystem;
-  public static final double armLength = 0.415;
-  private double movement;
+  private double angle;
   private boolean phase;
 
-  
   /**
-   * Creates a new MoveStaticArmCommand.
+   * Creates a new RotateArmCommand.
    *
    * @param subsystem The subsystem used by this command.
-   * @param percent = How far to move the arm from -1 to 1
+   * @param angle = How much to rotate in terms of radians
    */
-  public MoveStaticArmCommand(SlothClimbSubsystem iSubsystem, double percent) {
+  public RotateArmCommand(SlothClimbSubsystem iSubsystem, double angle) {
     subsystem = iSubsystem;
-    movement = percent;
-    if (movement > 0) 
+    this.angle = angle;
+    if (this.angle > 0) 
       phase = true;
     else 
       phase = false;
@@ -37,7 +35,7 @@ public class MoveStaticArmCommand extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    subsystem.moveStaticArm(movement * armLength);
+    subsystem.rotateDynamicArm(angle);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -50,20 +48,20 @@ public class MoveStaticArmCommand extends CommandBase {
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
-    subsystem.setCalStaticTicks(subsystem.getSensorStaticTicks());
+    subsystem.setCalRotationTicks(subsystem.getSensorRotationTicks());
   }
 
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
     if (phase) {
-      if (subsystem.getSensorStaticTicks() >= subsystem.getCalStaticTicks()) {
+      if (subsystem.getSensorRotationTicks() >= subsystem.getCalRotationTicks()) {
         return true;
       } else {
         return false;
       }
     } else {
-      if (subsystem.getSensorStaticTicks() <= subsystem.getCalStaticTicks()) {
+      if (subsystem.getSensorRotationTicks() <= subsystem.getCalRotationTicks()) {
         return true;
       } else {
         return false;

@@ -15,7 +15,15 @@ public class SlothClimbSubsystem extends SubsystemBase {
 
   //Number of ticks in a Falcon 500 to go around
   private static int motorTicks;
-  private static final double ticksPerMeter = motorTicks * 393.701;
+
+  //Falcon500 needs to spin gearRatio times to have one full rotation on the actual gear 
+  private int gearRatio = 20;
+  private double ticksPerMeter = motorTicks * gearRatio * 19.68505;
+
+  //Stores the calculated ticks of the robot
+  private double staticTicks;
+  private double dynamicTicks;
+  private double rotationTicks;
 
   /**
    * These are the motor ids of the TalonFXs
@@ -30,6 +38,7 @@ public class SlothClimbSubsystem extends SubsystemBase {
   private int rMotorID2;
   private int rMotorID3;
 
+  //1% tolerance
   private double deadbandTolerance = 0.01;
 
   //The TalonFX motor controllers
@@ -41,11 +50,16 @@ public class SlothClimbSubsystem extends SubsystemBase {
   private WPI_TalonFX rMotor2= new WPI_TalonFX(rMotorID2);
   private WPI_TalonFX rMotor3= new WPI_TalonFX(rMotorID3);
 
+  //Power configs
   private StatorCurrentLimitConfiguration statorLimit = new StatorCurrentLimitConfiguration(true, 30, 0, 0);
   private SupplyCurrentLimitConfiguration supplyLimit = new SupplyCurrentLimitConfiguration(true, 30, 0, 0);
 
   // Creates the SlothClimb subsystem and configs the motors
   public SlothClimbSubsystem() {
+    staticTicks = 0;
+    dynamicTicks = 0;
+    rotationTicks = 0;
+
     //Sets the stator power limit for the motors
     lMotor1.configStatorCurrentLimit(statorLimit, 10);
     lMotor2.configStatorCurrentLimit(statorLimit, 10);
@@ -91,6 +105,8 @@ public class SlothClimbSubsystem extends SubsystemBase {
    * @param meter = how much to move the arm in meter, positive for upwards, negative for downwards
    */
   public void moveStaticArm(double meter) {
+    double ticks = meter * ticksPerMeter;
+    staticTicks += ticks;
     lMotor1.set(TalonFXControlMode.Position, meter * ticksPerMeter);
   }
 
@@ -99,6 +115,8 @@ public class SlothClimbSubsystem extends SubsystemBase {
    * @param meter = how much to move the arm in meter, positive for upwards, negative for downwards
    */
   public void moveDynamicArm(double meter) {
+    double ticks = meter * ticksPerMeter;
+    dynamicTicks += ticks;
     lMotor2.set(TalonFXControlMode.Position, meter * ticksPerMeter);
   }
 
@@ -108,7 +126,53 @@ public class SlothClimbSubsystem extends SubsystemBase {
    * @param angle = angle in radians, can be positive or negative
    */
   public void rotateDynamicArm(double angle) {
-    lMotor2.set(TalonFXControlMode.Position, (angle / (2 * Math.PI)) * motorTicks * 20);
+    double ticks = (angle / (2 * Math.PI)) * motorTicks * 20;
+    rotationTicks += ticks;
+    lMotor3.set(TalonFXControlMode.Position, ticks);
+  }
+
+  public int getMotorTicks() {
+    return motorTicks;
+  }
+
+  public double getTicksPerMeter() {
+    return ticksPerMeter;
+  }
+
+  public double getSensorStaticTicks() {
+    return lMotor1.getSelectedSensorPosition();
+  }
+
+  public double getSensorDynamicTicks() {
+    return lMotor2.getSelectedSensorPosition();
+  }
+
+  public double getSensorRotationTicks() {
+    return lMotor3.getSelectedSensorPosition();
+  }
+
+  public double getCalStaticTicks() {
+    return staticTicks;
+  }
+
+  public double getCalDynamicTicks() {
+    return dynamicTicks;
+  }
+  
+  public double getCalRotationTicks() {
+    return rotationTicks;
+  }
+
+  public void setCalStaticTicks(double ticks) {
+    staticTicks = ticks;
+  }
+
+  public void setCalDynamicTicks(double ticks) {
+    dynamicTicks = ticks;
+  }
+
+  public void setCalRotationTicks(double ticks) {
+    rotationTicks = ticks;
   }
 
   @Override
