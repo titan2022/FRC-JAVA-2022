@@ -4,7 +4,6 @@
 
 package frc.robot.commands;
 
-
 import frc.robot.commands.SpinHopper;
 import frc.robot.commands.SpinIntake;
 import frc.robot.subsystems.IntakeSubsystem;
