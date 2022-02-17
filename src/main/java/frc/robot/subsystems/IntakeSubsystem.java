@@ -6,7 +6,6 @@ import com.ctre.phoenix.motorcontrol.StatorCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
-
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -54,16 +53,22 @@ public class IntakeSubsystem extends SubsystemBase {
     }
 
     /** Run the intake motor(s) at 1000 rpm
-     * @param direction 1 = inward, -1 = outward, 0 = stop
+     * @param intakeSpeed = Radians per sec
      * @see https://motors.vex.com/vexpro-motors/falcon?q=&locale.name=English
      */
-    public void spinIntake(int direction) {
-        // (rev/min) * (tick/1rev) * (60 sec/min) * (1000 ms/sec) * 100 ms
-        intakeMotor.set(ControlMode.Velocity, 1000 * COUNTS_PER_REVOLUTION * 6 * direction);
+    public void spinIntake(double intakeSpeed) {
+        
+        intakeMotor.set(ControlMode.Velocity, (intakeSpeed / 20 * Math.PI) * COUNTS_PER_REVOLUTION);
     }
-    public void spinHopper(int direction) {
-        hopperMotor.set(ControlMode.Velocity, 1000 * COUNTS_PER_REVOLUTION * 6 * direction);
+
+    /** Run the intake motor(s) at 1000 rpm
+     * @param intakeSpeed = Radians per sec
+     * @see https://motors.vex.com/vexpro-motors/falcon?q=&locale.name=English
+     */
+    public void spinHopper(double hopperSpeed) {
+        hopperMotor.set(ControlMode.Velocity, (hopperSpeed / 20 * Math.PI) * COUNTS_PER_REVOLUTION);
     }
+    
     public void setClaw(boolean open) {
         claw.set(open);
     }
