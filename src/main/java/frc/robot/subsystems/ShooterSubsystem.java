@@ -10,9 +10,9 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 public class ShooterSubsystem extends SubsystemBase {
 
-    private static final double MAX_VELOCITY = 0;
+    private static final double MAX_VELOCITY = 10000000;
     private static final double DEFAULT_VELOCITY = 0;
-    private static final double MPS_TO_TPHMS = 0;
+    private static final int TICKS_PER_REVOLUTION = 2048;
 
     private static final int RIGHT_MOTOR_PORT = 0;
     private static final int LEFT_MOTOR_PORT = 0;
@@ -24,11 +24,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final CANCoder leftEncoder = new CANCoder(LEFT_MOTOR_PORT);   
 
     public ShooterSubsystem(){
-        rightMotor.setInverted();
+        //rightMotor.setInverted();
         rightMotor.follow(leftMotor);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
-
 
         rightMotor.configRemoteFeedbackFilter(rightEncoder, 0);
         leftMotor.configRemoteFeedbackFilter(leftEncoder, 0);
@@ -44,11 +43,16 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shoot() {
-        leftMotor.set(ControlMode.Velocity, DEFAULT_VELOCITY * MPS_TO_TPHMS);
+        leftMotor.set(ControlMode.Velocity, DEFAULT_VELOCITY * TICKS_PER_REVOLUTION);
     }
 
-    public void shoot(double velocity) {
-        leftMotor.set(ControlMode.Velocity, Math.min(velocity, MAX_VELOCITY) * MPS_TO_TPHMS);
+    /**
+     * Rotates falcon for shooter
+     * 
+     * @param radians = Radians per sec
+     */
+    public void shoot(double radians) {
+        leftMotor.set(ControlMode.Velocity, Math.min((radians / (20 * Math.PI)), MAX_VELOCITY) * TICKS_PER_REVOLUTION);
     }
 
 }

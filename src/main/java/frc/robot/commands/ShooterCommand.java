@@ -17,9 +17,16 @@ public class ShooterCommand extends CommandBase {
    * Creates a new ExampleCommand.
    *
    * @param subsystem The subsystem used by this command.
+   * @param speed = Radians per sec
    */
+    public ShooterCommand(ShooterSubsystem subsystem, double speed) {
+        this.subsystem = subsystem;
+        subsystem.shoot(speed);
+    }
+
     public ShooterCommand(ShooterSubsystem subsystem) {
         this.subsystem = subsystem;
+        subsystem.shoot();
     }
 
     // Called when the command is initially scheduled.
