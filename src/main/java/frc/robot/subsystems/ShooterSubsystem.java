@@ -51,8 +51,17 @@ public class ShooterSubsystem extends SubsystemBase {
      * 
      * @param radians = Radians per sec
      */
-    public void shoot(double radians) {
+    public void shootPrecise(double radians) {
         leftMotor.set(ControlMode.Velocity, Math.min((radians / (20 * Math.PI)), MAX_VELOCITY) * TICKS_PER_REVOLUTION);
+    }
+
+    /**
+     * Rotates falcon in terms of fractions of max speed
+     * 
+     * @param percent = Percentage from -1 to 1
+     */
+    public void shootPercent(double percent) {
+        leftMotor.set(ControlMode.PercentOutput, percent);
     }
 
 }
