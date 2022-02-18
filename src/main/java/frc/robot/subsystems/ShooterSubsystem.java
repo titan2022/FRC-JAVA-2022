@@ -15,19 +15,24 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int TICKS_PER_REVOLUTION = 2048;
 
     private static final int RIGHT_MOTOR_PORT = 0;
-    private static final int LEFT_MOTOR_PORT = 0;
+    private static final int LEFT_MOTOR_PORT = 1;
+    
+    private static final int RIGHT_ENCODER_PORT = 9;
+    private static final int LEFT_ENCODER_PORT = 10;
     
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
 
-    private static final CANCoder rightEncoder = new CANCoder(RIGHT_MOTOR_PORT);    
-    private static final CANCoder leftEncoder = new CANCoder(LEFT_MOTOR_PORT);   
+    private static final CANCoder rightEncoder = new CANCoder(RIGHT_ENCODER_PORT);    
+    private static final CANCoder leftEncoder = new CANCoder(LEFT_ENCODER_PORT);   
 
     public ShooterSubsystem(){
         //rightMotor.setInverted();
         rightMotor.follow(leftMotor);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
+        leftMotor.setInverted(false);
+        rightMotor.setInverted(true);
 
         rightMotor.configRemoteFeedbackFilter(rightEncoder, 0);
         leftMotor.configRemoteFeedbackFilter(leftEncoder, 0);
@@ -39,6 +44,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
         rightEncoder.configMagnetOffset(0);
         leftEncoder.configMagnetOffset(0);
+
+        leftMotor.config_kP(0, 100);
+        leftMotor.config_kI(0, 0);
+        leftMotor.config_kD(0, 0);
+        rightMotor.config_kP(0, 100);
+        rightMotor.config_kI(0, 0);
+        rightMotor.config_kD(0, 0);
 
     }
 
