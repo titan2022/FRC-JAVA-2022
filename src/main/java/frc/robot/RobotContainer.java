@@ -4,11 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import frc.robot.commands.ExampleCommand;
+import frc.robot.commands.SpinHopper;
+import frc.robot.commands.SpinIntake;
+
 import static frc.robot.Constants.XBOX_CONTROLLER;
 import frc.robot.subsystems.ExampleSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -32,7 +34,7 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     // Configure the button bindings
-    configureButtonBindings();
+    //configureButtonBindings();
   }
 
   /**
@@ -41,14 +43,13 @@ public class RobotContainer {
    * edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then passing it to a {@link
    * edu.wpi.first.wpilibj2.command.button.JoystickButton}.
    */
-  private void configureButtonBindings() {
+  public void configureButtonBindings() {
     // OOP combined with imperitive is so scuffed!
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-      .whenPressed(() -> intake.spinIntake(1))
-      .whenReleased(() -> intake.spinIntake(0));
+      .whileActiveOnce(new SpinHopper(intake, 20 * Math.PI));
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
-      .whenPressed(() -> intake.spinIntake(-1))
-      .whenReleased(() -> intake.spinIntake(0));
+      .whileActiveOnce(new SpinIntake(intake, 20 * Math.PI));
+    System.out.println("Buttons configured");
 
       
   }
