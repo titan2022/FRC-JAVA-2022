@@ -9,8 +9,8 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
 public class SpinIntake extends CommandBase {
-  @SuppressWarnings({ "PMD.UnusedPrivateField", "PMD.SingularField" })
   private final IntakeSubsystem subsystem;
+  private final double speed;
 
   /**
    * Creates a new ExampleCommand.
@@ -19,14 +19,16 @@ public class SpinIntake extends CommandBase {
    */
   public SpinIntake(IntakeSubsystem subsystem, double speed) {
     this.subsystem = subsystem;
+    this.speed = speed;
     // Use addRequirements() here to declare subsystem dependencies.
     addRequirements(subsystem);
-    subsystem.spinIntake(speed);
   }
 
   // Called when the command is initially scheduled.
   @Override
-  public void initialize() {}
+  public void initialize() {
+    subsystem.spinIntake(speed);
+  }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
@@ -34,7 +36,9 @@ public class SpinIntake extends CommandBase {
 
   // Called once the command ends or is interrupted.
   @Override
-  public void end(boolean interrupted) {}
+  public void end(boolean interrupted) {
+    subsystem.spinIntake(0);
+  }
 
   // Returns true when the command should end.
   @Override
