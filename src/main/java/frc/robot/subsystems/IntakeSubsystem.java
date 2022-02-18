@@ -13,10 +13,10 @@ import static frc.robot.Constants.*;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-    private static final int INTAKE_MOTOR_PORT = 0;
-    private static final int HOPPER_MOTOR_PORT = 0;
+    private static final int INTAKE_MOTOR_PORT = 12;
+    private static final int HOPPER_MOTOR_PORT = 13;
     private static final int INTAKE_SENSOR_PORT = 0;
-    private static final int HOPPER_SENSOR_PORT = 0;
+    private static final int HOPPER_SENSOR_PORT = 1;
 
     private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
     private static final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT);
@@ -29,11 +29,15 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         intakeMotor.setNeutralMode(NeutralMode.Brake);
         intakeMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        intakeMotor.setInverted(false);
+        intakeMotor.setInverted(true);
         intakeMotor.configSupplyCurrentLimit(MAX_AMPS);
         intakeMotor.configStatorCurrentLimit(MAX_AMPS_OUT);
         intakeMotor.configNeutralDeadband(0.01);
         intakeMotor.selectProfileSlot(0, 0);
+        intakeMotor.config_kP(0, 1000);
+        intakeMotor.config_kI(0, 0);
+        intakeMotor.config_kD(0, 0);
+        intakeMotor.config_kF(0, 0);
 
         hopperMotor.setNeutralMode(NeutralMode.Brake);
         hopperMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
@@ -42,6 +46,10 @@ public class IntakeSubsystem extends SubsystemBase {
         hopperMotor.configStatorCurrentLimit(MAX_AMPS_OUT);
         hopperMotor.configNeutralDeadband(0.01);
         hopperMotor.selectProfileSlot(0, 0);
+        hopperMotor.config_kP(0, 1000);
+        hopperMotor.config_kI(0, 0);
+        hopperMotor.config_kD(0, 0);
+        hopperMotor.config_kF(0, 0);
     }
 
     public boolean intakeBall() {
