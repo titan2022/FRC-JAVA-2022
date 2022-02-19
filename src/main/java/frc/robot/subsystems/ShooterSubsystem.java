@@ -18,19 +18,19 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int HOOD_MINIMUM_TICKS = 0;
     private static final int HOOD_MAXIMUM_TICKS = 12140;
 
-    private static final int RIGHT_MOTOR_PORT = 0;
-    private static final int LEFT_MOTOR_PORT = 1;
+    private static final int RIGHT_MOTOR_PORT = 18;
+    private static final int LEFT_MOTOR_PORT = 17;
     private static final int HOOD_MOTOR_ID = 16;
     
-    private static final int RIGHT_ENCODER_PORT = 9;
-    private static final int LEFT_ENCODER_PORT = 10;
+    //private static final int RIGHT_ENCODER_PORT = 9;
+    //private static final int LEFT_ENCODER_PORT = 10;
     
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
 
-    private static final CANCoder rightEncoder = new CANCoder(RIGHT_ENCODER_PORT);    
-    private static final CANCoder leftEncoder = new CANCoder(LEFT_ENCODER_PORT);   
+    //private static final CANCoder rightEncoder = new CANCoder(RIGHT_ENCODER_PORT);    
+    //private static final CANCoder leftEncoder = new CANCoder(LEFT_ENCODER_PORT);   
 
     public ShooterSubsystem(){
         //rightMotor.setInverted();
@@ -40,16 +40,18 @@ public class ShooterSubsystem extends SubsystemBase {
         leftMotor.setInverted(false);
         rightMotor.setInverted(true);
 
-        rightMotor.configRemoteFeedbackFilter(rightEncoder, 0);
-        leftMotor.configRemoteFeedbackFilter(leftEncoder, 0);
-        rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0,0,0);
-        leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0,0,0);
+        //rightMotor.configRemoteFeedbackFilter(rightEncoder, 0);
+        //leftMotor.configRemoteFeedbackFilter(leftEncoder, 0);
+        rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
+        leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
         
-        rightEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        leftEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        //rightEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        //leftEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        rightMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        leftMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
 
-        rightEncoder.configMagnetOffset(0);
-        leftEncoder.configMagnetOffset(0);
+        //rightEncoder.configMagnetOffset(0);
+        //leftEncoder.configMagnetOffset(0);
 
         leftMotor.config_kP(0, 100);
         leftMotor.config_kI(0, 0);
