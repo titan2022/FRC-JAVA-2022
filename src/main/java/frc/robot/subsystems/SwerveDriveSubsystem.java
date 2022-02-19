@@ -60,10 +60,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   private static final int ENCODER_PORT = 0;
 
-  private static final int FRONT_LEFT_OFFSET = 202;
-  private static final int BACK_LEFT_OFFSET = 75;
+  private static final int FRONT_LEFT_OFFSET = 173;
+  private static final int BACK_LEFT_OFFSET = 823;
   private static final int FRONT_RIGHT_OFFSET = 1158;
-  private static final int BACK_RIGHT_OFFSET = 779;
+  private static final int BACK_RIGHT_OFFSET = 851;
 
   // Motor and sensor inversions
   private static final boolean LEFT_FRONT_MOTOR_INVERTED = false;
@@ -86,8 +86,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   // Physical limits of motors that create translational motion
   private static final double MAX_WHEEL_SPEED = 10; // meters/sec
-  private static final int PEAK_CURRENT_LIMIT = 6;
-  private static final int CONTINUOUS_CURRENT_LIMIT = 5;
+  private static final int PEAK_CURRENT_LIMIT = 12;
+  private static final int CONTINUOUS_CURRENT_LIMIT = 12;
   private static final StatorCurrentLimitConfiguration statorCurrentLimit = new StatorCurrentLimitConfiguration(true,
       PEAK_CURRENT_LIMIT, 0, 0);
   private static final SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true,

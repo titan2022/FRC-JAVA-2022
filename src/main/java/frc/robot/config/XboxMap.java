@@ -4,6 +4,8 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 
+import static frc.robot.Constants.XBOX_CONTROLLER;
+
 /**
  * Xbox button logic definitions
  */
@@ -15,8 +17,7 @@ public class XboxMap {
   private static final double ORIENTATION_LOWER_RADIUS = .5;
 
   // Main Driver and Auxilliary Driver
-  private static final XboxController controller = OI.ps4;
-  private static final XboxController auxController = OI.xbox;
+  private static final XboxController controller = XBOX_CONTROLLER;
 
   // Differential Driving Controls
   public static double leftWheel() { // TODO: fix this confusing mess of a controller configuration
