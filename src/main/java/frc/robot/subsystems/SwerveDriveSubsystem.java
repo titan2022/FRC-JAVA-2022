@@ -346,7 +346,13 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     leftBackMotor.set(ControlMode.Velocity, modules[1].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     rightFrontMotor.set(ControlMode.Velocity, modules[2].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     rightBackMotor.set(ControlMode.Velocity, modules[3].speedMetersPerSecond/(10 * METERS_PER_TICKS));
+    /*double percentVelocity = Math.sqrt(Math.pow(XboxMap.translationX(), 2) + Math.pow(XboxMap.translationY(), 2));
+    leftFrontMotor.set(ControlMode.PercentOutput, percentVelocity);
+    leftBackMotor.set(ControlMode.PercentOutput, percentVelocity);
+    rightFrontMotor.set(ControlMode.PercentOutput, percentVelocity);
+    rightBackMotor.set(ControlMode.PercentOutput, percentVelocity);*/
 
+    
     leftFrontRotatorMotor.set(ControlMode.Position, modules[0].angle.getRadians() / RADIANS_PER_TICK + 166);
     leftBackRotatorMotor.set(ControlMode.Position, modules[1].angle.getRadians() / RADIANS_PER_TICK - 1807);
     rightFrontRotatorMotor.set(ControlMode.Position, modules[2].angle.getRadians() / RADIANS_PER_TICK + 1162);

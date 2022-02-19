@@ -8,7 +8,6 @@ import frc.robot.commands.ManualSwerveDriveCommand;
 import frc.robot.config.PIDConfig;
 //import frc.robot.subsystems.NavigationSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
-import frc.robot.RobotContainer;
 
 /**
  * This class is where the bulk of the robot should be declared. Since
@@ -17,7 +16,7 @@ import frc.robot.RobotContainer;
  * scheduler calls). Instead, the structure of the robot (including subsystems,
  * commands, and button mappings) should be declared here.
  */
-public class SwerveDriveContainer extends RobotContainer {
+public class SwerveDriveContainer implements RobotContainer {
     // Subsystems
     private final SwerveDriveSubsystem swerveDriveSub;
     //private final NavigationSubsystem navSub;
@@ -37,6 +36,8 @@ public class SwerveDriveContainer extends RobotContainer {
         //navSub = new NavigationSubsystem();
         //vhopperSub = new VHopperSubsystem();
         //intakeSub = new IntakeSubsystem();
+
+        // Initialize Auto Commands
 
         // Initialize Teleop Commands
         ManualSwerveDriveCommand manualDriveCommand = new ManualSwerveDriveCommand(swerveDriveSub/*, navSub*/, getSwerveHeadingPIDConfig());
@@ -66,6 +67,7 @@ public class SwerveDriveContainer extends RobotContainer {
         return autoGroup;
     }
 
+    @Override
     public Command getTeleopCommand() {
         return teleopGroup;
     }
@@ -78,8 +80,8 @@ public class SwerveDriveContainer extends RobotContainer {
     {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 1500;
-        talon.slot0.kI = 250;
+        talon.slot0.kP = 1000;
+        talon.slot0.kI = 0;  // 250
         talon.slot0.kD = 0;        
         talon.slot0.kF = 0;
         talon.slot0.integralZone = 900;
@@ -99,12 +101,12 @@ public class SwerveDriveContainer extends RobotContainer {
     {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 0.01;
+        talon.slot0.kP = 100.;
         talon.slot0.kI = 0;
         talon.slot0.kD = 0;
         talon.slot0.kF = 0;
         talon.slot0.integralZone = 900;
-        talon.slot0.allowableClosedloopError = 217;//20;
+        talon.slot0.allowableClosedloopError = 20;//217;
         talon.slot0.maxIntegralAccumulator = 254.000000;
         //talon.slot0.closedLoopPeakOutput = 0.869990; // Sets maximum output of the PID controller
         //talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the PID controller

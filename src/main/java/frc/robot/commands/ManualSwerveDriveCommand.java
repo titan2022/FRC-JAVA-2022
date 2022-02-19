@@ -87,7 +87,7 @@ public class ManualSwerveDriveCommand extends CommandBase {
         //targetAngleRadians = Math.max(0, Math.min(Math.toRadians(28), targetAngleRadians)); // Limit if needed
       }
       double thetaSpeed = pid.calculate(headingRadians, targetAngleRadians);
-      swerveDriveSub.setVelocities(new ChassisSpeeds(xVelocity, yVelocity, 0 /* thetaSpeed */));
+      swerveDriveSub.setVelocities(new ChassisSpeeds(-xVelocity, -yVelocity, 0 /* thetaSpeed */));
 
       SmartDashboard.putNumber("xFieldVel", xFieldVelocity);
       SmartDashboard.putNumber("yFieldVel", yFieldVelocity);
