@@ -74,13 +74,13 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final boolean RIGHT_FRONT_MOTOR_SENSOR_PHASE = false;
   private static final boolean LEFT_BACK_MOTOR_SENSOR_PHASE = false;
   private static final boolean RIGHT_BACK_MOTOR_SENSOR_PHASE = false;
-  private static final boolean LEFT_FRONT_MOTOR_ROTATOR_SENSOR_PHASE = false;
-  private static final boolean RIGHT_FRONT_MOTOR_ROTATOR_SENSOR_PHASE = false;
-  private static final boolean LEFT_BACK_MOTOR_ROTATOR_SENSOR_PHASE = false;
-  private static final boolean RIGHT_BACK_MOTOR_ROTATOR_SENSOR_PHASE = false;
+  private static final boolean LEFT_FRONT_MOTOR_ROTATOR_SENSOR_PHASE = true;
+  private static final boolean RIGHT_FRONT_MOTOR_ROTATOR_SENSOR_PHASE = true;
+  private static final boolean LEFT_BACK_MOTOR_ROTATOR_SENSOR_PHASE = true;
+  private static final boolean RIGHT_BACK_MOTOR_ROTATOR_SENSOR_PHASE = true;
 
   // Physical limits of motors that create translational motion
-  private static final double MAX_WHEEL_SPEED = .25; // meters/sec
+  private static final double MAX_WHEEL_SPEED = 10; // meters/sec
   private static final int PEAK_CURRENT_LIMIT = 6;
   private static final int CONTINUOUS_CURRENT_LIMIT = 5;
   private static final StatorCurrentLimitConfiguration statorCurrentLimit = new StatorCurrentLimitConfiguration(true,
@@ -139,10 +139,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rotatorConfig.absoluteSensorRange = AbsoluteSensorRange.Signed_PlusMinus180;
     rotatorConfig.initializationStrategy = SensorInitializationStrategy.BootToAbsolutePosition;
 
-    leftFrontRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 500);
-    leftBackRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 500);
-    rightFrontRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 500);
-    rightBackRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 500);
+    leftFrontRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
+    leftBackRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
+    rightFrontRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
+    rightBackRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
 
     mainConfig.statorCurrLimit = statorCurrentLimit;
     mainConfig.supplyCurrLimit = supplyCurrentLimit;
@@ -347,12 +347,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rightFrontMotor.set(ControlMode.Velocity, modules[2].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     rightBackMotor.set(ControlMode.Velocity, modules[3].speedMetersPerSecond/(10 * METERS_PER_TICKS));
 
-    
-    leftFrontRotatorMotor.set(ControlMode.Position, /*modules[0].angle.getRadians() / RADIANS_PER_TICK + 908*/0);
-    leftBackRotatorMotor.set(ControlMode.Position, /*modules[1].angle.getRadians() / RADIANS_PER_TICK + 773*/0);
-    rightFrontRotatorMotor.set(ControlMode.Position, /*modules[2].angle.getRadians() / RADIANS_PER_TICK - 1783*/0);
-    rightBackRotatorMotor.set(ControlMode.Position, /*modules[3].angle.getRadians() / RADIANS_PER_TICK + 231*/0);
-    
+    leftFrontRotatorMotor.set(ControlMode.Position, modules[0].angle.getRadians() / RADIANS_PER_TICK + 166);
+    leftBackRotatorMotor.set(ControlMode.Position, modules[1].angle.getRadians() / RADIANS_PER_TICK - 1807);
+    rightFrontRotatorMotor.set(ControlMode.Position, modules[2].angle.getRadians() / RADIANS_PER_TICK + 1162);
+    rightBackRotatorMotor.set(ControlMode.Position, modules[3].angle.getRadians() / RADIANS_PER_TICK + 710);
 
     getSwerveModuleStates();
   } 
