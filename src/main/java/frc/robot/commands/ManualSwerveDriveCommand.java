@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.controller.PIDController;
 import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -8,6 +9,8 @@ import frc.robot.config.XboxMap;
 import frc.robot.config.PIDConfig;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 //import frc.robot.subsystems.NavigationSubsystem;
+
+import static frc.robot.Constants.XBOX_CONTROLLER;
 
 /**
  * Manual field oriented velocity and orientation swerve drive manual control command.
@@ -87,7 +90,7 @@ public class ManualSwerveDriveCommand extends CommandBase {
         //targetAngleRadians = Math.max(0, Math.min(Math.toRadians(28), targetAngleRadians)); // Limit if needed
       }
       double thetaSpeed = pid.calculate(headingRadians, targetAngleRadians);
-      swerveDriveSub.setVelocities(new ChassisSpeeds(-xVelocity, -yVelocity, 0 /* thetaSpeed */));
+      swerveDriveSub.setVelocities(new ChassisSpeeds(-xVelocity, -yVelocity, XBOX_CONTROLLER.getX(Hand.kRight) * Math.PI /* thetaSpeed */));
 
       SmartDashboard.putNumber("xFieldVel", xFieldVelocity);
       SmartDashboard.putNumber("yFieldVel", yFieldVelocity);
@@ -100,7 +103,7 @@ public class ManualSwerveDriveCommand extends CommandBase {
       SmartDashboard.putNumber("AHRS", Math.toDegrees(headingRadians));
       SmartDashboard.putNumber("ipt angle", Math.toDegrees(targetAngleRadians));
       //SmartDashboard.putNumber("Yaw", navSub.getYaw());
-      SmartDashboard.putNumber("ThetaSpeed", thetaSpeed);
+      SmartDashboard.putNumber("ThetaSpeed", XBOX_CONTROLLER.getX(Hand.kRight) * 180/*thetaSpeed*/);
       SmartDashboard.putNumber("OrientX", xDirection);
       SmartDashboard.putNumber("OrientY", yDirection);
       SmartDashboard.putNumber("posErr", Math.toDegrees(pid.getPositionError()));
