@@ -5,7 +5,7 @@ import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.config.XboxMap;
-import frc.robot.motion.control.PIDConfig;
+import frc.robot.config.PIDConfig;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 //import frc.robot.subsystems.NavigationSubsystem;
 
