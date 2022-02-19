@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.RobotContainer;
 import frc.robot.commands.ManualSwerveDriveCommand;
 import frc.robot.config.PIDConfig;
 //import frc.robot.subsystems.NavigationSubsystem;
@@ -16,7 +17,7 @@ import frc.robot.subsystems.SwerveDriveSubsystem;
  * scheduler calls). Instead, the structure of the robot (including subsystems,
  * commands, and button mappings) should be declared here.
  */
-public class SwerveDriveContainer implements RobotContainer {
+public class SwerveDriveContainer extends RobotContainer {
     // Subsystems
     private final SwerveDriveSubsystem swerveDriveSub;
     //private final NavigationSubsystem navSub;
