@@ -6,7 +6,6 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import frc.robot.RobotContainer;
 import frc.robot.commands.ManualSwerveDriveCommand;
-import frc.robot.config.PIDConfig;
 //import frc.robot.subsystems.NavigationSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
@@ -53,16 +52,6 @@ public class SwerveDriveContainer extends RobotContainer {
         configureButtonBindings();
     }
 
-    /**
-     * Use this method to define your button->command mappings. Buttons can be
-     * created by instantiating a {@link GenericHID} or one of its subclasses
-     * ({@link edu.wpi.first.wpilibj.Joystick} or {@link XboxController}), and then
-     * passing it to a {@link edu.wpi.first.wpilibj2.command.button.JoystickButton}.
-     */
-    private void configureButtonBindings() {
-
-    }
-
     @Override
     public Command getAutonomousCommand() {
         return autoGroup;
@@ -104,7 +93,7 @@ public class SwerveDriveContainer extends RobotContainer {
         // Add configs here:
         talon.slot0.kP = 100.;
         talon.slot0.kI = 0;
-        talon.slot0.kD = 0;
+        talon.slot0.kD = 5;
         talon.slot0.kF = 0;
         talon.slot0.integralZone = 900;
         talon.slot0.allowableClosedloopError = 20;//217;

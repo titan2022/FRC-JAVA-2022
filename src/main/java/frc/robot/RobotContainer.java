@@ -29,7 +29,7 @@ public class RobotContainer {
 
   private final ExampleCommand m_autoCommand = new ExampleCommand(m_exampleSubsystem);
 
-  private final IntakeSubsystem intake = new IntakeSubsystem();
+  protected final IntakeSubsystem intake = new IntakeSubsystem();
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -46,9 +46,9 @@ public class RobotContainer {
   public void configureButtonBindings() {
     // OOP combined with imperitive is so scuffed!
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperLeft.value)
-      .whileActiveOnce(new SpinHopper(intake, 20 * Math.PI));
+      .whileActiveOnce(new SpinHopper(intake, 5 * Math.PI));
     new JoystickButton(XBOX_CONTROLLER, Button.kBumperRight.value)
-      .whileActiveOnce(new SpinIntake(intake, 20 * Math.PI));
+      .whileActiveOnce(new SpinIntake(intake, 5 * Math.PI));
     System.out.println("Buttons configured");
 
       

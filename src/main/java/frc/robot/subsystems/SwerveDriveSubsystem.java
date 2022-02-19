@@ -60,6 +60,11 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   private static final int ENCODER_PORT = 0;
 
+  private static final int FRONT_LEFT_OFFSET = 202;
+  private static final int BACK_LEFT_OFFSET = 75;
+  private static final int FRONT_RIGHT_OFFSET = 1158;
+  private static final int BACK_RIGHT_OFFSET = 779;
+
   // Motor and sensor inversions
   private static final boolean LEFT_FRONT_MOTOR_INVERTED = false;
   private static final boolean LEFT_BACK_MOTOR_INVERTED = false;
@@ -339,8 +344,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     SmartDashboard.putNumber("Norm FR tgt", modules[2].angle.getRadians() / RADIANS_PER_TICK);
     SmartDashboard.putNumber("Norm BR tgt", modules[3].angle.getRadians() / RADIANS_PER_TICK);
     
-    for(int i=0; i<4; i++)
-      modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition((i&1)==0, i>1)));
+    //for(int i=0; i<4; i++)
+      //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition((i&1)==0, i>1)));
 
     leftFrontMotor.set(ControlMode.Velocity, modules[0].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     leftBackMotor.set(ControlMode.Velocity, modules[1].speedMetersPerSecond/(10 * METERS_PER_TICKS));
@@ -352,11 +357,15 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rightFrontMotor.set(ControlMode.PercentOutput, percentVelocity);
     rightBackMotor.set(ControlMode.PercentOutput, percentVelocity);*/
 
+    SmartDashboard.putNumber("FL Tgt Raw Opt", modules[0].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    SmartDashboard.putNumber("BL Tgt Raw Opt", modules[1].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    SmartDashboard.putNumber("FR Tgt Raw Opt", modules[2].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    SmartDashboard.putNumber("BR Tgt Raw Opt", modules[3].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
     
-    leftFrontRotatorMotor.set(ControlMode.Position, modules[0].angle.getRadians() / RADIANS_PER_TICK + 166);
-    leftBackRotatorMotor.set(ControlMode.Position, modules[1].angle.getRadians() / RADIANS_PER_TICK - 1807);
-    rightFrontRotatorMotor.set(ControlMode.Position, modules[2].angle.getRadians() / RADIANS_PER_TICK + 1162);
-    rightBackRotatorMotor.set(ControlMode.Position, modules[3].angle.getRadians() / RADIANS_PER_TICK + 710);
+    leftFrontRotatorMotor.set(ControlMode.Position, modules[0].angle.getRadians() / RADIANS_PER_TICK /*+ 166*/ + FRONT_LEFT_OFFSET);
+    leftBackRotatorMotor.set(ControlMode.Position, modules[1].angle.getRadians() / RADIANS_PER_TICK /*- 1807*/ + BACK_LEFT_OFFSET);
+    rightFrontRotatorMotor.set(ControlMode.Position, modules[2].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    rightBackRotatorMotor.set(ControlMode.Position, modules[3].angle.getRadians() / RADIANS_PER_TICK /*+ 710*/ + BACK_RIGHT_OFFSET);
 
     getSwerveModuleStates();
   } 
