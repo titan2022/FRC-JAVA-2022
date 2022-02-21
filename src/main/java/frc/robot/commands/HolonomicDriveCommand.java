@@ -8,21 +8,54 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.DriveSubsystem;
 
+/**
+ * Manual drive command for a holonomic drive base.
+ */
 public class HolonomicDriveCommand extends CommandBase {
     private final DriveSubsystem drivebase;
     private final XboxController controller;
     private double velocity;
     private double turnRate;
 
+    /**
+     * Creates a new HolonomicDriveCommand.
+     * 
+     * @param drivebase  The drive subsystem to control.
+     * @param controller  The joystick controller to use.
+     * @param turnRate  The angular velocity represented by moving the rotational
+     *  joystick all the way to one side, in radians per second.
+     * @param velocity  The translational velocity represented by moving the
+     *  translational joystick all the way towards a cardinal direction, in
+     *  meters per second.
+     */
     public HolonomicDriveCommand(DriveSubsystem drivebase, XboxController controller, double turnRate, double velocity) {
         this.drivebase = drivebase;
         this.controller = controller;
         this.turnRate = turnRate;
         this.velocity = velocity;
     }
+    /**
+     * Creates a new HolonomicDriveCommand.
+     * 
+     * The maximum translation velocity is assumed to be 10 meters per second.
+     * 
+     * @param drivebase  The drive subsystem to control.
+     * @param controller  The joystick controller to use.
+     * @param turnRate  The angular velocity represented by moving the rotational
+     *  joystick all the way to one side.
+     */
     public HolonomicDriveCommand(DriveSubsystem drivebase, XboxController controller, double turnRate) {
         this(drivebase, controller, turnRate, 10.);
     }
+    /**
+     * Creates a new HolonomicDriveCommand.
+     * 
+     * The maximum translation velocity is assumed to be 10 meters per second.
+     * The maximum angular velocity is assumed to be pi radians per second.
+     * 
+     * @param drivebase  The drive subsystem to control.
+     * @param controller  The joystick controller to use.
+     */
     public HolonomicDriveCommand(DriveSubsystem drivebase, XboxController controller) {
         this(drivebase, controller, Math.PI);
     }
