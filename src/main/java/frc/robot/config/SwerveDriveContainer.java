@@ -113,24 +113,4 @@ public class SwerveDriveContainer extends RobotContainer {
 
         return talon;
     }
-
-    /**
-     * The swerve field oriented heading PID configuration
-     * @return PID configuration for {@link PIDController}
-     */
-    public PIDConfig getSwerveHeadingPIDConfig(){
-        PIDConfig pidConfig = new PIDConfig();
-
-        pidConfig.kP = 1;//504.000000;
-        pidConfig.kI = 0;//5.600000;
-        pidConfig.kD = 0;//0.20000;
-        
-        pidConfig.CONTINOUS_MINIMUM = 0;
-        pidConfig.CONTINOUS_MAXIMUM = 2 * Math.PI;
-
-        pidConfig.INTEGRATION_MIN = -0.5;
-        pidConfig.INTEGRATION_MAX = 0.5;
-
-        return pidConfig;
-    }
 }
