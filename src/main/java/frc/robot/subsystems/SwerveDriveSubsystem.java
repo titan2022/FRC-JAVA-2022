@@ -21,17 +21,16 @@ import edu.wpi.first.wpilibj.util.Units;
 import edu.wpi.first.wpilibj.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.geometry.Translation2d;
 
+import static frc.robot.Constants.Unit.*;
+
 public class SwerveDriveSubsystem implements DriveSubsystem
 {
   // Physical parameters
-  public static final double ROBOT_TRACK_WIDTH = Units.inchesToMeters(23.5); // 0.672; // meters (30 in)
-  public static final double ROBOT_LENGTH = Units.inchesToMeters(23.5); // 0.672; // meter 
-  public static final double WHEEL_RADIUS = Units.inchesToMeters(2); // 0.0508; // meters (2 in)
-  public static final double INTEGRATED_ENCODER_TICKS = 4096;//2048;
-  public static final double CANCODER_TICKS = 4096;
-  public static final double RADIANS_PER_TICK = 2 * Math.PI / CANCODER_TICKS;
+  public static final double ROBOT_TRACK_WIDTH = 23.5 * IN; // 0.672; // meters (30 in)
+  public static final double ROBOT_LENGTH = 23.5 * IN; // 0.672; // meter 
+  public static final double WHEEL_RADIUS = 2 * IN; // 0.0508; // meters (2 in)
   public static final double GEAR_RATIO = 6.86;
-  public static final double METERS_PER_TICKS = WHEEL_RADIUS * 2 * Math.PI / INTEGRATED_ENCODER_TICKS / GEAR_RATIO;
+  public static final double METERS_PER_TICKS = WHEEL_RADIUS * 2 * Math.PI / FALCON_CPR / GEAR_RATIO;
 
   // Rotator Encoder Offsets
   private static final double LEFT_FRONT_ENCODER_DEGREES_OFFSET = 74.88*0;//77;  852
@@ -85,7 +84,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final boolean RIGHT_BACK_MOTOR_ROTATOR_SENSOR_PHASE = true;
 
   // Physical limits of motors that create translational motion
-  private static final double MAX_WHEEL_SPEED = 10; // meters/sec
+  private static final double MAX_WHEEL_SPEED = 10 * M / S;
   private static final int PEAK_CURRENT_LIMIT = 12;
   private static final int CONTINUOUS_CURRENT_LIMIT = 12;
   private static final StatorCurrentLimitConfiguration statorCurrentLimit = new StatorCurrentLimitConfiguration(true,
@@ -339,10 +338,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     SmartDashboard.putNumber("Norm BL deg", modules[1].angle.getDegrees());
     SmartDashboard.putNumber("Norm FR deg", modules[2].angle.getDegrees());
     SmartDashboard.putNumber("Norm BR deg", modules[3].angle.getDegrees());
-    SmartDashboard.putNumber("Norm FL tgt", modules[0].angle.getRadians() / RADIANS_PER_TICK);
-    SmartDashboard.putNumber("Norm BL tgt", modules[1].angle.getRadians() / RADIANS_PER_TICK);
-    SmartDashboard.putNumber("Norm FR tgt", modules[2].angle.getRadians() / RADIANS_PER_TICK);
-    SmartDashboard.putNumber("Norm BR tgt", modules[3].angle.getRadians() / RADIANS_PER_TICK);
+    SmartDashboard.putNumber("Norm FL tgt", modules[0].angle.getRadians() * RAD / ROT * CANCODER_CPR);
+    SmartDashboard.putNumber("Norm BL tgt", modules[1].angle.getRadians() * RAD / ROT * CANCODER_CPR);
+    SmartDashboard.putNumber("Norm FR tgt", modules[2].angle.getRadians() * RAD / ROT * CANCODER_CPR);
+    SmartDashboard.putNumber("Norm BR tgt", modules[3].angle.getRadians() * RAD / ROT * CANCODER_CPR);
     
     //for(int i=0; i<4; i++)
       //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition((i&1)==0, i>1)));
@@ -357,15 +356,15 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rightFrontMotor.set(ControlMode.PercentOutput, percentVelocity);
     rightBackMotor.set(ControlMode.PercentOutput, percentVelocity);*/
 
-    SmartDashboard.putNumber("FL Tgt Raw Opt", modules[0].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    SmartDashboard.putNumber("BL Tgt Raw Opt", modules[1].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    SmartDashboard.putNumber("FR Tgt Raw Opt", modules[2].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    SmartDashboard.putNumber("BR Tgt Raw Opt", modules[3].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    SmartDashboard.putNumber("FL Tgt Raw Opt", modules[0].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    SmartDashboard.putNumber("BL Tgt Raw Opt", modules[1].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    SmartDashboard.putNumber("FR Tgt Raw Opt", modules[2].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    SmartDashboard.putNumber("BR Tgt Raw Opt", modules[3].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
     
-    leftFrontRotatorMotor.set(ControlMode.Position, modules[0].angle.getRadians() / RADIANS_PER_TICK /*+ 166*/ + FRONT_LEFT_OFFSET);
-    leftBackRotatorMotor.set(ControlMode.Position, modules[1].angle.getRadians() / RADIANS_PER_TICK /*- 1807*/ + BACK_LEFT_OFFSET);
-    rightFrontRotatorMotor.set(ControlMode.Position, modules[2].angle.getRadians() / RADIANS_PER_TICK /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    rightBackRotatorMotor.set(ControlMode.Position, modules[3].angle.getRadians() / RADIANS_PER_TICK /*+ 710*/ + BACK_RIGHT_OFFSET);
+    leftFrontRotatorMotor.set(ControlMode.Position, modules[0].angle.getRadians() * RAD / CANCODER_TICKS /*+ 166*/ + FRONT_LEFT_OFFSET);
+    leftBackRotatorMotor.set(ControlMode.Position, modules[1].angle.getRadians() * RAD / CANCODER_TICKS /*- 1807*/ + BACK_LEFT_OFFSET);
+    rightFrontRotatorMotor.set(ControlMode.Position, modules[2].angle.getRadians() * RAD / CANCODER_TICKS/*+ 1162*/ + FRONT_RIGHT_OFFSET);
+    rightBackRotatorMotor.set(ControlMode.Position, modules[3].angle.getRadians() * RAD / CANCODER_TICKS /*+ 710*/ + BACK_RIGHT_OFFSET);
 
     getSwerveModuleStates();
   } 
@@ -487,22 +486,22 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     {
       if (useBack){
         SmartDashboard.putNumber("raw BL rot", leftBackRotatorMotor.getSelectedSensorPosition(ENCODER_PORT));
-        return leftBackRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * RADIANS_PER_TICK;
+        return leftBackRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * CANCODER_TICKS;
       }
       else{
         SmartDashboard.putNumber("raw FL rot", leftFrontRotatorMotor.getSelectedSensorPosition(ENCODER_PORT));
-        return leftFrontRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * RADIANS_PER_TICK;
+        return leftFrontRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * CANCODER_TICKS;
       }
     }
     else
     {
       if (useBack){
         SmartDashboard.putNumber("raw BR rot", rightBackRotatorMotor.getSelectedSensorPosition(ENCODER_PORT));
-        return rightBackRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * RADIANS_PER_TICK;
+        return rightBackRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * CANCODER_TICKS;
       }
       else{
         SmartDashboard.putNumber("raw FR rot", rightFrontRotatorMotor.getSelectedSensorPosition(ENCODER_PORT));
-        return rightFrontRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * RADIANS_PER_TICK;
+        return rightFrontRotatorMotor.getSelectedSensorPosition(ENCODER_PORT) * CANCODER_TICKS;
       }
     }
   }

@@ -7,6 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -19,6 +20,23 @@ import edu.wpi.first.wpilibj.XboxController;
 public final class Constants {
     public static final double COUNTS_PER_REVOLUTION = 4096;
     public static final XboxController XBOX_CONTROLLER = new XboxController(1);
+
+    public static final class Unit {
+        public static final double METERS = 1.0, M = 1.0;
+        public static final double CM = 0.01, MM = 0.001;
+        public static final double IN = Units.inchesToMeters(1);
+        public static final double FT = Units.feetToMeters(1);
+        public static final double RAD = 1.0;
+        public static final double DEG = Units.degreesToRadians(1);
+        public static final double ROT = Math.PI * 2;
+        public static final double FALCON_CPR = 2048;
+        public static final double CANCODER_CPR = 4096;
+        public static final double FALCON_TICKS = FALCON_CPR / ROT;
+        public static final double CANCODER_TICKS = FALCON_CPR / ROT;
+        public static final double SECONDS = 1.0, S = 1.0;
+        public static final double MIN = 1.0/60;
+        public static final double MS = 0.001;
+    }
 
     /**
      * Contains a velocity based PID configuration.
