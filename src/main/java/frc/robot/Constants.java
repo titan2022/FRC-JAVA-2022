@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+
 import edu.wpi.first.wpilibj.XboxController;
 
 /**
@@ -17,4 +19,46 @@ import edu.wpi.first.wpilibj.XboxController;
 public final class Constants {
     public static final double COUNTS_PER_REVOLUTION = 4096;
     public static final XboxController XBOX_CONTROLLER = new XboxController(1);
+
+    /**
+     * Contains a velocity based PID configuration.
+     * @return TalonFX Configuration Object
+     */
+    public static TalonFXConfiguration getSwerveDriveTalonDirectionalConfig()
+    {
+        TalonFXConfiguration talon = new TalonFXConfiguration();
+        // Add configs here:
+        talon.slot0.kP = 1000;
+        talon.slot0.kI = 0;  // 250
+        talon.slot0.kD = 0;        
+        talon.slot0.kF = 0;
+        talon.slot0.integralZone = 900;
+        talon.slot0.allowableClosedloopError = 217;
+        talon.slot0.maxIntegralAccumulator = 254.000000;
+        //talon.slot0.closedLoopPeakOutput = 0.869990; // Sets maximum output of the PID controller
+        //talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the PID controller
+
+        return talon;
+    }
+
+    /**
+     * Contains a position based PID configuration
+     * @return TalonFX Configuration Object
+     */
+    public static TalonFXConfiguration getSwerveDriveTalonRotaryConfig()
+    {
+        TalonFXConfiguration talon = new TalonFXConfiguration();
+        // Add configs here:
+        talon.slot0.kP = 10.;
+        talon.slot0.kI = 0;
+        talon.slot0.kD = 0;
+        talon.slot0.kF = 0;
+        talon.slot0.integralZone = 900;
+        talon.slot0.allowableClosedloopError = 20;//217;
+        talon.slot0.maxIntegralAccumulator = 254.000000;
+        //talon.slot0.closedLoopPeakOutput = 0.869990; // Sets maximum output of the PID controller
+        //talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the PID controller
+
+        return talon;
+    }
 }
