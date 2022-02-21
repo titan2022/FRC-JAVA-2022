@@ -22,13 +22,9 @@ public class ShooterCommand extends CommandBase {
    * @param speed = percent from -1 to 1
    */
     public ShooterCommand(ShooterSubsystem subsystem, double speed) {
+        addRequirements(subsystem);
         this.subsystem = subsystem;
         
-    }
-
-    public ShooterCommand(ShooterSubsystem subsystem) {
-        this.subsystem = subsystem;
-        subsystem.shoot();
     }
 
     // Called when the command is initially scheduled.

@@ -11,6 +11,7 @@ public class ManualShooterCommand extends CommandBase {
     private ShooterSubsystem shooter;
 
     public ManualShooterCommand(ShooterSubsystem shooter) {
+        addRequirements(shooter);
         this.shooter = shooter;
     }
 

@@ -29,6 +29,7 @@ public class HolonomicDriveCommand extends CommandBase {
      *  meters per second.
      */
     public HolonomicDriveCommand(DriveSubsystem drivebase, XboxController controller, double turnRate, double velocity) {
+        addRequirements(drivebase);
         this.drivebase = drivebase;
         this.controller = controller;
         this.turnRate = turnRate;
