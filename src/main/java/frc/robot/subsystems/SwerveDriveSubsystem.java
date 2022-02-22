@@ -282,7 +282,17 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rightBackRotatorMotor.set(ControlMode.Position, modules[3].angle.getRadians() * RAD / CANCODER_TICKS /*+ 710*/ + BACK_RIGHT_OFFSET);
 
     getSwerveModuleStates();
-  } 
+  }
+
+  /**
+   * Estimates robot velocity from wheel speeds.
+   * 
+   * @return  The estimated robot velocity.
+   */
+  public ChassisSpeeds getVelocities() {
+    SwerveModuleState[] states = getSwerveModuleStates();
+    return kinematics.toChassisSpeeds(states);
+  }
 
   public void setOutput(double omega, double XVelocity, double YVelocity)
   {
