@@ -52,6 +52,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final int BACK_LEFT_OFFSET = 823;
   private static final int FRONT_RIGHT_OFFSET = 1158;
   private static final int BACK_RIGHT_OFFSET = 851;
+  private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
   // Motor inversions
   private static final boolean WHEEL_INVERTED = false;
@@ -70,22 +71,32 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true,
       CONTINUOUS_CURRENT_LIMIT, 0, 0);
 
-  // Physical limits of motors that rotate the wheel. Use radians.
-  
+  public static class Module {
+    public static final int FRONT_LEFT = 0;
+    public static final int BACK_LEFT = 1;
+    public static final int FRONT_RIGHT = 2;
+    public static final int BACK_RIGHT = 3;
+  }
+
   // Physical Hardware
-  private static final WPI_TalonFX leftFrontMotor = new WPI_TalonFX(LEFT_FRONT_MOTOR_PORT)
-    , leftBackMotor = new WPI_TalonFX(LEFT_BACK_MOTOR_PORT)
-    , rightFrontMotor = new WPI_TalonFX(RIGHT_FRONT_MOTOR_PORT)
-    , rightBackMotor = new WPI_TalonFX(RIGHT_BACK_MOTOR_PORT)
-    , leftFrontRotatorMotor = new WPI_TalonFX(LEFT_FRONT_MOTOR_ROTATOR_PORT)
-    , leftBackRotatorMotor = new WPI_TalonFX(LEFT_BACK_MOTOR_ROTATOR_PORT)
-    , rightFrontRotatorMotor = new WPI_TalonFX(RIGHT_FRONT_MOTOR_ROTATOR_PORT)
-    , rightBackRotatorMotor = new WPI_TalonFX(RIGHT_BACK_MOTOR_ROTATOR_PORT);
-  
-    private static final CANCoder leftFrontRotatorEncoder = new CANCoder(LEFT_FRONT_ENCODER_ROTATOR_PORT)
-      , leftBackRotatorEncoder = new CANCoder(LEFT_BACK_ENCODER_ROTATOR_PORT)
-      , rightFrontRotatorEncoder = new CANCoder(RIGHT_FRONT_ENCODER_ROTATOR_PORT)
-      , rightBackRotatorEncoder = new CANCoder(RIGHT_BACK_ENCODER_ROTATOR_PORT);
+  private static final WPI_TalonFX[] motors = new WPI_TalonFX[]{
+    new WPI_TalonFX(LEFT_FRONT_MOTOR_PORT),
+    new WPI_TalonFX(LEFT_BACK_MOTOR_PORT),
+    new WPI_TalonFX(RIGHT_FRONT_MOTOR_PORT),
+    new WPI_TalonFX(RIGHT_BACK_MOTOR_PORT)
+  };
+  private static final WPI_TalonFX[] rotators = new WPI_TalonFX[]{
+    new WPI_TalonFX(LEFT_FRONT_MOTOR_ROTATOR_PORT),
+    new WPI_TalonFX(LEFT_BACK_MOTOR_ROTATOR_PORT),
+    new WPI_TalonFX(RIGHT_FRONT_MOTOR_ROTATOR_PORT),
+    new WPI_TalonFX(RIGHT_BACK_MOTOR_ROTATOR_PORT)
+  };
+  private static final CANCoder[] encoders = new CANCoder[]{
+    new CANCoder(LEFT_FRONT_ENCODER_ROTATOR_PORT),
+    new CANCoder(LEFT_BACK_ENCODER_ROTATOR_PORT),
+    new CANCoder(RIGHT_FRONT_ENCODER_ROTATOR_PORT),
+    new CANCoder(RIGHT_BACK_ENCODER_ROTATOR_PORT)
+  };
 
   // PID slots
   private static final int ROTATOR_SLOT_IDX = 0;
@@ -111,16 +122,16 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
     if(mainConfig != null)
     {
-      leftFrontMotor.configAllSettings(mainConfig);
+      motors[0].configAllSettings(mainConfig);
     }
     if(rotatorConfig != null){
-      leftFrontRotatorMotor.configAllSettings(rotatorConfig);
+      rotators[0].configAllSettings(rotatorConfig);
     }
     
     mainConfig = new TalonFXConfiguration();
     rotatorConfig = new TalonFXConfiguration();
-    leftFrontMotor.getAllConfigs(mainConfig);
-    leftFrontRotatorMotor.getAllConfigs(rotatorConfig);
+    motors[0].getAllConfigs(mainConfig);
+    rotators[0].getAllConfigs(rotatorConfig);
 
     // Current limits
     rotatorConfig.statorCurrLimit = statorCurrentLimit;
@@ -132,85 +143,35 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rotatorConfig.neutralDeadband = ROTATOR_DEADBAND;
     mainConfig.neutralDeadband = WHEEL_DEADBAND;
 
-    // Apply persistent configurations
-    leftFrontMotor.configAllSettings(mainConfig);
-    leftBackMotor.configAllSettings(mainConfig);
-    rightFrontMotor.configAllSettings(mainConfig);
-    rightBackMotor.configAllSettings(mainConfig);
-
-    leftFrontRotatorMotor.configAllSettings(rotatorConfig);
-    leftBackRotatorMotor.configAllSettings(rotatorConfig);
-    rightFrontRotatorMotor.configAllSettings(rotatorConfig);
-    rightBackRotatorMotor.configAllSettings(rotatorConfig);
-
-    // Sensor initilizations
-    leftFrontRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
-    leftBackRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
-    rightFrontRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
-    rightBackRotatorEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
-
-    // Motor inversions
-    rightFrontMotor.setInverted(WHEEL_INVERTED);
-    rightBackMotor.setInverted(WHEEL_INVERTED);
-    rightFrontRotatorMotor.setInverted(WHEEL_INVERTED);
-    rightBackRotatorMotor.setInverted(WHEEL_INVERTED);
-
-    leftFrontMotor.setInverted(ROTATOR_INVERTED);
-    leftBackMotor.setInverted(ROTATOR_INVERTED);
-    leftFrontRotatorMotor.setInverted(ROTATOR_INVERTED);
-    leftBackRotatorMotor.setInverted(ROTATOR_INVERTED);
-
-    // Sensor inversions
-    leftFrontMotor.setSensorPhase(WHEEL_PHASE);
-    rightFrontMotor.setSensorPhase(WHEEL_PHASE);
-    leftBackMotor.setSensorPhase(WHEEL_PHASE);
-    rightBackMotor.setSensorPhase(WHEEL_PHASE);
-    leftFrontRotatorMotor.setSensorPhase(ROTATOR_PHASE);
-    rightFrontRotatorMotor.setSensorPhase(ROTATOR_PHASE);
-    leftBackRotatorMotor.setSensorPhase(ROTATOR_PHASE);
-    rightBackRotatorMotor.setSensorPhase(ROTATOR_PHASE);
-
-    // Configure feedback sensors
-    leftFrontRotatorMotor.configRemoteFeedbackFilter(leftFrontRotatorEncoder, 0);
-    leftBackRotatorMotor.configRemoteFeedbackFilter(leftBackRotatorEncoder, 0);
-    rightFrontRotatorMotor.configRemoteFeedbackFilter(rightFrontRotatorEncoder, 0);
-    rightBackRotatorMotor.configRemoteFeedbackFilter(rightBackRotatorEncoder, 0);
-
-    // Select feedback sensors
-    leftFrontRotatorMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, 0);
-    leftBackRotatorMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, 0);
-    rightBackRotatorMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, 0);
-    rightFrontRotatorMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, 0);
-
-    leftFrontMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-    rightFrontMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-    leftBackMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-    rightBackMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-
-    // Select PID slots
-    leftFrontRotatorMotor.selectProfileSlot(ROTATOR_SLOT_IDX, 0);
-    rightFrontRotatorMotor.selectProfileSlot(ROTATOR_SLOT_IDX, 0);
-    leftBackRotatorMotor.selectProfileSlot(ROTATOR_SLOT_IDX, 0);
-    rightBackRotatorMotor.selectProfileSlot(ROTATOR_SLOT_IDX, 0);
-
-    leftFrontMotor.selectProfileSlot(MAIN_MOTOR_SLOT_IDX, 0);
-    rightFrontMotor.selectProfileSlot(MAIN_MOTOR_SLOT_IDX, 0);
-    leftBackMotor.selectProfileSlot(MAIN_MOTOR_SLOT_IDX, 0);
-    rightBackMotor.selectProfileSlot(MAIN_MOTOR_SLOT_IDX, 0);
+    // Apply configurations
+    for(WPI_TalonFX motor : motors){
+      motor.configAllSettings(mainConfig);
+      motor.setInverted(WHEEL_INVERTED);
+      motor.setSensorPhase(WHEEL_PHASE);
+      motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
+      motor.selectProfileSlot(MAIN_MOTOR_SLOT_IDX, 0);
+    }
+    for(WPI_TalonFX rotator : rotators){
+      rotator.configAllSettings(rotatorConfig);
+      rotator.setInverted(ROTATOR_INVERTED);
+      rotator.setSensorPhase(ROTATOR_PHASE);
+      rotator.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, 0);
+      rotator.selectProfileSlot(ROTATOR_SLOT_IDX, 0);
+    }
+    for(CANCoder encoder : encoders)
+      encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
+    for(int i=0; i<4; i++)
+      rotators[i].configRemoteFeedbackFilter(encoders[i], 0);
   }
   public SwerveDriveSubsystem() {
     this(null, null);
   }
 
   private void setFactoryMotorConfig() {
-    leftFrontMotor.configFactoryDefault();
-    leftBackMotor.configFactoryDefault();
-    rightFrontMotor.configFactoryDefault();
-    rightBackMotor.configFactoryDefault();
-    leftFrontRotatorMotor.configFactoryDefault();
-    leftBackRotatorMotor.configFactoryDefault();
-    rightFrontRotatorMotor.configFactoryDefault();
-    rightBackRotatorMotor.configFactoryDefault();
+    for(WPI_TalonFX motor : motors)
+      motor.configFactoryDefault();
+    for(WPI_TalonFX rotator : rotators)
+      rotator.configFactoryDefault();
   }
 
   /**
@@ -261,25 +222,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     //for(int i=0; i<4; i++)
       //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition((i&1)==0, i>1)));
 
-    leftFrontMotor.set(ControlMode.Velocity, modules[0].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-    leftBackMotor.set(ControlMode.Velocity, modules[1].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-    rightFrontMotor.set(ControlMode.Velocity, modules[2].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-    rightBackMotor.set(ControlMode.Velocity, modules[3].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-    /*double percentVelocity = Math.sqrt(Math.pow(XboxMap.translationX(), 2) + Math.pow(XboxMap.translationY(), 2));
-    leftFrontMotor.set(ControlMode.PercentOutput, percentVelocity);
-    leftBackMotor.set(ControlMode.PercentOutput, percentVelocity);
-    rightFrontMotor.set(ControlMode.PercentOutput, percentVelocity);
-    rightBackMotor.set(ControlMode.PercentOutput, percentVelocity);*/
-
-    SmartDashboard.putNumber("FL Tgt Raw Opt", modules[0].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    SmartDashboard.putNumber("BL Tgt Raw Opt", modules[1].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    SmartDashboard.putNumber("FR Tgt Raw Opt", modules[2].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    SmartDashboard.putNumber("BR Tgt Raw Opt", modules[3].angle.getRadians() * RAD / CANCODER_TICKS /*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    
-    leftFrontRotatorMotor.set(ControlMode.Position, modules[0].angle.getRadians() * RAD / CANCODER_TICKS /*+ 166*/ + FRONT_LEFT_OFFSET);
-    leftBackRotatorMotor.set(ControlMode.Position, modules[1].angle.getRadians() * RAD / CANCODER_TICKS /*- 1807*/ + BACK_LEFT_OFFSET);
-    rightFrontRotatorMotor.set(ControlMode.Position, modules[2].angle.getRadians() * RAD / CANCODER_TICKS/*+ 1162*/ + FRONT_RIGHT_OFFSET);
-    rightBackRotatorMotor.set(ControlMode.Position, modules[3].angle.getRadians() * RAD / CANCODER_TICKS /*+ 710*/ + BACK_RIGHT_OFFSET);
+    for(int i=0; i<4; i++){
+      motors[i].set(ControlMode.Velocity, modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
+      rotators[i].set(ControlMode.Position, modules[i].angle.getRadians() * RAD / CANCODER_TICKS /*+ 166*/ + OFFSETS[i]);
+    }
 
     getSwerveModuleStates();
   }
@@ -307,60 +253,48 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   public void enableBrakes() {
     stop();
     stopRotators();
-    leftFrontMotor.setNeutralMode(NeutralMode.Brake);
-    rightFrontMotor.setNeutralMode(NeutralMode.Brake);
-    leftBackMotor.setNeutralMode(NeutralMode.Brake);
-    rightBackMotor.setNeutralMode(NeutralMode.Brake);
+    for(WPI_TalonFX motor : motors)
+      motor.setNeutralMode(NeutralMode.Brake);
   }
 
   /**
    * Disables brake.
    */
   public void disableBrakes() {
-    leftFrontMotor.setNeutralMode(NeutralMode.Coast);
-    rightFrontMotor.setNeutralMode(NeutralMode.Coast);
-    leftBackMotor.setNeutralMode(NeutralMode.Coast);
-    rightBackMotor.setNeutralMode(NeutralMode.Coast);
+    for(WPI_TalonFX motor : motors)
+      motor.setNeutralMode(NeutralMode.Coast);
   }
 
   /**
    * Enables brake for rotator motors.
    */
   public void enableRotatorBrakes() {
-    leftFrontRotatorMotor.setNeutralMode(NeutralMode.Brake);
-    rightFrontRotatorMotor.setNeutralMode(NeutralMode.Brake);
-    leftBackRotatorMotor.setNeutralMode(NeutralMode.Brake);
-    rightBackRotatorMotor.setNeutralMode(NeutralMode.Brake);
+    for(WPI_TalonFX rotator : rotators)
+      rotator.setNeutralMode(NeutralMode.Brake);
   }
 
   /**
    * Disables brake for rotator motors.
    */
   public void disableRotatorBrakes() {
-    leftFrontRotatorMotor.setNeutralMode(NeutralMode.Coast);
-    rightFrontRotatorMotor.setNeutralMode(NeutralMode.Coast);
-    leftBackRotatorMotor.setNeutralMode(NeutralMode.Coast);
-    rightBackRotatorMotor.setNeutralMode(NeutralMode.Coast);
+    for(WPI_TalonFX rotator : rotators)
+      rotator.setNeutralMode(NeutralMode.Coast);
   }
 
   /**
    * Stops the motors.
    */
   public void stop() {
-    leftFrontMotor.set(ControlMode.PercentOutput, 0);
-    rightFrontMotor.set(ControlMode.PercentOutput, 0);
-    leftBackMotor.set(ControlMode.PercentOutput, 0);
-    rightBackMotor.set(ControlMode.PercentOutput, 0);
+    for(WPI_TalonFX motor : motors)
+      motor.set(ControlMode.PercentOutput, 0);
   }
 
   /**
    * Stops the rotator motors.
    */
   public void stopRotators() {
-    leftFrontRotatorMotor.set(ControlMode.PercentOutput, 0);
-    rightFrontRotatorMotor.set(ControlMode.PercentOutput, 0);
-    leftBackRotatorMotor.set(ControlMode.PercentOutput, 0);
-    rightBackRotatorMotor.set(ControlMode.PercentOutput, 0);
+    for(WPI_TalonFX rotator : rotators)
+      rotator.set(ControlMode.PercentOutput, 0);
   }
 
   // encoder methods
@@ -371,30 +305,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @param useLeft - Whether to use the left primary motor.
    * @return Encoder count for specified primary motor.
    */
-  public double getEncoderCount(boolean useLeft, boolean useBack)
+  public double getEncoderCount(int module)
   {
-    if (useLeft)
-    {
-      if (useBack){
-        SmartDashboard.putNumber("read BL m", leftBackMotor.getSelectedSensorPosition(0)*METERS_PER_TICKS);
-        return leftBackMotor.getSelectedSensorPosition(0);
-      }
-      else{
-        SmartDashboard.putNumber("read FL m", leftFrontMotor.getSelectedSensorPosition(0)*METERS_PER_TICKS);
-        return leftFrontMotor.getSelectedSensorPosition(0);
-      }
-    }
-    else
-    {
-      if (useBack){
-        SmartDashboard.putNumber("read BR m", rightBackMotor.getSelectedSensorPosition(0)*METERS_PER_TICKS);
-        return rightBackMotor.getSelectedSensorPosition(0);
-      }
-      else{
-        SmartDashboard.putNumber("read FR m", rightFrontMotor.getSelectedSensorPosition(0)*METERS_PER_TICKS);
-        return rightFrontMotor.getSelectedSensorPosition(0);
-      }
-    }
+    return motors[module].getSelectedSensorPosition();
   }
 
   // encoder methods
@@ -405,30 +318,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @param useLeft - Whether to use the left primary motor.
    * @return Encoder count for specified primary motor.
    */
-  public double getRotatorEncoderCount(boolean useLeft, boolean useBack)
+  public double getRotatorEncoderCount(int module)
   {
-    if (useLeft)
-    {
-      if (useBack){
-        SmartDashboard.putNumber("raw BL rot", leftBackRotatorMotor.getSelectedSensorPosition(0));
-        return leftBackRotatorMotor.getSelectedSensorPosition(0) * CANCODER_TICKS;
-      }
-      else{
-        SmartDashboard.putNumber("raw FL rot", leftFrontRotatorMotor.getSelectedSensorPosition(0));
-        return leftFrontRotatorMotor.getSelectedSensorPosition(0) * CANCODER_TICKS;
-      }
-    }
-    else
-    {
-      if (useBack){
-        SmartDashboard.putNumber("raw BR rot", rightBackRotatorMotor.getSelectedSensorPosition(0));
-        return rightBackRotatorMotor.getSelectedSensorPosition(0) * CANCODER_TICKS;
-      }
-      else{
-        SmartDashboard.putNumber("raw FR rot", rightFrontRotatorMotor.getSelectedSensorPosition(0));
-        return rightFrontRotatorMotor.getSelectedSensorPosition(0) * CANCODER_TICKS;
-      }
-    }
+    return motors[module].getSelectedSensorPosition() * CANCODER_TICKS;
   }
 
   /**
@@ -437,57 +329,22 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @param useLeft - Whether to use the left primary motor.
    * @return Angle of rotator motor in radians
    */
-  public double getRotatorEncoderPosition(boolean useLeft, boolean useBack) {
-    return getRotatorEncoderCount(useLeft, useBack);
+  public double getRotatorEncoderPosition(int module) {
+    return getRotatorEncoderCount(module);
   }
 
-  public double getEncoderVelocity(boolean useLeft, boolean useBack)
+  public double getEncoderVelocity(int module)
   {
-    if (useLeft)
-    {
-      if (useBack){
-        SmartDashboard.putNumber("read BL m/s", leftBackMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10);
-        return leftBackMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10;
-      }
-      else{
-        SmartDashboard.putNumber("read FL m/s", leftFrontMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10);
-        return leftFrontMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10;
-      }
-    }
-    else
-    {
-      if (useBack){
-        SmartDashboard.putNumber("read BR m/s", rightBackMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10);
-        return rightBackMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10;
-      }
-      else{
-        SmartDashboard.putNumber("read FR m/s", rightFrontMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10);
-        return rightFrontMotor.getSelectedSensorVelocity(0) * METERS_PER_TICKS * 10;
-      }
-    }
+    return motors[module].getSelectedSensorVelocity() * METERS_PER_TICKS * 10;
   }
 
   public SwerveModuleState[] getSwerveModuleStates() {
-    SwerveModuleState leftBack = new SwerveModuleState(getEncoderVelocity(true, true),
-        new Rotation2d(getRotatorEncoderPosition(true, true)));
-
-    SwerveModuleState leftFront = new SwerveModuleState(getEncoderVelocity(true, false),
-        new Rotation2d(getRotatorEncoderPosition(true, false)));
-
-    SwerveModuleState rightBack = new SwerveModuleState(getEncoderVelocity(false, true),
-        new Rotation2d(getRotatorEncoderPosition(false, true)));
-
-    SwerveModuleState rightFront = new SwerveModuleState(getEncoderVelocity(false, false),
-        new Rotation2d(getRotatorEncoderPosition(false, false)));
-    
-    return new SwerveModuleState[]{leftFront, leftBack, rightFront, rightBack};
+    SwerveModuleState[] states = new SwerveModuleState[4];
+    for(int i=0; i<4; i++)
+      states[i] = new SwerveModuleState(getEncoderVelocity(i), new Rotation2d(getRotatorEncoderPosition(i)));
+    return states;
   }
 
   @Override
-  public void periodic() {
-    getEncoderVelocity(false, false);
-    getEncoderVelocity(false, true);
-    getEncoderVelocity(true, false);
-    getEncoderVelocity(true, true);
-  }
+  public void periodic() {}
 }
