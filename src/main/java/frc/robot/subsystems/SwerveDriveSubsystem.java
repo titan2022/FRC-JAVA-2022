@@ -33,19 +33,19 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final double ROTATOR_DEADBAND = 0.001;
     
   // CAN ID numbers
-  private static final int LEFT_FRONT_MOTOR_PORT = 7;
-  private static final int LEFT_BACK_MOTOR_PORT = 3;
-  private static final int RIGHT_FRONT_MOTOR_PORT = 2;
-  private static final int RIGHT_BACK_MOTOR_PORT = 4;
-  private static final int LEFT_FRONT_MOTOR_ROTATOR_PORT = 0;
-  private static final int LEFT_BACK_MOTOR_ROTATOR_PORT = 1;
-  private static final int RIGHT_FRONT_MOTOR_ROTATOR_PORT = 5;
-  private static final int RIGHT_BACK_MOTOR_ROTATOR_PORT = 6;
+  private static final int LEFT_FRONT_MOTOR_PORT = 6;
+  private static final int LEFT_BACK_MOTOR_PORT = 4;
+  private static final int RIGHT_FRONT_MOTOR_PORT = 7;
+  private static final int RIGHT_BACK_MOTOR_PORT = 2;
+  private static final int LEFT_FRONT_MOTOR_ROTATOR_PORT = 5;
+  private static final int LEFT_BACK_MOTOR_ROTATOR_PORT = 3;
+  private static final int RIGHT_FRONT_MOTOR_ROTATOR_PORT = 8;
+  private static final int RIGHT_BACK_MOTOR_ROTATOR_PORT = 1;
 
-  private static final int LEFT_FRONT_ENCODER_ROTATOR_PORT = 9;
-  private static final int LEFT_BACK_ENCODER_ROTATOR_PORT = 10;
-  private static final int RIGHT_FRONT_ENCODER_ROTATOR_PORT = 8;
-  private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 11;
+  private static final int LEFT_FRONT_ENCODER_ROTATOR_PORT = 35;
+  private static final int LEFT_BACK_ENCODER_ROTATOR_PORT = 33;
+  private static final int RIGHT_FRONT_ENCODER_ROTATOR_PORT = 37;
+  private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 31;
 
   // Rotator encoder offsets
   private static final int FRONT_LEFT_OFFSET = 173;

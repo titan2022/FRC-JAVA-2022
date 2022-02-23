@@ -14,25 +14,17 @@ import static frc.robot.Constants.*;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-    private static final int INTAKE_MOTOR_PORT = 12;
-    private static final int HOPPER_MOTOR_PORT = 13;
-    private static final int HOPPER_MOTOR_PORT2 = 14;
-    //private static final int HOPPER_MOTOR_PORT3 = 2;
+    private static final int INTAKE_MOTOR_PORT = 15;
+    private static final int HOPPER_MOTOR_PORT = 17;
+    private static final int HOPPER_MOTOR_PORT2 = 18;
     private static final int INTAKE_SENSOR_PORT = 0;
     private static final int HOPPER_SENSOR_PORT = 1;
-
-    private static final int HOOD_MOTOR_PORT = 16;
-
-    // down = 27.6 deg
-    // up = +15 deg
 
     private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
     private static final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT);
     private static final WPI_TalonFX hopperMotor2 = new WPI_TalonFX(HOPPER_MOTOR_PORT2);
-    //private static final WPI_TalonFX hopperMotor3 = new WPI_TalonFX(HOPPER_MOTOR_PORT3);
     private static final DigitalInput intakeBeamSensor = new DigitalInput(INTAKE_SENSOR_PORT);
     private static final DigitalInput hopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT);
-    private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_PORT);
     //private static final Solenoid claw = new Solenoid(1);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     private static final StatorCurrentLimitConfiguration MAX_AMPS_OUT = new StatorCurrentLimitConfiguration(true, 10, 0, 0);
@@ -65,18 +57,6 @@ public class IntakeSubsystem extends SubsystemBase {
         hopperMotor2.setInverted(true);
         hopperMotor2.selectProfileSlot(0, 0);
         hopperMotor2.follow(hopperMotor);
-
-        /*hopperMotor3.configAllSettings(config);
-        hopperMotor3.setNeutralMode(NeutralMode.Brake);
-        hopperMotor3.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hopperMotor3.setInverted(true);
-        hopperMotor3.selectProfileSlot(0, 0);*/
-
-        hoodMotor.configAllSettings(config);
-        hoodMotor.setNeutralMode(NeutralMode.Brake);
-        hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hoodMotor.setInverted(true);
-        hoodMotor.selectProfileSlot(0, 0);
     }
 
     public boolean intakeBall() {
