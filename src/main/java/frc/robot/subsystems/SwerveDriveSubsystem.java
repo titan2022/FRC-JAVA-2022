@@ -196,35 +196,27 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   @Override
   public void setVelocities(ChassisSpeeds inputChassisSpeeds) {
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
-    SmartDashboard.putNumber("State FL vel", modules[0].speedMetersPerSecond);
-    SmartDashboard.putNumber("State BL vel", modules[1].speedMetersPerSecond);
-    SmartDashboard.putNumber("State FR vel", modules[2].speedMetersPerSecond);
-    SmartDashboard.putNumber("State BR vel", modules[3].speedMetersPerSecond);
-    SmartDashboard.putNumber("State FL deg", modules[0].angle.getDegrees());
-    SmartDashboard.putNumber("State BL deg", modules[1].angle.getDegrees());
-    SmartDashboard.putNumber("State FR deg", modules[2].angle.getDegrees());
-    SmartDashboard.putNumber("State BR deg", modules[3].angle.getDegrees());
 
     SwerveDriveKinematics.normalizeWheelSpeeds(modules, MAX_WHEEL_SPEED);
     SmartDashboard.putNumber("Norm FL vel", modules[0].speedMetersPerSecond);
     SmartDashboard.putNumber("Norm BL vel", modules[1].speedMetersPerSecond);
     SmartDashboard.putNumber("Norm FR vel", modules[2].speedMetersPerSecond);
     SmartDashboard.putNumber("Norm BR vel", modules[3].speedMetersPerSecond);
-    SmartDashboard.putNumber("Norm FL deg", modules[0].angle.getDegrees());
-    SmartDashboard.putNumber("Norm BL deg", modules[1].angle.getDegrees());
-    SmartDashboard.putNumber("Norm FR deg", modules[2].angle.getDegrees());
-    SmartDashboard.putNumber("Norm BR deg", modules[3].angle.getDegrees());
     SmartDashboard.putNumber("Norm FL tgt", modules[0].angle.getRadians() * RAD / ROT * CANCODER_CPR);
     SmartDashboard.putNumber("Norm BL tgt", modules[1].angle.getRadians() * RAD / ROT * CANCODER_CPR);
     SmartDashboard.putNumber("Norm FR tgt", modules[2].angle.getRadians() * RAD / ROT * CANCODER_CPR);
     SmartDashboard.putNumber("Norm BR tgt", modules[3].angle.getRadians() * RAD / ROT * CANCODER_CPR);
+    SmartDashboard.putNumber("RawT FL vel", modules[0].speedMetersPerSecond/(10 * METERS_PER_TICKS));
+    SmartDashboard.putNumber("RawT BL vel", modules[1].speedMetersPerSecond/(10 * METERS_PER_TICKS));
+    SmartDashboard.putNumber("RawT FR vel", modules[2].speedMetersPerSecond/(10 * METERS_PER_TICKS));
+    SmartDashboard.putNumber("RawT BR vel", modules[3].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     
     //for(int i=0; i<4; i++)
       //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition((i&1)==0, i>1)));
 
     for(int i=0; i<4; i++){
       motors[i].set(ControlMode.Velocity, modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-      rotators[i].set(ControlMode.Position, modules[i].angle.getRadians() * RAD / CANCODER_TICKS /*+ 166*/ + OFFSETS[i]);
+      rotators[i].set(ControlMode.Position, modules[i].angle.getRadians() * RAD / ROT * CANCODER_CPR + OFFSETS[i]);
     }
 
     getSwerveModuleStates();
