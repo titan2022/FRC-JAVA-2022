@@ -19,7 +19,7 @@ import edu.wpi.first.wpilibj.util.Units;
  */
 public final class Constants {
     public static final double COUNTS_PER_REVOLUTION = 4096;
-    public static final XboxController XBOX_CONTROLLER = new XboxController(1);
+    public static final XboxController XBOX_CONTROLLER = new XboxController(0);
 
     public static final class Unit {
         public static final double METERS = 1.0, M = 1.0;
@@ -31,8 +31,8 @@ public final class Constants {
         public static final double ROT = Math.PI * 2;
         public static final double FALCON_CPR = 2048;
         public static final double CANCODER_CPR = 4096;
-        public static final double FALCON_TICKS = FALCON_CPR / ROT;
-        public static final double CANCODER_TICKS = FALCON_CPR / ROT;
+        public static final double FALCON_TICKS = ROT / FALCON_CPR;
+        public static final double CANCODER_TICKS = ROT / CANCODER_CPR;
         public static final double SECONDS = 1.0, S = 1.0;
         public static final double MIN = 1.0/60;
         public static final double MS = 0.001;
@@ -46,7 +46,7 @@ public final class Constants {
     {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 1000;
+        talon.slot0.kP = 0.05;
         talon.slot0.kI = 0;  // 250
         talon.slot0.kD = 0;        
         talon.slot0.kF = 0;
@@ -67,7 +67,7 @@ public final class Constants {
     {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 10.;
+        talon.slot0.kP = 0.5;
         talon.slot0.kI = 0;
         talon.slot0.kD = 0;
         talon.slot0.kF = 0;
