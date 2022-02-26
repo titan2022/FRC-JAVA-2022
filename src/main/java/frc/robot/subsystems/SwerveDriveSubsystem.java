@@ -64,7 +64,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   // Physical limits of motors that create translational motion
   private static final double MAX_WHEEL_SPEED = 10 * M / S;
-  private static final int PEAK_CURRENT_LIMIT = 12;
+  private static final int PEAK_CURRENT_LIMIT = 20;
   private static final int CONTINUOUS_CURRENT_LIMIT = 12;
   private static final StatorCurrentLimitConfiguration statorCurrentLimit = new StatorCurrentLimitConfiguration(true,
       PEAK_CURRENT_LIMIT, 0, 0);
@@ -134,9 +134,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rotators[0].getAllConfigs(rotatorConfig);
 
     // Current limits
-    rotatorConfig.statorCurrLimit = statorCurrentLimit;
+    //rotatorConfig.statorCurrLimit = statorCurrentLimit;
     rotatorConfig.supplyCurrLimit = supplyCurrentLimit;
-    mainConfig.statorCurrLimit = statorCurrentLimit;
+    //mainConfig.statorCurrLimit = statorCurrentLimit;
     mainConfig.supplyCurrLimit = supplyCurrentLimit;
 
     // Deadbands
