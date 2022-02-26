@@ -29,7 +29,7 @@ import static frc.robot.Constants.getSwerveDriveTalonRotaryConfig;
  */
 public class Robot extends TimedRobot {
   // Controllers
-  private static final XboxController xbox = new XboxController(1);
+  private static final XboxController xbox = new XboxController(0);
 
   // Subsystems
   private final ShooterSubsystem shooter = new ShooterSubsystem();
