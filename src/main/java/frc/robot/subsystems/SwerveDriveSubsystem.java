@@ -23,7 +23,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 {
   // Physical parameters
   public static final double ROBOT_TRACK_WIDTH = 23.5 * IN; // 0.672; // meters (30 in)
-  public static final double ROBOT_LENGTH = 23.5 * IN; // 0.672; // meter 
+  public static final double ROBOT_LENGTH = 26 * IN; // 0.672; // meter 
   public static final double WHEEL_RADIUS = 2 * IN; // 0.0508; // meters (2 in)
   public static final double GEAR_RATIO = 6.86;
   public static final double METERS_PER_TICKS = WHEEL_RADIUS * 2 * Math.PI / FALCON_CPR / GEAR_RATIO;
@@ -48,15 +48,15 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 31;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 173;
-  private static final int BACK_LEFT_OFFSET = 823;
-  private static final int FRONT_RIGHT_OFFSET = 1158;
-  private static final int BACK_RIGHT_OFFSET = 851;
+  private static final int FRONT_LEFT_OFFSET = 1859;
+  private static final int BACK_LEFT_OFFSET = 1298;
+  private static final int FRONT_RIGHT_OFFSET = 908;
+  private static final int BACK_RIGHT_OFFSET = 1167;
   private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
   // Motor inversions
   private static final boolean WHEEL_INVERTED = false;
-  private static final boolean ROTATOR_INVERTED = false;
+  private static final boolean ROTATOR_INVERTED = true;
  
   // Sensor inversions
   private static final boolean WHEEL_PHASE = false;
@@ -104,10 +104,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   // Kinematics
   // Positions describe the position of each wheel relative to the center of the robot
-  private static final Translation2d leftFrontPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
+  private static final Translation2d leftFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
   private static final Translation2d leftBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
   private static final Translation2d rightFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
-  private static final Translation2d rightBackPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
+  private static final Translation2d rightBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
   public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(leftFrontPosition, leftBackPosition, rightFrontPosition, rightBackPosition);
 
   /**
@@ -212,7 +212,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     SmartDashboard.putNumber("RawT BR vel", modules[3].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     
     //for(int i=0; i<4; i++)
-      //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition((i&1)==0, i>1)));
+      //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition(i)));
 
     for(int i=0; i<4; i++){
       motors[i].set(ControlMode.Velocity, modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
@@ -312,7 +312,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    */
   public double getRotatorEncoderCount(int module)
   {
-    return motors[module].getSelectedSensorPosition() * CANCODER_TICKS;
+    return motors[module].getSelectedSensorPosition() * CANCODER_TICKS / RAD;
   }
 
   /**
