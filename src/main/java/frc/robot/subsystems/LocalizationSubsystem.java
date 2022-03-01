@@ -4,8 +4,11 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 import com.titanrobotics2022.localization.KalmanFilter;
 
 import org.ejml.data.DMatrix2;
@@ -16,6 +19,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   private double step;
   private DMatrix2 mean = new DMatrix2();
   private DMatrix2x2 prec = new DMatrix2x2();
+  private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
 
   public LocalizationSubsystem(double step, int depth, double drift) {
     filter = new KalmanFilter(depth, new DMatrix2x2(drift, 0, 0, drift));
@@ -55,6 +59,10 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
   public Translation2d getPred() {
     return getPred(0);
+  }
+
+  public Rotation2d getOrientation() {
+    return imu.getRotation2d();
   }
 
   @Override
