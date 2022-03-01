@@ -15,6 +15,7 @@ import frc.robot.commands.SpinHopper;
 import frc.robot.commands.SpinIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
@@ -36,6 +37,7 @@ public class Robot extends TimedRobot {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final DriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
+  private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -87,7 +89,7 @@ public class Robot extends TimedRobot {
     new JoystickButton(xbox, Button.kRightBumper.value)
       .whenHeld(new SpinIntake(intake, 5 * Math.PI));
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
-    drivebase.setDefaultCommand(new HolonomicDriveCommand(drivebase, xbox));
+    drivebase.setDefaultCommand(new HolonomicDriveCommand(drivebase, xbox, nav));
   }
 
   /** This function is called periodically during operator control. */
