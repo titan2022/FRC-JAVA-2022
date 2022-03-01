@@ -110,6 +110,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final Translation2d rightBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
   public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(leftFrontPosition, leftBackPosition, rightFrontPosition, rightBackPosition);
 
+  private ChassisSpeeds lastVelocity = new ChassisSpeeds();
+
   /**
    * Creates the swerve drive subsystem
    * 
@@ -195,6 +197,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    */
   @Override
   public void setVelocities(ChassisSpeeds inputChassisSpeeds) {
+    lastVelocity.vxMetersPerSecond = inputChassisSpeeds.vxMetersPerSecond;
+    lastVelocity.vyMetersPerSecond = inputChassisSpeeds.vyMetersPerSecond;
+    lastVelocity.omegaRadiansPerSecond = inputChassisSpeeds.omegaRadiansPerSecond;
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
 
     SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
@@ -220,6 +225,17 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     }
 
     getSwerveModuleStates();
+  }
+  @Override
+  public void setVelocities(Translation2d velocities) {
+    lastVelocity.vxMetersPerSecond = velocities.getX();
+    lastVelocity.vyMetersPerSecond = velocities.getY();
+    setVelocities(lastVelocity);
+  }
+  @Override
+  public void setVelocities(Rotation2d velocities) {
+    lastVelocity.omegaRadiansPerSecond = velocities.getRadians();
+    setVelocities(lastVelocity);
   }
 
   /**
