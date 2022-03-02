@@ -215,16 +215,23 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     SmartDashboard.putNumber("RawT BL vel", modules[1].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     SmartDashboard.putNumber("RawT FR vel", modules[2].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     SmartDashboard.putNumber("RawT BR vel", modules[3].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-    
-    //for(int i=0; i<4; i++)
-      //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition(i)));
 
     for(int i=0; i<4; i++){
-      motors[i].set(ControlMode.Velocity, modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-      rotators[i].set(ControlMode.Position, modules[i].angle.getRadians() * RAD / ROT * CANCODER_CPR + OFFSETS[i]);
+      double targetTicks = modules[i].angle.getRadians() * RAD / ROT * CANCODER_CPR + OFFSETS[i];
+      double currentTicks = getRotatorEncoderCount(i);
+      double diff = (targetTicks - currentTicks) % CANCODER_CPR;
+      double inversion = 1;
+      if(diff >= CANCODER_CPR / 2){
+        inversion = -1;
+        diff -= CANCODER_CPR / 2;
+      }
+      else if(diff <= CANCODER_CPR / 2){
+        inversion = -1;
+        diff -= CANCODER_CPR / 2;
+      }
+      motors[i].set(ControlMode.Velocity, inversion * modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
+      rotators[i].set(ControlMode.Position, currentTicks + diff);
     }
-
-    getSwerveModuleStates();
   }
   @Override
   public void setVelocities(Translation2d velocities) {
