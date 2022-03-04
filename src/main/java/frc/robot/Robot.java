@@ -7,14 +7,17 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.AutonomousCommand;
 import frc.robot.commands.HolonomicDriveCommand;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.SpinHopper;
 import frc.robot.commands.SpinIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.OdometrySubsystemWrapper;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
@@ -72,7 +75,8 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // TODO: Create autonomous
+    OdometrySubsystemWrapper odometry = OdometrySubsystemWrapper(startX, startY, startRot);
+    new AutonomousCommand(shooter, intake, drivebase, odometry).schedule();
   }
 
   /** This function is called periodically during autonomous. */
