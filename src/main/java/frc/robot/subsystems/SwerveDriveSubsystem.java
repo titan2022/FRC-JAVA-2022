@@ -220,17 +220,29 @@ public class SwerveDriveSubsystem implements DriveSubsystem
       double targetTicks = modules[i].angle.getRadians() * RAD / ROT * CANCODER_CPR + OFFSETS[i];
       double currentTicks = getRotatorEncoderCount(i);
       double diff = (targetTicks - currentTicks) % CANCODER_CPR;
+      SmartDashboard.putNumber("diff " + i, diff);
+      SmartDashboard.putNumber("state " + i, currentTicks - OFFSETS[i]);
       double inversion = 1;
-      if(diff >= CANCODER_CPR / 2){
+      if(diff >= CANCODER_TICKS / 2){
+        diff -= CANCODER_TICKS;
+      }
+      else if(diff <= -CANCODER_TICKS / 2){
+        diff += CANCODER_TICKS;
+      }
+      if(diff >= CANCODER_CPR / 4){
         inversion = -1;
         diff -= CANCODER_CPR / 2;
       }
-      else if(diff <= CANCODER_CPR / 2){
+      else if(diff <= -CANCODER_CPR / 4){
         inversion = -1;
-        diff -= CANCODER_CPR / 2;
+        diff += CANCODER_CPR / 2;
       }
+      SmartDashboard.putNumber("diff2 " + i, diff);
+      SmartDashboard.putNumber("inv " + i, inversion);
+      SmartDashboard.putNumber("c+d " + i, currentTicks + diff - OFFSETS[i]);
       motors[i].set(ControlMode.Velocity, inversion * modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-      rotators[i].set(ControlMode.Position, currentTicks + diff);
+      if(modules[i].speedMetersPerSecond != 0)
+        rotators[i].set(ControlMode.Position, currentTicks + diff);
     }
   }
   @Override
@@ -335,7 +347,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    */
   public double getRotatorEncoderCount(int module)
   {
-    return motors[module].getSelectedSensorPosition() * CANCODER_TICKS / RAD;
+    return rotators[module].getSelectedSensorPosition();
   }
 
   /**
@@ -345,7 +357,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @return Angle of rotator motor in radians
    */
   public double getRotatorEncoderPosition(int module) {
-    return getRotatorEncoderCount(module);
+    return getRotatorEncoderCount(module) * CANCODER_TICKS / RAD;
   }
 
   public double getEncoderVelocity(int module)
