@@ -78,11 +78,11 @@ public class HolonomicDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double joyX = applyDeadband(controller.getLeftX(), 0.1);
+        double joyX = applyDeadband(-controller.getLeftX(), 0.1);
         double joyY = applyDeadband(-controller.getLeftY(), 0.1);
         double joyTurn = applyDeadband(controller.getRightX(), 0.1);
         Translation2d fieldVel = new Translation2d(scaleVelocity(joyX), scaleVelocity(joyY));
-        Translation2d robotVel = fieldVel.rotateBy(nav.getOrientation().unaryMinus());
+        Translation2d robotVel = fieldVel.rotateBy(nav.getOrientation());
         double turn = Math.signum(joyTurn) * joyTurn * joyTurn * turnRate;
         SmartDashboard.putNumber("fieldX", fieldVel.getX());
         SmartDashboard.putNumber("fieldY", fieldVel.getY());
