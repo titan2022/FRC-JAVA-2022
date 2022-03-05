@@ -10,12 +10,12 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 import static frc.robot.Constants.Unit.*;
 
@@ -197,7 +197,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   public void setVelocities(ChassisSpeeds inputChassisSpeeds) {
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
 
-    SwerveDriveKinematics.normalizeWheelSpeeds(modules, MAX_WHEEL_SPEED);
+    SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
     SmartDashboard.putNumber("Norm FL vel", modules[0].speedMetersPerSecond);
     SmartDashboard.putNumber("Norm BL vel", modules[1].speedMetersPerSecond);
     SmartDashboard.putNumber("Norm FR vel", modules[2].speedMetersPerSecond);

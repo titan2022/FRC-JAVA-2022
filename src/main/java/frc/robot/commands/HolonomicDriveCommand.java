@@ -1,9 +1,8 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -67,9 +66,9 @@ public class HolonomicDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        double joyX = controller.getX(Hand.kLeft);
-        double joyY = controller.getY(Hand.kLeft);
-        double joyTurn = controller.getX(Hand.kRight);
+        double joyX = controller.getLeftX();
+        double joyY = controller.getLeftY();
+        double joyTurn = controller.getRightX();
         double fieldY = -Math.signum(joyY) * joyY * joyY * velocity;
         double fieldX = Math.signum(joyX) * joyX * joyX * velocity;
         double turn = Math.signum(joyTurn) * joyTurn * joyTurn * turnRate;
@@ -82,9 +81,9 @@ public class HolonomicDriveCommand extends CommandBase {
         SmartDashboard.putNumber("fieldX", fieldX);
         SmartDashboard.putNumber("fieldY", fieldY);
         SmartDashboard.putNumber("turn", turn);
-        SmartDashboard.putNumber("xbox X", controller.getX(Hand.kLeft));
-        SmartDashboard.putNumber("xbox Y", controller.getY(Hand.kLeft));
-        SmartDashboard.putNumber("raw turn", controller.getX(Hand.kRight));
+        SmartDashboard.putNumber("xbox X", controller.getLeftX());
+        SmartDashboard.putNumber("xbox Y", controller.getLeftY());
+        SmartDashboard.putNumber("raw turn", controller.getRightX());
         drivebase.setVelocities(new ChassisSpeeds(fieldY, fieldX, turn));
     }
 

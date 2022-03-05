@@ -82,9 +82,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
-    new JoystickButton(xbox, Button.kBumperLeft.value)
+    new JoystickButton(xbox, Button.kLeftBumper.value)
       .whenHeld(new SpinHopper(intake, 5 * Math.PI));
-    new JoystickButton(xbox, Button.kBumperRight.value)
+    new JoystickButton(xbox, Button.kRightBumper.value)
       .whenHeld(new SpinIntake(intake, 5 * Math.PI));
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
     drivebase.setDefaultCommand(new HolonomicDriveCommand(drivebase, xbox));
