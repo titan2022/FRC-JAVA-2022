@@ -1,6 +1,9 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.LocalizationSubsystem;
+import frc.robot.subsystems.SwerveDriveSubsystem;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import org.ejml.simple.SimpleMatrix;
@@ -47,7 +50,7 @@ public class RMPMotionGenerationCommand extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        drivebase.setVelocites(new ChassisSpeeds(0, 0, 0));
+        drivebase.setVelocities(new ChassisSpeeds(0, 0, 0));
     }
 
     // Returns true when the command should end.

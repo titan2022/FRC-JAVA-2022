@@ -4,7 +4,7 @@
 
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.titanrobotics2022.localization.KalmanFilter;
 
@@ -32,17 +32,17 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
 
   public void addData(int degree, double x, double y, double varX, double varY, double covar) {
-    mean.set(x, y);
+    mean.setTo(x, y);
     double idet = 1 / (varX * varY - covar * covar);
-    prec.set(varY * idet, -covar * idet, -covar * idet, varX * idet);
+    prec.setTo(varY * idet, -covar * idet, -covar * idet, varX * idet);
     filter.update(degree, mean, prec);
   }
   public void addData(int degree, Translation2d pred, double varX, double varY, double covar) {
     addData(degree, pred.getX(), pred.getY(), varX, varY, covar);
   }
   public void addData(int degree, double x, double y, double var) {
-    mean.set(x, y);
-    prec.set(1/var, 0, 0, 1/var);
+    mean.setTo(x, y);
+    prec.setTo(1/var, 0, 0, 1/var);
     filter.update(degree, mean, prec);
   }
   public void addData(int degree, Translation2d pred, double var) {

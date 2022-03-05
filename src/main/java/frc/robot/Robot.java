@@ -5,8 +5,21 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.HolonomicDriveCommand;
+import frc.robot.commands.ManualShooterCommand;
+import frc.robot.commands.SpinHopper;
+import frc.robot.commands.SpinIntake;
+import frc.robot.subsystems.DriveSubsystem;
+import frc.robot.subsystems.IntakeSubsystem;
+import frc.robot.subsystems.ShooterSubsystem;
+import frc.robot.subsystems.SwerveDriveSubsystem;
+
+import static frc.robot.Constants.getSwerveDriveTalonDirectionalConfig;
+import static frc.robot.Constants.getSwerveDriveTalonRotaryConfig;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -15,9 +28,14 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
  * project.
  */
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+  // Controllers
+  private static final XboxController xbox = new XboxController(0);
 
-  private RobotContainer m_robotContainer;
+  // Subsystems
+  private final ShooterSubsystem shooter = new ShooterSubsystem();
+  private final IntakeSubsystem intake = new IntakeSubsystem();
+  private final DriveSubsystem drivebase =
+    new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -25,9 +43,7 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
-    // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    // TODO: Display autonomous chooser on dashboard
   }
 
   /**
@@ -56,12 +72,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
-
-    // schedule the autonomous command (example)
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
-    }
+    // TODO: Create autonomous
   }
 
   /** This function is called periodically during autonomous. */
@@ -70,13 +81,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    // This makes sure that the autonomous stops running when
-    // teleop starts running. If you want the autonomous to
-    // continue until interrupted by another command, remove
-    // this line or comment it out.
-    if (m_autonomousCommand != null) {
-      m_autonomousCommand.cancel();
-    }
+    // TODO: Makes sure the autonomous stops running when teleop starts
+    new JoystickButton(xbox, Button.kLeftBumper.value)
+      .whenHeld(new SpinHopper(intake, 5 * Math.PI));
+    new JoystickButton(xbox, Button.kRightBumper.value)
+      .whenHeld(new SpinIntake(intake, 5 * Math.PI));
+    shooter.setDefaultCommand(new ManualShooterCommand(shooter));
+    drivebase.setDefaultCommand(new HolonomicDriveCommand(drivebase, xbox));
   }
 
   /** This function is called periodically during operator control. */
