@@ -8,9 +8,9 @@ public class TravelThruHopper extends ParallelRaceGroup {
     
     private IntakeSubsystem sub = new IntakeSubsystem();
 
-    public MasterIntakeSystem(){
+    public TravelThruHopper(){
         addCommands(
-            new SpinHopper(sub, 5*Math.PI).until(()->sub.topHopperBall);
+            new SpinHopper(sub, 5*Math.PI).until(()->sub.topHopperBall())
         );
     }
 

@@ -8,7 +8,10 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.DoubleSolenoid;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.Solenoid;
+import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import static frc.robot.Constants.*;
 
@@ -30,6 +33,9 @@ public class IntakeSubsystem extends SubsystemBase {
     //private static final Solenoid claw = new Solenoid(1);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     private static final StatorCurrentLimitConfiguration MAX_AMPS_OUT = new StatorCurrentLimitConfiguration(true, 10, 0, 0);
+    //Pnuematics
+    DoubleSolenoid solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2); //Forward then Reverse Channel
+    DoubleSolenoid solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 4);
 
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -92,5 +98,11 @@ public class IntakeSubsystem extends SubsystemBase {
     
     public void setClaw(boolean open) {
         //claw.set(open);
+    }
+
+    //input solenoid enum
+    public void raiseOrLowerIntake(Value direction){
+        solenoidRight.set(direction);
+        solenoidLeft.set(direction);
     }
 }
