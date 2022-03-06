@@ -55,7 +55,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
 
   public void resetHeading() {
-    phiOffset = getOrientation();
+    phiOffset = phiOffset.plus(getOrientation());
   }
 
   public Translation2d getPred(int degree) {

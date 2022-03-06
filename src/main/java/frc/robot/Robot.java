@@ -46,6 +46,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // TODO: Display autonomous chooser on dashboard
+    nav.resetHeading();
   }
 
   /**
