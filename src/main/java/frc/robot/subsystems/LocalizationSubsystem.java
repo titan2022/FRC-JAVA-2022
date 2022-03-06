@@ -20,6 +20,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   private DMatrix2 mean = new DMatrix2();
   private DMatrix2x2 prec = new DMatrix2x2();
   private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
+  private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
 
   public LocalizationSubsystem(double step, int depth, double drift) {
     filter = new KalmanFilter(depth, new DMatrix2x2(drift, 0, 0, drift));
@@ -53,6 +54,10 @@ public class LocalizationSubsystem extends SubsystemBase {
     addData(degree, pred.getX(), pred.getY(), var);
   }
 
+  public void resetHeading() {
+    phiOffset = getOrientation();
+  }
+
   public Translation2d getPred(int degree) {
     filter.getPred(degree, mean);
     return new Translation2d(mean.a1, mean.a2);
@@ -62,7 +67,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
 
   public Rotation2d getOrientation() {
-    return imu.getRotation2d();
+    return imu.getRotation2d().minus(phiOffset);
   }
 
   @Override
