@@ -252,8 +252,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     setVelocities(lastVelocity);
   }
   @Override
-  public void setVelocities(Rotation2d velocities) {
-    lastVelocity.omegaRadiansPerSecond = velocities.getRadians();
+  public void setRotation(double omega) {
+    lastVelocity.omegaRadiansPerSecond = omega;
     setVelocities(lastVelocity);
   }
 
@@ -270,6 +270,35 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   public void setOutput(double omega, double XVelocity, double YVelocity)
   {
     setVelocities(new ChassisSpeeds(XVelocity, YVelocity, omega));
+  }
+
+  public TranslationalDrivebase translationalLock() {
+    return new TranslationalDrivebase() {
+      @Override
+      public void setVelocity(Translation2d velocity) {
+        setVelocities(velocity);
+      }
+
+      @Override
+      public Translation2d getVelocity() {
+        ChassisSpeeds speeds = getVelocities();
+        return new Translation2d(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+      }
+    };
+  }
+
+  public RotationalDrivebase rotationalLock() {
+    return new RotationalDrivebase() {
+      @Override
+      public void setRotation(double velocity) {
+        setRotation(velocity);
+      }
+
+      @Override
+      public double getRate() {
+        return getVelocities().omegaRadiansPerSecond;
+      }
+    };
   }
 
   // TODO: Fix all the brake logic and semantics because disabling brakes into coast mode is not about disabling brakes.
