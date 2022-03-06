@@ -79,21 +79,23 @@ public class IntakeSubsystem extends SubsystemBase {
         return topHopperBeamSensor.get();
     }
 
-    /** Run the intake motor(s) at 1000 rpm
-     * @param intakeSpeed = Radians per sec
+    /** Run the intake motor(s)
+     * 
+     * @param intakeSpeed  Velocity of the intake, in the range [-1,1]
      * @see https://motors.vex.com/vexpro-motors/falcon?q=&locale.name=English
      */
-    public void spinIntake(double intakeSpeed) {
+    public void spinIntake(double intakePct) {
         
-        intakeMotor.set(ControlMode.Velocity, (intakeSpeed / 20 * Math.PI) * COUNTS_PER_REVOLUTION);
+        intakeMotor.set(ControlMode.PercentOutput, intakePct);
     }
 
-    /** Run the intake motor(s) at 1000 rpm
-     * @param intakeSpeed = Radians per sec
+    /** Run the hopper motor(s)
+     * 
+     * @param hopperSpeed  Velocity of the hopper, in the range [-1,1]
      * @see https://motors.vex.com/vexpro-motors/falcon?q=&locale.name=English
      */
-    public void spinHopper(double hopperSpeed) {
-        hopperMotor.set(ControlMode.Velocity, (hopperSpeed / 20 * Math.PI) * COUNTS_PER_REVOLUTION);
+    public void spinHopper(double hopperPct) {
+        hopperMotor.set(ControlMode.PercentOutput, hopperPct);
     }
     
     public void setClaw(boolean open) {

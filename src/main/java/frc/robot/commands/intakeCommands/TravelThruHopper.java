@@ -10,7 +10,7 @@ public class TravelThruHopper extends ParallelRaceGroup {
 
     public TravelThruHopper(){
         addCommands(
-            new SpinHopper(sub, 5*Math.PI).until(()->sub.topHopperBall())
+            new SpinHopper(sub, 1.0).until(()->sub.topHopperBall())
         );
     }
 

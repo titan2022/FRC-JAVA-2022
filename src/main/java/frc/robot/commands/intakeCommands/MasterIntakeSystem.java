@@ -11,14 +11,14 @@ public class MasterIntakeSystem extends ParallelRaceGroup {
 
     public MasterIntakeSystem(){
         addCommands(
-            new SpinIntake(sub, 5*Math.PI).until(()->sub.bottomHopperBall()),
-            new SpinHopper(sub, 5*Math.PI)
+            new SpinIntake(sub, 1.0).until(()->sub.bottomHopperBall()),
+            new SpinHopper(sub, 0.25)
         );
     }
 
     public void end(boolean interupted){
         if(interupted){
-            new SpinIntake(sub, -5*Math.PI).until(()->sub.intakeBall());
+            new SpinIntake(sub, -1.0).until(()->sub.intakeBall());
             sub.raiseOrLowerIntake(Value.kForward);
         }
     }
