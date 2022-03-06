@@ -19,6 +19,7 @@ public class HolonomicDriveCommand extends CommandBase {
     private final LocalizationSubsystem nav;
     private double velocity;
     private double turnRate;
+    private boolean fieldOrientation = true;
 
     /**
      * Creates a new HolonomicDriveCommand.
@@ -78,11 +79,15 @@ public class HolonomicDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
+        if(controller.getBButtonPressed())
+            fieldOrientation = !fieldOrientation;
+        if(controller.getAButtonReleased())
+            nav.resetHeading();
         double joyX = applyDeadband(-controller.getLeftX(), 0.1);
         double joyY = applyDeadband(-controller.getLeftY(), 0.1);
         double joyTurn = applyDeadband(controller.getRightX(), 0.1);
         Translation2d fieldVel = new Translation2d(scaleVelocity(joyX), scaleVelocity(joyY));
-        Translation2d robotVel = fieldVel.rotateBy(nav.getOrientation());
+        Translation2d robotVel = fieldOrientation ? fieldVel.rotateBy(nav.getOrientation()) : new Translation2d(scaleVelocity(joyY), scaleVelocity(joyX));
         double turn = Math.signum(joyTurn) * joyTurn * joyTurn * turnRate;
         SmartDashboard.putNumber("fieldX", fieldVel.getX());
         SmartDashboard.putNumber("fieldY", fieldVel.getY());
@@ -90,6 +95,7 @@ public class HolonomicDriveCommand extends CommandBase {
         SmartDashboard.putNumber("xbox X", controller.getLeftX());
         SmartDashboard.putNumber("xbox Y", controller.getLeftY());
         SmartDashboard.putNumber("raw turn", controller.getRightX());
+        SmartDashboard.putBoolean("isFieldOriented", fieldOrientation);
         drivebase.setVelocities(new ChassisSpeeds(robotVel.getX(), robotVel.getY(), turn));
     }
 
