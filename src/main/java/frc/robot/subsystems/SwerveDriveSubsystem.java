@@ -48,10 +48,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 31;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 1859;
-  private static final int BACK_LEFT_OFFSET = 1298;
-  private static final int FRONT_RIGHT_OFFSET = 908;
-  private static final int BACK_RIGHT_OFFSET = 1167;
+  private static final int FRONT_LEFT_OFFSET = 1865;
+  private static final int BACK_LEFT_OFFSET = 1295;
+  private static final int FRONT_RIGHT_OFFSET = 887;
+  private static final int BACK_RIGHT_OFFSET = 1145;
   private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
   // Motor inversions
