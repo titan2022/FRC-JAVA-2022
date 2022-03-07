@@ -60,6 +60,12 @@ public class LocalizationSubsystem extends SubsystemBase {
   public Translation2d getPred() {
     return getPred(0);
   }
+  public Translation2d getPosition() {
+    return getPred(0);
+  }
+  public Translation2d getVelocity() {
+    return getPred(1);
+  }
 
   public Rotation2d getOrientation() {
     return imu.getRotation2d();
