@@ -7,16 +7,17 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
+import static frc.robot.Constants.Unit.*;
+
 
 public class ShooterSubsystem extends SubsystemBase {
 
-    private static final double MAX_VELOCITY = 10000000;
-    private static final double DEFAULT_VELOCITY = 0;
-    private static final int TICKS_PER_REVOLUTION = 2048;
-    private static final double HOOD_TICKS_PER_RADIAN = 2048*200;
-    private static final double HOOD_OFFSET = -2048.0*27.6/360.0;
-    private static final double HOOD_MINIMUM_TICKS = 0;
-    private static final double HOOD_MAXIMUM_TICKS = 12140;
+    private static final double MAX_VELOCITY = 10000000 * RAD / S;
+    private static final double DEFAULT_VELOCITY = 0 * RAD / S;
+    private static final double HOOD_OFFSET = 0;
+    private static final double HOOD_RATIO = 200;
+    private static final double HOOD_MIN_ANGLE = 0 * DEG;
+    private static final double HOOD_MAX_ANGLE = 20 * DEG;
 
     private static final int RIGHT_MOTOR_PORT = 20;
     private static final int LEFT_MOTOR_PORT = 21;
@@ -70,7 +71,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void shoot() {
-        leftMotor.set(ControlMode.Velocity, DEFAULT_VELOCITY * TICKS_PER_REVOLUTION);
+        leftMotor.set(ControlMode.Velocity, DEFAULT_VELOCITY * (RAD / S) / (FALCON_TICKS / (100 * MS)));
     }
 
     /**
@@ -79,7 +80,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param radians = Radians per sec
      */
     public void shootPrecise(double radians) {
-        leftMotor.set(ControlMode.Velocity, Math.min((radians / (20 * Math.PI)), MAX_VELOCITY) * TICKS_PER_REVOLUTION);
+        leftMotor.set(ControlMode.Velocity, Math.min(radians * (RAD / S), MAX_VELOCITY) / (FALCON_TICKS / (100 * MS)));
     }
 
     /**
@@ -92,9 +93,8 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     public void setAngle(double radians) {
-        double pos = radians * HOOD_TICKS_PER_RADIAN + HOOD_OFFSET;
-        if(HOOD_MINIMUM_TICKS < pos && pos < HOOD_MAXIMUM_TICKS)
-            hoodMotor.set(ControlMode.Position, pos);
+        if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE)
+            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD) / FALCON_TICKS + HOOD_OFFSET);
     }
 
 }
