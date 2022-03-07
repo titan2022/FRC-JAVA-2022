@@ -97,4 +97,12 @@ public class ShooterSubsystem extends SubsystemBase {
             hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD) / FALCON_TICKS + HOOD_OFFSET);
     }
 
+    public double getAngle() {
+        return (hoodMotor.getSelectedSensorPosition() - HOOD_OFFSET) * FALCON_TICKS;
+    }
+
+    public double getVelocity() {
+        double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
+        return rawVel * (FALCON_TICKS / (100 * MS));
+    }
 }
