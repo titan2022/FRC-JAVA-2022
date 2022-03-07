@@ -112,6 +112,34 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   private ChassisSpeeds lastVelocity = new ChassisSpeeds();
 
+  
+
+  // Locks
+  private final TranslationalDrivebase translationalLock = new TranslationalDrivebase() {
+    @Override
+    public void setVelocity(Translation2d velocity) {
+      updateVelocity(velocity);
+    }
+
+    @Override
+    public Translation2d getVelocity() {
+      ChassisSpeeds speeds = getVelocities();
+      return new Translation2d(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+    }
+  };
+  private final RotationalDrivebase rotationalLock = new RotationalDrivebase() {
+    @Override
+    public void setRotation(double omega) {
+      updateRotationalVelocity(omega);
+    }
+
+    @Override
+    public double getRate() {
+      ChassisSpeeds speeds = getVelocities();
+      return speeds.omegaRadiansPerSecond;
+    }
+  };
+
   /**
    * Creates the swerve drive subsystem
    * 
@@ -195,7 +223,6 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @param leftOutputValue  left side output value for ControlMode
    * @param rightOutputValue right side output value for ControlMode
    */
-  @Override
   public void setVelocities(ChassisSpeeds inputChassisSpeeds) {
     lastVelocity.vxMetersPerSecond = inputChassisSpeeds.vxMetersPerSecond;
     lastVelocity.vyMetersPerSecond = inputChassisSpeeds.vyMetersPerSecond;
@@ -245,16 +272,20 @@ public class SwerveDriveSubsystem implements DriveSubsystem
         rotators[i].set(ControlMode.Position, currentTicks + diff);
     }
   }
-  @Override
   public void setVelocities(Translation2d velocities) {
     lastVelocity.vxMetersPerSecond = velocities.getX();
     lastVelocity.vyMetersPerSecond = velocities.getY();
     setVelocities(lastVelocity);
   }
-  @Override
+  protected void updateVelocity(Translation2d velocity) {
+    setVelocities(velocity);
+  }
   public void setRotation(double omega) {
     lastVelocity.omegaRadiansPerSecond = omega;
     setVelocities(lastVelocity);
+  }
+  protected void updateRotationalVelocity(double omega) {
+    setRotation(omega);
   }
 
   /**
@@ -402,5 +433,12 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   }
 
   @Override
-  public void periodic() {}
+  public TranslationalDrivebase getTranlational() {
+    return translationalLock;
+  }
+
+  @Override
+  public RotationalDrivebase getRotational() {
+    return rotationalLock;
+  }
 }
