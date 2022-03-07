@@ -11,10 +11,9 @@ import static frc.robot.Constants.Unit.*;
 
 
 public class ShooterSubsystem extends SubsystemBase {
-
-    private static final double MAX_VELOCITY = 10000000 * RAD / S;
-    private static final double DEFAULT_VELOCITY = 0 * RAD / S;
+    /** Raw ticks measurement at 0 degrees */
     private static final double HOOD_OFFSET = 0;
+    /** Gear ratio between the hood motor and hood rack */
     private static final double HOOD_RATIO = 200;
     private static final double HOOD_MIN_ANGLE = 0 * DEG;
     private static final double HOOD_MAX_ANGLE = 20 * DEG;
@@ -23,36 +22,19 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int LEFT_MOTOR_PORT = 21;
     private static final int HOOD_MOTOR_ID = 19;
     
-    //private static final int RIGHT_ENCODER_PORT = 9;
-    //private static final int LEFT_ENCODER_PORT = 10;
-    
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
 
-    //private static final CANCoder rightEncoder = new CANCoder(RIGHT_ENCODER_PORT);    
-    //private static final CANCoder leftEncoder = new CANCoder(LEFT_ENCODER_PORT);   
-
     public ShooterSubsystem(){
-        //rightMotor.setInverted();
         rightMotor.follow(leftMotor);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
         leftMotor.setInverted(false);
         rightMotor.setInverted(true);
 
-        //rightMotor.configRemoteFeedbackFilter(rightEncoder, 0);
-        //leftMotor.configRemoteFeedbackFilter(leftEncoder, 0);
         rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
         leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
-        
-        //rightEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        //leftEncoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        rightMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        leftMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-
-        //rightEncoder.configMagnetOffset(0);
-        //leftEncoder.configMagnetOffset(0);
 
         leftMotor.config_kP(0, 100);
         leftMotor.config_kI(0, 0);
@@ -67,40 +49,57 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodMotor.config_kP(0, 100);
         hoodMotor.config_kI(0, 0);
         hoodMotor.config_kD(0, 0);
-
-    }
-
-    public void shoot() {
-        leftMotor.set(ControlMode.Velocity, DEFAULT_VELOCITY * (RAD / S) / (FALCON_TICKS / (100 * MS)));
     }
 
     /**
-     * Rotates falcon for shooter
+     * Runs the shooter at a specified velocity.
      * 
-     * @param radians = Radians per sec
+     * @param speed  The target velocity of the shooter in radians per second.
      */
-    public void shootPrecise(double radians) {
-        leftMotor.set(ControlMode.Velocity, Math.min(radians * (RAD / S), MAX_VELOCITY) / (FALCON_TICKS / (100 * MS)));
+    public void shootPrecise(double speed) {
+        leftMotor.set(ControlMode.Velocity, speed * (RAD / S) / (FALCON_TICKS / (100 * MS)));
     }
 
     /**
-     * Rotates falcon in terms of fractions of max speed
+     * Runs the shooter at by prcent output velocity.
      * 
-     * @param percent = Percentage from -1 to 1
+     * @param percent  The target velocity of the shooter, as a proportion of the
+     *  maximum output, [-1,1].
      */
     public void shootPercent(double percent) {
         leftMotor.set(ControlMode.PercentOutput, percent);
     }
 
+    /**
+     * Sets the angle of the hood.
+     * 
+     * This method does nothing if the specified angle is out of bounds.
+     * 
+     * @param radians  The angle of inclination of the hood in radians. This is
+     *  the complement of the angle of inclination of the initial velocity of a
+     *  projectile launched from the shooter.
+     */
     public void setAngle(double radians) {
         if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE)
             hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD) / FALCON_TICKS + HOOD_OFFSET);
     }
 
+    /**
+     * Returns the current angle of the hood.
+     * 
+     * @return  The current measure angle of inclination of the hood in radians.
+     *  This is the complement of the angle of inclination of the initial
+     *  velocity of a projectile launched from the shooter.
+     */
     public double getAngle() {
         return (hoodMotor.getSelectedSensorPosition() - HOOD_OFFSET) * FALCON_TICKS;
     }
 
+    /**
+     * Returns the current velocity of the shooter.
+     * 
+     * @return  The current measured velocity of the shooter in radians per second.
+     */
     public double getVelocity() {
         double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
         return rawVel * (FALCON_TICKS / (100 * MS));
