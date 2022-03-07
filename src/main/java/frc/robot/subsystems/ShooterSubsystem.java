@@ -4,7 +4,6 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import static frc.robot.Constants.Unit.*;
@@ -17,6 +16,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final double HOOD_RATIO = 200;
     private static final double HOOD_MIN_ANGLE = 0 * DEG;
     private static final double HOOD_MAX_ANGLE = 20 * DEG;
+    private static final double FLYWHEEL_RATIO = 1;
+    private static final double FLYWHEEL_RADIUS = 2 * IN;
 
     private static final int RIGHT_MOTOR_PORT = 20;
     private static final int LEFT_MOTOR_PORT = 21;
@@ -54,10 +55,10 @@ public class ShooterSubsystem extends SubsystemBase {
     /**
      * Runs the shooter at a specified velocity.
      * 
-     * @param speed  The target velocity of the shooter in radians per second.
+     * @param speed  The target velocity of the shooter in meters per second.
      */
     public void shootPrecise(double speed) {
-        leftMotor.set(ControlMode.Velocity, speed * (RAD / S) / (FALCON_TICKS / (100 * MS)));
+        leftMotor.set(ControlMode.Velocity, FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
     }
 
     /**
@@ -98,10 +99,10 @@ public class ShooterSubsystem extends SubsystemBase {
     /**
      * Returns the current velocity of the shooter.
      * 
-     * @return  The current measured velocity of the shooter in radians per second.
+     * @return  The current measured velocity of the shooter in meters per second.
      */
     public double getVelocity() {
         double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
-        return rawVel * (FALCON_TICKS / (100 * MS));
+        return rawVel * (FALCON_TICKS / (100 * MS)) / RAD * FLYWHEEL_RADIUS;
     }
 }
