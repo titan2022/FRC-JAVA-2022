@@ -14,9 +14,9 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final double DEFAULT_VELOCITY = 0;
     private static final int TICKS_PER_REVOLUTION = 2048;
     private static final double HOOD_TICKS_PER_RADIAN = 2048*200;
-    private static final int HOOD_OFFSET = (int) (-2048.0*27.6/360.0);
-    private static final int HOOD_MINIMUM_TICKS = 0;
-    private static final int HOOD_MAXIMUM_TICKS = 12140;
+    private static final double HOOD_OFFSET = -2048.0*27.6/360.0;
+    private static final double HOOD_MINIMUM_TICKS = 0;
+    private static final double HOOD_MAXIMUM_TICKS = 12140;
 
     private static final int RIGHT_MOTOR_PORT = 20;
     private static final int LEFT_MOTOR_PORT = 21;
