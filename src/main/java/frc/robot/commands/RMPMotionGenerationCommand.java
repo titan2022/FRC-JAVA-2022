@@ -12,22 +12,23 @@ import org.ejml.simple.SimpleMatrix;
 public class RMPMotionGenerationCommand extends CommandBase {
 
     private LocalizationSubsystem localization;
-    private RMPRoot rmp;
+    private RMPRoot root;
     private SwerveDriveSubsystem drivebase;
     private double deltaT;
 
-    public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot rmp, SwerveDriveSubsystem drivebase,
+    public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root, SwerveDriveSubsystem drivebase,
             double deltaT) {
         this.localization = localization;
-        this.rmp = rmp;
+        this.root = root;
         this.drivebase = drivebase;
         this.deltaT = deltaT;
         addRequirements(localization);
     }
 
-    public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot rmp, SwerveDriveSubsystem drivebase) {
+    public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root,
+            SwerveDriveSubsystem drivebase) {
         this.localization = localization;
-        this.rmp = rmp;
+        this.root = root;
         this.drivebase = drivebase;
         deltaT = 0.02;
         addRequirements(localization);
@@ -42,7 +43,7 @@ public class RMPMotionGenerationCommand extends CommandBase {
         SimpleMatrix x = new SimpleMatrix(1, 2, false, new double[] { loc0.getX(), loc0.getY() });
         SimpleMatrix x_dot = new SimpleMatrix(1, 2, false, new double[] { loc1.getX(), loc1.getY() });
 
-        SimpleMatrix x_ddot = rmp.solve(x, x_dot);
+        SimpleMatrix x_ddot = root.solve(x, x_dot);
         x_dot.set(0, x_dot.get(0) + x_ddot.get(0) * deltaT);
         x_dot.set(1, x_dot.get(1) + x_ddot.get(1) * deltaT);
         drivebase.setVelocities(new ChassisSpeeds(x_dot.get(0), x_dot.get(1), 0));
