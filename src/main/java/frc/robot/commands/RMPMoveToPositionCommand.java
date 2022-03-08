@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LocalizationSubsystem;
 import com.titanrobotics2022.mapping.LinearSegment;
-import com.titanrobotics2022.mapping.Path;
 import com.titanrobotics2022.mapping.Point;
 import com.titanrobotics2022.motion.generation.rmpflow.rmps.PathFollowing;
 import com.titanrobotics2022.motion.generation.rmpflow.RMPRoot;

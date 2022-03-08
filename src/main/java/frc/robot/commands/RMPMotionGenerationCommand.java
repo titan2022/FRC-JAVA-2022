@@ -1,9 +1,8 @@
 package frc.robot.commands;
 
 import frc.robot.subsystems.LocalizationSubsystem;
-import frc.robot.subsystems.SwerveDriveSubsystem;
+import frc.robot.subsystems.TranslationalDrivebase;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.titanrobotics2022.motion.generation.rmpflow.RMPRoot;
 
@@ -13,10 +12,11 @@ public class RMPMotionGenerationCommand extends CommandBase {
 
     private LocalizationSubsystem localization;
     private RMPRoot root;
-    private SwerveDriveSubsystem drivebase;
+    private TranslationalDrivebase drivebase;
     private double deltaT;
 
-    public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root, SwerveDriveSubsystem drivebase,
+    public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root,
+            TranslationalDrivebase drivebase,
             double deltaT) {
         this.localization = localization;
         this.root = root;
@@ -26,7 +26,7 @@ public class RMPMotionGenerationCommand extends CommandBase {
     }
 
     public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root,
-            SwerveDriveSubsystem drivebase) {
+            TranslationalDrivebase drivebase) {
         this.localization = localization;
         this.root = root;
         this.drivebase = drivebase;
@@ -46,14 +46,14 @@ public class RMPMotionGenerationCommand extends CommandBase {
         SimpleMatrix x_ddot = root.solve(x, x_dot);
         x_dot.set(0, x_dot.get(0) + x_ddot.get(0) * deltaT);
         x_dot.set(1, x_dot.get(1) + x_ddot.get(1) * deltaT);
-        drivebase.setVelocities(new ChassisSpeeds(x_dot.get(0), x_dot.get(1), 0));
+        drivebase.setVelocity(new Translation2d(x_dot.get(0), x_dot.get(1)));
 
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        drivebase.setVelocities(new ChassisSpeeds(0, 0, 0));
+        drivebase.setVelocity(new Translation2d(0, 0));
     }
 
     // Returns true when the command should end.

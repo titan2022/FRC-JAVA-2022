@@ -22,6 +22,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
+import frc.robot.subsystems.TranslationalDrivebase;
 
 import static frc.robot.Constants.getSwerveDriveTalonDirectionalConfig;
 import static frc.robot.Constants.getSwerveDriveTalonRotaryConfig;
@@ -101,7 +102,8 @@ public class Robot extends TimedRobot {
     RMPRoot root = new RMPRoot("root");
     Translation2d goal = new Translation2d(0, 0);
     LocalizationSubsystem localization = new LocalizationSubsystem(0.02);
-    SwerveDriveSubsystem drivebase = new SwerveDriveSubsystem();
+    SwerveDriveSubsystem swerve = new SwerveDriveSubsystem();
+    TranslationalDrivebase drivebase = swerve.getTranslational();
     double v = 1;
     RMPMoveToPositionCommand mtp = new RMPMoveToPositionCommand(root, goal, localization, v);
     RMPMotionGenerationCommand mg = new RMPMotionGenerationCommand(localization, root, drivebase);
@@ -122,8 +124,8 @@ public class Robot extends TimedRobot {
     new JoystickButton(xbox, Button.kRightBumper.value)
         .whenHeld(new SpinIntake(intake, 5 * Math.PI));
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
-    drivebase.getTranlational()
-        .setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
+    drivebase.getTranslational()
+        .setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 5.));
     drivebase.getRotational()
         .setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
   }
