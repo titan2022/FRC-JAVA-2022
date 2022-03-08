@@ -6,7 +6,6 @@ package frc.robot.commands;
 
 import frc.robot.Constants;
 import frc.robot.subsystems.ShooterSubsystem;
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 //import static frc.robot.Constants
 
@@ -30,7 +29,7 @@ public class ShooterCommand extends CommandBase {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        this.subsystem.shootPercent(Constants.XBOX_CONTROLLER.getTriggerAxis(Hand.kRight));
+        this.subsystem.shootPercent(Constants.XBOX_CONTROLLER.getRightTriggerAxis());
     }
 
     // Called every time the scheduler runs while the command is scheduled.

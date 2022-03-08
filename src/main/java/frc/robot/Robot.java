@@ -7,17 +7,15 @@ package frc.robot;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.AutonomousCommand;
 import frc.robot.commands.HolonomicDriveCommand;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.SpinHopper;
 import frc.robot.commands.SpinIntake;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
-import frc.robot.subsystems.OdometrySubsystemWrapper;
+import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 
@@ -39,6 +37,7 @@ public class Robot extends TimedRobot {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final DriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
+  private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -75,8 +74,7 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    OdometrySubsystemWrapper odometry = OdometrySubsystemWrapper(startX, startY, startRot);
-    new AutonomousCommand(shooter, intake, drivebase, odometry).schedule();
+    // TODO: Create autonomous
   }
 
   /** This function is called periodically during autonomous. */
@@ -86,12 +84,12 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
-    new JoystickButton(xbox, Button.kBumperLeft.value)
+    new JoystickButton(xbox, Button.kLeftBumper.value)
       .whenHeld(new SpinHopper(intake, 5 * Math.PI));
-    new JoystickButton(xbox, Button.kBumperRight.value)
+    new JoystickButton(xbox, Button.kRightBumper.value)
       .whenHeld(new SpinIntake(intake, 5 * Math.PI));
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
-    drivebase.setDefaultCommand(new HolonomicDriveCommand(drivebase, xbox));
+    drivebase.setDefaultCommand(new HolonomicDriveCommand(drivebase, xbox, nav));
   }
 
   /** This function is called periodically during operator control. */

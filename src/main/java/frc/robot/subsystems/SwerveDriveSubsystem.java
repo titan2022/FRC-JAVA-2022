@@ -10,12 +10,12 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj.kinematics.SwerveDriveKinematics;
-import edu.wpi.first.wpilibj.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj.geometry.Rotation2d;
-import edu.wpi.first.wpilibj.geometry.Translation2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 
 import static frc.robot.Constants.Unit.*;
 
@@ -110,6 +110,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final Translation2d rightBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
   public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(leftFrontPosition, leftBackPosition, rightFrontPosition, rightBackPosition);
 
+  private ChassisSpeeds lastVelocity = new ChassisSpeeds();
+
   /**
    * Creates the swerve drive subsystem
    * 
@@ -195,9 +197,12 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    */
   @Override
   public void setVelocities(ChassisSpeeds inputChassisSpeeds) {
+    lastVelocity.vxMetersPerSecond = inputChassisSpeeds.vxMetersPerSecond;
+    lastVelocity.vyMetersPerSecond = inputChassisSpeeds.vyMetersPerSecond;
+    lastVelocity.omegaRadiansPerSecond = inputChassisSpeeds.omegaRadiansPerSecond;
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
 
-    SwerveDriveKinematics.normalizeWheelSpeeds(modules, MAX_WHEEL_SPEED);
+    SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
     SmartDashboard.putNumber("Norm FL vel", modules[0].speedMetersPerSecond);
     SmartDashboard.putNumber("Norm BL vel", modules[1].speedMetersPerSecond);
     SmartDashboard.putNumber("Norm FR vel", modules[2].speedMetersPerSecond);
@@ -220,6 +225,17 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     }
 
     getSwerveModuleStates();
+  }
+  @Override
+  public void setVelocities(Translation2d velocities) {
+    lastVelocity.vxMetersPerSecond = velocities.getX();
+    lastVelocity.vyMetersPerSecond = velocities.getY();
+    setVelocities(lastVelocity);
+  }
+  @Override
+  public void setVelocities(Rotation2d velocities) {
+    lastVelocity.omegaRadiansPerSecond = velocities.getRadians();
+    setVelocities(lastVelocity);
   }
 
   /**
