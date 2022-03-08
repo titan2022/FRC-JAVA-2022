@@ -1,0 +1,11 @@
+CHECK GOOGLE DOC IN SHARED DRIVE FOR AUTON ROUTE IMAGES
+
+There are three main routes for the robot during the autonomous period.
+Route 1 (Pink). The robot goes forward, leaves the tarmac, turns, and shoots its starting ball.
+Route 2 (Orange). The robot goes forwards towards a ball on their side, intakes it, turns, and shoots the ball. (Similar to Route 1.)
+Route 3 (Green). The robot goes forwards and grabs the first ball, makes a turn to the second ball, turns towards the goal and shoots.
+Route 4 (Cyan). Same process as route 3 but turn and get two balls from the cargo area, and shoot.
+
+During autonomous:
+(Upper hub scoring is 4 points)
+(Lower hub scoring is 2 points)
