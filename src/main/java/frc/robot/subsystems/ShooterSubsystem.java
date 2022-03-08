@@ -18,6 +18,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final double HOOD_MAX_ANGLE = 20 * DEG;
     private static final double FLYWHEEL_RATIO = 1;
     private static final double FLYWHEEL_RADIUS = 2 * IN;
+    private static final double SHOOTER_HEIGHT = 3.5 * FT;
 
     private static final int RIGHT_MOTOR_PORT = 20;
     private static final int LEFT_MOTOR_PORT = 21;
@@ -104,5 +105,9 @@ public class ShooterSubsystem extends SubsystemBase {
     public double getVelocity() {
         double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
         return rawVel * (FALCON_TICKS / (100 * MS)) / RAD * FLYWHEEL_RADIUS;
+    }
+
+    public double getHeight() {
+        return SHOOTER_HEIGHT;
     }
 }
