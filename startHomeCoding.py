@@ -9,7 +9,7 @@ import shutil
 import git
 
 # Imports required for emailing
-import smtplib, ssl
+import smtplib, ssl, socket
 import html as htmlLib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
@@ -126,7 +126,7 @@ def email(html):
     message["From"] = addr
     message["To"] = ", ".join(recipients)
     message.attach(MIMEText(html, "html"))
-    print(message.as_string())
+    # print(message.as_string())
 
     with smtplib.SMTP_SSL("smtp.gmail.com", port, context=context) as server:
         server.login(addr, password)
@@ -178,20 +178,27 @@ if __name__ == "__main__":
         """if (diff := getDiff()):
             allChanges += diff + '\n'"""
 
-    print("Stopping...")
-    allChanges = applyColor('\n\n'.join(diffAll()))
-    print(allChanges)
-    accomplish = input("What did you accomplish?: ")
-    for waitfor in range(20, 61, 20):  # Will retry 3 times, increasing wait time by 20 sec each time TODO: proper exponential backoff
-        try:
-            email(f'<p>Hello, I am requesting {(time.time() - startTime) / 3600} hours that I spent programming for robotics while not in the lab. I worked on "{accomplish}". Following is a list of the changes I made every {args.frequency} seconds:</p>'
-                + allChanges + "<p>Thank you 🤖</p>")
-            break
-        except socket.gaierror:
-            print("Network error, retrying in", waitfor)
-            sleep(waitfor)
-    # Zipping & sending the git history seems like overkill, but still an option
-    # shutil.make_archive("git", 'zip', ".git")
-    repo.__del__()
-    os.chdir("/")
-    tempdir.cleanup()
+    try:
+        print("Stopping...")
+        allChanges = applyColor('\n\n'.join(diffAll()))
+        accomplish = input("What did you accomplish?: ")
+        msg = f'<p>Hello, I am requesting {(time.time() - startTime) / 3600} hours that I spent programming for robotics while not in the lab. I worked on "{accomplish}". Following is a list of the changes I made every {args.frequency} seconds:</p>' + allChanges + "<p>Thank you 🤖</p>"
+        retry = 0
+        if len(args.email) != 0:
+            for retry in range(1, 4):  # Will retry 3 times, increasing wait time by 20 sec each time
+                try:
+                    email(msg)
+                    break
+                except socket.gaierror:
+                    waitfor = retry * 10
+                    print("Network error, retrying in", waitfor, "seconds")
+                    time.sleep(waitfor)
+        if len(args.email) == 0 or retry == 3:
+            print("\nUnable to send, here is the HTML body:")
+            print(allChanges)
+        # Zipping & sending the git history seems like overkill, but still an option
+        # shutil.make_archive("git", 'zip', ".git")
+    finally:  # No error is expected to be thrown, moreso for debugging errors
+        repo.__del__()
+        os.chdir("/")
+        tempdir.cleanup()
