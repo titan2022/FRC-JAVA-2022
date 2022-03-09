@@ -6,21 +6,17 @@ import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 
-public class Auton1Command extends SequentialCommandGroup{
+public class Auton2Command extends SequentialCommandGroup{
     private final ShooterSubsystem shooter;
     private final IntakeSubsystem intake;
     private final DriveSubsystem driveBase;
 
-    public Auton1Command(ShooterSubsystem shooter, IntakeSubsystem intake, DriveSubsystem driveBase) {
+    public Auton2Command(ShooterSubsystem shooter, IntakeSubsystem intake, DriveSubsystem driveBase) {
         this.shooter = shooter;
         this.intake = intake;
         this.driveBase = driveBase;
-
-        addCommands(
-            
-        );
     }
-
+    
     @Override
     public void initialize() {
 
@@ -43,5 +39,4 @@ public class Auton1Command extends SequentialCommandGroup{
     public boolean isFinished() {
         return true;
     }
-    
 }
