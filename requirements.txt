@@ -1,0 +1,4 @@
+git
+smtplib
+ssl
+email
