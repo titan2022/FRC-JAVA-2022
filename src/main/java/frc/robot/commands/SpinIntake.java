@@ -27,12 +27,18 @@ public class SpinIntake extends CommandBase {
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    subsystem.spinIntake(speed);
+    
   }
 
   // Called every time the scheduler runs while the command is scheduled.
   @Override
-  public void execute() {}
+  public void execute() {
+    if (isFinished()) {
+      end(false);
+    } else {
+      subsystem.spinIntake(speed);
+    } 
+  }
 
   // Called once the command ends or is interrupted.
   @Override
@@ -43,6 +49,10 @@ public class SpinIntake extends CommandBase {
   // Returns true when the command should end.
   @Override
   public boolean isFinished() {
-    return false;
+    if (subsystem.hopperBall()) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

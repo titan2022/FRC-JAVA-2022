@@ -7,14 +7,14 @@ import frc.robot.subsystems.LocalizationSubsystem;
 
 public class DriveToCommand extends WaitCommand {
     // TODO: make a class that includes all these components (hmm RobotContainer?)
-    private final LocalizationSubsystem odemetry;
+    private final LocalizationSubsystem odometry;
     private final DriveSubsystem drivebase;
     private final int x, y, sec;
     
     public DriveToCommand(DriveSubsystem drivebase, LocalizationSubsystem odometry, int x, int y, int sec) {
         super(sec);
         this.drivebase = drivebase;
-        this.odemetry = odometry;
+        this.odometry = odometry;
         this.x = x;
         this.y = y;
         this.sec = sec;
@@ -28,7 +28,7 @@ public class DriveToCommand extends WaitCommand {
      * @param sec amount of seconds for the robot to make the move
      */
     private void driveTo(int x, int y, int sec) {
-        Translation2d position = odemetry.getPosition();
+        Translation2d position = odometry.getPosition();
         drivebase.setVelocities(new Translation2d((x - position.getX()) / sec, (y - position.getY()) / sec));
     }
 
@@ -41,20 +41,26 @@ public class DriveToCommand extends WaitCommand {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        
+        if (isFinished()) {
+            end(false);
+        } else {
+            driveTo(x, y, sec);
+        }
     }
 
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        super.end(interrupted);
-        // Using the WaitCommand to stop after seconds (TODO: assumes that drivebase goes to correct position)
-        drivebase.setVelocities(new Translation2d(0, 0));
+
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        if (odometry.getPosition().getX() == x && odometry.getPosition().getY() == y) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
