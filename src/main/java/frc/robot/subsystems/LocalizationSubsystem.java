@@ -150,7 +150,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  positive y axis.
    */
   public void setHeading(Rotation2d heading) {
-    setOrientation(new Rotation2d(Math.PI).minus(heading));
+    setOrientation(new Rotation2d(Math.PI/2).minus(heading));
   }
   /** Resets the current orientation to zero. */
   public void resetOrientation() {
@@ -288,7 +288,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  clockwise from the positive y axis.
    */
   public Rotation2d getHeading() {
-    return new Rotation2d(Math.PI).minus(getOrientation());
+    return new Rotation2d(Math.PI/2).minus(getOrientation());
   }
 
   @Override
