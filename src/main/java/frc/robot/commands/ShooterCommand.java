@@ -39,7 +39,11 @@ public class ShooterCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        state = 0;
+        sum = 0;
+        prev = new Rotation2d(Math.PI).minus(nav.getOrientation()).plus(nav.getTheta()).getRadians();
+    }
 
     private double calcError(Translation2d vel, Rotation2d phi, double h) {
         Translation2d pos = nav.getPosition();
