@@ -135,16 +135,107 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
 
   /**
+   * Sets the current orientation to a specified value.
+   * 
+   * @param heading  The new current orientation.
+   */
+  public void setHeading(Rotation2d heading) {
+    phiOffset = phiOffset.plus(getOrientation().minus(heading));
+  }
+  /** Resets the current orientation to zero. */
+  public void resetHeading() {
+    phiOffset = phiOffset.plus(getOrientation());
+  }
+
+  /**
+   * Resets the current position estimate to a specific value and uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated position estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * @param pos  The new current position.
+   * @param var  The new position variance.
+   */
+  public void setPosition(Translation2d pos, double var) {
+    mean.setTo(pos.getX(), pos.getY());
+    prec.setTo(var, 0, 0, var);
+    filter.setPred(0, mean);
+    filter.setCov(0, prec);
+  }
+  /**
+   * Resets the current position estimate to a specific value.
+   * 
+   * Warning: This method will overwrite the accumulated position estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * The position value is assumed to be precise, without uncertainty.
+   * 
+   * @param pos  The new current position.
+   */
+  public void setPosition(Translation2d pos) {
+    setPosition(pos, 0);
+  }
+  /**
+   * Resets the current position estimate, preserving uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated position estimate. Use
+   * only when necessary.
+   * 
+   * @param pos  The new current position.
+   */
+  public void translateTo(Translation2d pos) {
+    mean.setTo(pos.getX(), pos.getY());
+    filter.setPred(0, mean);
+  }
+
+  /**
+   * Resets the current velocity estimate to a specific value and uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated velocity estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * @param vel  The new current velocity.
+   * @param var  The new velocity variance.
+   */
+  public void setVelocity(Translation2d vel, double var) {
+    mean.setTo(vel.getX(), vel.getY());
+    prec.setTo(var, 0, 0, var);
+    filter.setPred(1, mean);
+    filter.setCov(1, prec);
+  }
+  /**
+   * Resets the current velocity estimate to a specific value.
+   * 
+   * Warning: This method will overwrite the accumulated velocity estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * The velocity value is assumed to be precise, without uncertainty.
+   * 
+   * @param vel  The new current velocity.
+   */
+  public void setVelocity(Translation2d vel) {
+    setVelocity(vel, 0);
+  }
+  /**
+   * Resets the current velocity estimate, preserving uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated velocity estimate. Use
+   * only when necessary.
+   * 
+   * @param vel  The new current velocity.
+   */
+  public void accelerateTo(Translation2d vel) {
+    mean.setTo(vel.getX(), vel.getY());
+    filter.setPred(1, mean);
+  }
+
+  /**
    * Returns the current estimate of a given derivative of position.
    * 
    * @param degree  The order of the derivative of position to return the
    *  estimate of.
    * @return  The current estimate of the requested derivative of position.
    */
-  public void resetHeading() {
-    phiOffset = phiOffset.plus(getOrientation());
-  }
-
   public Translation2d getPred(int degree) {
     filter.getPred(degree, mean);
     return new Translation2d(mean.a1, mean.a2);
