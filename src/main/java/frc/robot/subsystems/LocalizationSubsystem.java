@@ -25,6 +25,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   private DMatrix2 mean = new DMatrix2();
   private DMatrix2x2 prec = new DMatrix2x2();
   private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
+  private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
 
   /**
    * Creates a new LocalizationSubsystem.
@@ -140,6 +141,10 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  estimate of.
    * @return  The current estimate of the requested derivative of position.
    */
+  public void resetHeading() {
+    phiOffset = phiOffset.plus(getOrientation());
+  }
+
   public Translation2d getPred(int degree) {
     filter.getPred(degree, mean);
     return new Translation2d(mean.a1, mean.a2);
@@ -169,7 +174,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  counterclockwise from the positive x axis.
    */
   public Rotation2d getOrientation() {
-    return imu.getRotation2d();
+    return imu.getRotation2d().minus(phiOffset);
   }
 
   @Override
