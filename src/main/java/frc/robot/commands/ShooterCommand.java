@@ -51,12 +51,6 @@ public class ShooterCommand extends CommandBase {
         return new Translation2d(v_ground, phi).plus(vel).times(t).plus(pos).getNorm();
     }
 
-    private Translation2d getTargetVelocity(double r, Rotation2d theta, double h) {
-        double vx2 = g*r*r / (h - m*r) / 2;
-        double vx = Math.sqrt(vx2);
-        return new Translation2d(vx, g*r / vx + m*vx);
-    }
-
     private double updateRotationPID(double r, Rotation2d theta, Translation2d vel, Rotation2d phi) {
         double deltaPhi = new Rotation2d(Math.PI).minus(phi).plus(theta).getRadians();
         Translation2d predPos = new Translation2d(r, theta).plus(vel.times(step));
@@ -77,11 +71,11 @@ public class ShooterCommand extends CommandBase {
         else
             intake.spinIntake(0);
         double r = nav.getDistance();
-        Rotation2d theta = nav.getTheta();
-        Translation2d targetVel = getTargetVelocity(r, theta, h);
+        double vx = Math.sqrt(g*r*r / (h - m*r) / 2);
+        Translation2d targetVel = new Translation2d(vx, g*r / vx + m*vx);
         shooter.run(targetVel.getNorm());
         shooter.setAngle(Math.PI - Math.atan2(targetVel.getY(), targetVel.getX()));
-        base.setRotation(updateRotationPID(r, theta, vel, phi));
+        base.setRotation(updateRotationPID(r, nav.getTheta(), vel, phi));
         if(shooter.hasCargo())
             state = 1;
         else if(state == 1)
