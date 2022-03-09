@@ -137,14 +137,28 @@ public class LocalizationSubsystem extends SubsystemBase {
   /**
    * Sets the current orientation to a specified value.
    * 
-   * @param heading  The new current orientation.
+   * @param phi  The new current orientation, measured counterclockwise from the
+   *  positive x axis.
+   */
+  public void setOrientation(Rotation2d phi) {
+    phiOffset = phiOffset.plus(getOrientation().minus(phi));
+  }
+  /**
+   * Sets the current heading to a specified value.
+   * 
+   * @param heading  The new current heading, measured clockwise from the
+   *  positive y axis.
    */
   public void setHeading(Rotation2d heading) {
-    phiOffset = phiOffset.plus(getOrientation().minus(heading));
+    setOrientation(new Rotation2d(Math.PI).minus(heading));
   }
   /** Resets the current orientation to zero. */
+  public void resetOrientation() {
+    setOrientation(new Rotation2d(0));
+  }
+  /** Resets the current heading to zero. */
   public void resetHeading() {
-    phiOffset = phiOffset.plus(getOrientation());
+    setHeading(new Rotation2d(0));
   }
 
   /**
@@ -261,11 +275,20 @@ public class LocalizationSubsystem extends SubsystemBase {
   /**
    * Returns the current estimate of the orientation of the robot.
    * 
-   * @return  The current estimate of the orientation of the robot in radians
+   * @return  The current estimate of the orientation of the robot measured
    *  counterclockwise from the positive x axis.
    */
   public Rotation2d getOrientation() {
     return imu.getRotation2d().minus(phiOffset);
+  }
+  /**
+   * Returns the current estimate of the heading of the robot.
+   * 
+   * @return  The current estimate of the heading of the robot, measured
+   *  clockwise from the positive y axis.
+   */
+  public Rotation2d getHeading() {
+    return new Rotation2d(Math.PI).minus(getOrientation());
   }
 
   @Override
