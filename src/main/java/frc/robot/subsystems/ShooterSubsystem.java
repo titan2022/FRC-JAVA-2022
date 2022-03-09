@@ -62,7 +62,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * 
      * @param speed  The target velocity of the shooter in meters per second.
      */
-    public void shootPrecise(double speed) {
+    public void run(double speed) {
         leftMotor.set(ControlMode.Velocity, FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
     }
 
@@ -72,7 +72,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param percent  The target velocity of the shooter, as a proportion of the
      *  maximum output, [-1,1].
      */
-    public void shootPercent(double percent) {
+    public void runPercent(double percent) {
         leftMotor.set(ControlMode.PercentOutput, percent);
     }
 
@@ -116,6 +116,12 @@ public class ShooterSubsystem extends SubsystemBase {
         return rawVel * (FALCON_TICKS / (100 * MS)) / RAD * FLYWHEEL_RADIUS;
     }
 
+    /**
+     * Gets the current launch height of the shooter.
+     * 
+     * @return  The current height of a projectile as it leaves the shooter, in
+     *  meters.
+     */
     public double getHeight() {
         return SHOOTER_HEIGHT;
     }
