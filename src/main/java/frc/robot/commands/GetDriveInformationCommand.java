@@ -7,22 +7,24 @@ import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.TranslationalDrivebase;
 
 public class GetDriveInformationCommand extends CommandBase {
-    
-    
-    LocalizationSubsystem localPosition;
-    TranslationalDrivebase translator; //object translator is currently an interface, need to create a class for it
-    public GetDriveInformationCommand(LocalizationSubsystem loc, TranslationalDrivebase trans){
-        localPosition = loc;
+    private LocalizationSubsystem nav;
+    private TranslationalDrivebase translator;
+    private double var;
+
+    public GetDriveInformationCommand(LocalizationSubsystem loc, TranslationalDrivebase trans, double std){
+        nav = loc;
         translator = trans;
+        var = std*std;
+    }
+    public GetDriveInformationCommand(LocalizationSubsystem loc, TranslationalDrivebase trans) {
+        this(loc, trans, 0.1);
     }
 
     @Override
-    public void initialize() {
-
-    }
+    public void initialize() {}
 
     public void execute() {
-        localPosition.addData(1, new Translation2d(localPosition.getOrientation().getCos() * translator.getVelocity().getNorm(), localPosition.getOrientation().getSin() * translator.getVelocity().getNorm()), 0.01);
+        nav.addData(1, translator.getVelocity().rotateBy(nav.getHeading()), var);
     }
 
     @Override
