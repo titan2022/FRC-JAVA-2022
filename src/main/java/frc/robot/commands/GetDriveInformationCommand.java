@@ -18,10 +18,11 @@ public class GetDriveInformationCommand extends CommandBase {
 
     @Override
     public void initialize() {
+
     }
 
     public void execute() {
-        localPosition.addData(translator.getDegree, translator.getVelocity(), var); //need to change degree and variability parameters.
+        localPosition.addData(1, new Translation2d(localPosition.getOrientation().getCos() * translator.getVelocity().getNorm(), localPosition.getOrientation().getSin() * translator.getVelocity().getNorm()), 0.01);
     }
 
     @Override
