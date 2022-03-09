@@ -36,6 +36,7 @@ public class ShooterCommand extends CommandBase {
         kF = F;
         this.threshold = threshold;
         this.step = step;
+        addRequirements(shooter, base, intake);
     }
 
     @Override
