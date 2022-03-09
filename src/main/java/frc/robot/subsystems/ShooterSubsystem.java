@@ -3,6 +3,8 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
@@ -23,10 +25,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int RIGHT_MOTOR_PORT = 20;
     private static final int LEFT_MOTOR_PORT = 21;
     private static final int HOOD_MOTOR_ID = 19;
+    private static final int BEAM_BREAK_PORT = 1;
     
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
+    private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_PORT);
 
     public ShooterSubsystem(){
         rightMotor.follow(leftMotor);
@@ -72,6 +76,11 @@ public class ShooterSubsystem extends SubsystemBase {
         leftMotor.set(ControlMode.PercentOutput, percent);
     }
 
+    /** Turns off the shooter */
+    public void coast() {
+        leftMotor.set(ControlMode.PercentOutput, 0);
+    }
+
     /**
      * Sets the angle of the hood.
      * 
@@ -109,5 +118,14 @@ public class ShooterSubsystem extends SubsystemBase {
 
     public double getHeight() {
         return SHOOTER_HEIGHT;
+    }
+
+    /**
+     * Checks whether there is a cargo in the shooter.
+     * 
+     * @return  True if a cargo is detected in the shooter, or false otherwise.
+     */
+    public boolean hasCargo() {
+        return beamBreak.get();
     }
 }
