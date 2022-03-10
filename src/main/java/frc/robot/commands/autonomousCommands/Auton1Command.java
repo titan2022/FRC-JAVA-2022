@@ -14,6 +14,7 @@ import frc.robot.subsystems.ShooterSubsystem;
 public class Auton1Command extends SequentialCommandGroup {
 
     public Auton1Command(ShooterSubsystem shooter, IntakeSubsystem intake, DriveSubsystem driveBase, LocalizationSubsystem nav) {
+        //Needs to be tuned
         addCommands(
             //Collect our ball and shoots into goal
             new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
@@ -24,7 +25,7 @@ public class Auton1Command extends SequentialCommandGroup {
             new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
             //Shoots enemy team balls away
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
-            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02)
         );
     }
 }
