@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
-public class MasterIntakeSystem extends CommandBase {
+public class MasterIntakeCommand extends CommandBase {
     
     private IntakeSubsystem intake;
 
-    public MasterIntakeSystem(IntakeSubsystem intake){
+    public MasterIntakeCommand(IntakeSubsystem intake){
         this.intake = intake;
         addRequirements(intake);
     }
