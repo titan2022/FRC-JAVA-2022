@@ -46,10 +46,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 31;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 1865;
-  private static final int BACK_LEFT_OFFSET = 1295;
-  private static final int FRONT_RIGHT_OFFSET = 887;
-  private static final int BACK_RIGHT_OFFSET = 1145;
+  private static final int FRONT_LEFT_OFFSET = 841;
+  private static final int BACK_LEFT_OFFSET = 271;
+  private static final int FRONT_RIGHT_OFFSET = -137;
+  private static final int BACK_RIGHT_OFFSET = 121;
   private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
   // Motor inversions
@@ -99,10 +99,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   // Kinematics
   // Positions describe the position of each wheel relative to the center of the robot
-  private static final Translation2d leftFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
-  private static final Translation2d leftBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
-  private static final Translation2d rightFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
-  private static final Translation2d rightBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
+  private static final Translation2d leftFrontPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
+  private static final Translation2d leftBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
+  private static final Translation2d rightFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
+  private static final Translation2d rightBackPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
   public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(leftFrontPosition, leftBackPosition, rightFrontPosition, rightBackPosition);
 
   private ChassisSpeeds lastVelocity = new ChassisSpeeds();

@@ -94,7 +94,7 @@ public class TranslationalDriveCommand extends CommandBase {
         SmartDashboard.putNumber("fieldX", velocity.getX());
         SmartDashboard.putNumber("fieldY", velocity.getY());
         if(isFieldOriented)
-            velocity = velocity.rotateBy(nav.getOrientation().unaryMinus());
+            velocity = velocity.rotateBy(nav.getHeading().unaryMinus());
         SmartDashboard.putNumber("robotX", velocity.getX());
         SmartDashboard.putNumber("robotY", velocity.getY());
         drive.setVelocity(velocity);
