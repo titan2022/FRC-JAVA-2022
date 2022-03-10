@@ -9,10 +9,11 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
-import frc.robot.commands.HolonomicDriveCommand;
 import frc.robot.commands.ManualShooterCommand;
+import frc.robot.commands.RotationalDriveCommand;
 import frc.robot.commands.SpinHopper;
 import frc.robot.commands.SpinIntake;
+import frc.robot.commands.TranslationalDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
@@ -46,6 +47,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     // TODO: Display autonomous chooser on dashboard
+    nav.resetHeading();
   }
 
   /**
@@ -89,7 +91,8 @@ public class Robot extends TimedRobot {
     new JoystickButton(xbox, Button.kRightBumper.value)
       .whenHeld(new SpinIntake(intake, 5 * Math.PI));
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
-    drivebase.setDefaultCommand(new HolonomicDriveCommand(drivebase, xbox, nav));
+    drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
+    drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
   }
 
   /** This function is called periodically during operator control. */

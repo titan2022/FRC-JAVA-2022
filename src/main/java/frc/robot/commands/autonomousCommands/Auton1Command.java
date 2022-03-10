@@ -43,5 +43,4 @@ public class Auton1Command extends SequentialCommandGroup{
     public boolean isFinished() {
         return true;
     }
-    
 }
