@@ -29,7 +29,6 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final DigitalInput bottomHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT1);
     private static final DigitalInput topHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT2);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
-    private static final StatorCurrentLimitConfiguration MAX_AMPS_OUT = new StatorCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
     DoubleSolenoid solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2); //Forward then Reverse Channel
     DoubleSolenoid solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 4);
@@ -37,12 +36,7 @@ public class IntakeSubsystem extends SubsystemBase {
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
         config.supplyCurrLimit = MAX_AMPS;
-        config.statorCurrLimit = MAX_AMPS_OUT;
         config.neutralDeadband = 0.1;
-        config.slot0.kP = 3;
-        config.slot0.kI = 0;
-        config.slot0.kD = 0;
-        config.slot0.kF = 0;
 
         intakeMotor.configAllSettings(config);
         intakeMotor.setNeutralMode(NeutralMode.Brake);
