@@ -16,12 +16,12 @@ public class ManualShooterCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        shooter.shootPercent(0);
+        shooter.runPercent(0);
     }
 
     @Override
     public void execute() {
-        shooter.shootPercent(XBOX_CONTROLLER.getRightTriggerAxis());
+        shooter.runPercent(XBOX_CONTROLLER.getRightTriggerAxis());
         shooter.setAngle(XBOX_CONTROLLER.getLeftTriggerAxis() * Math.PI / 18 + Math.PI / 6);
         SmartDashboard.putNumber("shooter", XBOX_CONTROLLER.getRightTriggerAxis());
         SmartDashboard.putNumber("hood (deg)", (XBOX_CONTROLLER.getLeftTriggerAxis() * Math.PI / 18 + Math.PI / 6) * (180 / Math.PI));
@@ -29,7 +29,7 @@ public class ManualShooterCommand extends CommandBase {
 
     @Override
     public void end(boolean interrupted) {
-        shooter.shootPercent(0);
+        shooter.runPercent(0);
         SmartDashboard.putNumber("shooter", -2);
     }
 

@@ -48,10 +48,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 31;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 1859;
-  private static final int BACK_LEFT_OFFSET = 1298;
-  private static final int FRONT_RIGHT_OFFSET = 908;
-  private static final int BACK_RIGHT_OFFSET = 1167;
+  private static final int FRONT_LEFT_OFFSET = 1865;
+  private static final int BACK_LEFT_OFFSET = 1295;
+  private static final int FRONT_RIGHT_OFFSET = 887;
+  private static final int BACK_RIGHT_OFFSET = 1145;
   private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
   // Motor inversions
@@ -109,6 +109,36 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final Translation2d rightFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
   private static final Translation2d rightBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
   public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(leftFrontPosition, leftBackPosition, rightFrontPosition, rightBackPosition);
+
+  private ChassisSpeeds lastVelocity = new ChassisSpeeds();
+
+  
+
+  // Locks
+  private final TranslationalDrivebase translationalLock = new TranslationalDrivebase() {
+    @Override
+    public void setVelocity(Translation2d velocity) {
+      updateVelocity(velocity);
+    }
+
+    @Override
+    public Translation2d getVelocity() {
+      ChassisSpeeds speeds = getVelocities();
+      return new Translation2d(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+    }
+  };
+  private final RotationalDrivebase rotationalLock = new RotationalDrivebase() {
+    @Override
+    public void setRotation(double omega) {
+      updateRotationalVelocity(omega);
+    }
+
+    @Override
+    public double getRate() {
+      ChassisSpeeds speeds = getVelocities();
+      return speeds.omegaRadiansPerSecond;
+    }
+  };
 
   /**
    * Creates the swerve drive subsystem
@@ -193,8 +223,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @param leftOutputValue  left side output value for ControlMode
    * @param rightOutputValue right side output value for ControlMode
    */
-  @Override
   public void setVelocities(ChassisSpeeds inputChassisSpeeds) {
+    lastVelocity.vxMetersPerSecond = inputChassisSpeeds.vxMetersPerSecond;
+    lastVelocity.vyMetersPerSecond = inputChassisSpeeds.vyMetersPerSecond;
+    lastVelocity.omegaRadiansPerSecond = inputChassisSpeeds.omegaRadiansPerSecond;
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
 
     SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
@@ -210,16 +242,50 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     SmartDashboard.putNumber("RawT BL vel", modules[1].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     SmartDashboard.putNumber("RawT FR vel", modules[2].speedMetersPerSecond/(10 * METERS_PER_TICKS));
     SmartDashboard.putNumber("RawT BR vel", modules[3].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-    
-    //for(int i=0; i<4; i++)
-      //modules[i] = SwerveModuleState.optimize(modules[i], new Rotation2d(getRotatorEncoderPosition(i)));
 
     for(int i=0; i<4; i++){
-      motors[i].set(ControlMode.Velocity, modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
-      rotators[i].set(ControlMode.Position, modules[i].angle.getRadians() * RAD / ROT * CANCODER_CPR + OFFSETS[i]);
+      double targetTicks = modules[i].angle.getRadians() * RAD / ROT * CANCODER_CPR + OFFSETS[i];
+      double currentTicks = getRotatorEncoderCount(i);
+      double diff = (targetTicks - currentTicks) % CANCODER_CPR;
+      SmartDashboard.putNumber("diff " + i, diff);
+      SmartDashboard.putNumber("state " + i, currentTicks - OFFSETS[i]);
+      double inversion = 1;
+      if(diff >= CANCODER_TICKS / 2){
+        diff -= CANCODER_TICKS;
+      }
+      else if(diff <= -CANCODER_TICKS / 2){
+        diff += CANCODER_TICKS;
+      }
+      if(diff >= CANCODER_CPR / 4){
+        inversion = -1;
+        diff -= CANCODER_CPR / 2;
+      }
+      else if(diff <= -CANCODER_CPR / 4){
+        inversion = -1;
+        diff += CANCODER_CPR / 2;
+      }
+      SmartDashboard.putNumber("diff2 " + i, diff);
+      SmartDashboard.putNumber("inv " + i, inversion);
+      SmartDashboard.putNumber("c+d " + i, currentTicks + diff - OFFSETS[i]);
+      motors[i].set(ControlMode.Velocity, inversion * modules[i].speedMetersPerSecond/(10 * METERS_PER_TICKS));
+      if(modules[i].speedMetersPerSecond != 0)
+        rotators[i].set(ControlMode.Position, currentTicks + diff);
     }
-
-    getSwerveModuleStates();
+  }
+  public void setVelocities(Translation2d velocities) {
+    lastVelocity.vxMetersPerSecond = velocities.getX();
+    lastVelocity.vyMetersPerSecond = velocities.getY();
+    setVelocities(lastVelocity);
+  }
+  protected void updateVelocity(Translation2d velocity) {
+    setVelocities(velocity);
+  }
+  public void setRotation(double omega) {
+    lastVelocity.omegaRadiansPerSecond = omega;
+    setVelocities(lastVelocity);
+  }
+  protected void updateRotationalVelocity(double omega) {
+    setRotation(omega);
   }
 
   /**
@@ -235,6 +301,35 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   public void setOutput(double omega, double XVelocity, double YVelocity)
   {
     setVelocities(new ChassisSpeeds(XVelocity, YVelocity, omega));
+  }
+
+  public TranslationalDrivebase translationalLock() {
+    return new TranslationalDrivebase() {
+      @Override
+      public void setVelocity(Translation2d velocity) {
+        setVelocities(velocity);
+      }
+
+      @Override
+      public Translation2d getVelocity() {
+        ChassisSpeeds speeds = getVelocities();
+        return new Translation2d(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+      }
+    };
+  }
+
+  public RotationalDrivebase rotationalLock() {
+    return new RotationalDrivebase() {
+      @Override
+      public void setRotation(double velocity) {
+        setRotation(velocity);
+      }
+
+      @Override
+      public double getRate() {
+        return getVelocities().omegaRadiansPerSecond;
+      }
+    };
   }
 
   // TODO: Fix all the brake logic and semantics because disabling brakes into coast mode is not about disabling brakes.
@@ -312,7 +407,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    */
   public double getRotatorEncoderCount(int module)
   {
-    return motors[module].getSelectedSensorPosition() * CANCODER_TICKS / RAD;
+    return rotators[module].getSelectedSensorPosition();
   }
 
   /**
@@ -322,7 +417,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @return Angle of rotator motor in radians
    */
   public double getRotatorEncoderPosition(int module) {
-    return getRotatorEncoderCount(module);
+    return getRotatorEncoderCount(module) * CANCODER_TICKS / RAD;
   }
 
   public double getEncoderVelocity(int module)
@@ -338,5 +433,12 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   }
 
   @Override
-  public void periodic() {}
+  public TranslationalDrivebase getTranlational() {
+    return translationalLock;
+  }
+
+  @Override
+  public RotationalDrivebase getRotational() {
+    return rotationalLock;
+  }
 }
