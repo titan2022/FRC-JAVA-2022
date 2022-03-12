@@ -28,13 +28,8 @@ public class RMPMoveToPositionCommand extends CommandBase {
     public void initialize() {
         Translation2d pos = localization.getPred(0);
         path = new LinearSegment(new Point(pos), new Point(goal));
-        double P = 0;
-        double I = 0;
-        double A = 0;
-        double B = 0;
-        double K = 0;
-        double h = 0;
-        PathFollowing leaf = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h);
+        double P = 0.1, I = 0, A = 1, B = 1, K = 1, h = 0.5;
+        leaf = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

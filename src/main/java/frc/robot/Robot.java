@@ -100,11 +100,11 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // TODO: Create autonomous
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(0, 0);
+    Translation2d goal = new Translation2d(5, 5);
     LocalizationSubsystem localization = new LocalizationSubsystem(0.02);
     SwerveDriveSubsystem swerve = new SwerveDriveSubsystem();
     TranslationalDrivebase drivebase = swerve.getTranslational();
-    double v = 1;
+    double v = 5;
     RMPMoveToPositionCommand mtp = new RMPMoveToPositionCommand(root, goal, localization, v);
     RMPMotionGenerationCommand mg = new RMPMotionGenerationCommand(localization, root, drivebase);
     mtp.schedule();
