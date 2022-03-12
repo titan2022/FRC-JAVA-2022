@@ -135,8 +135,113 @@ public class LocalizationSubsystem extends SubsystemBase {
     addData(degree, pred.getX(), pred.getY(), var);
   }
 
+  /**
+   * Sets the current orientation to a specified value.
+   * 
+   * @param phi  The new current orientation, measured counterclockwise from the
+   *  positive x axis.
+   */
+  public void setOrientation(Rotation2d phi) {
+    phiOffset = phiOffset.plus(getOrientation().minus(phi));
+  }
+  /**
+   * Sets the current heading to a specified value.
+   * 
+   * @param heading  The new current heading, measured clockwise from the
+   *  positive y axis.
+   */
+  public void setHeading(Rotation2d heading) {
+    setOrientation(new Rotation2d(Math.PI/2).minus(heading));
+  }
+  /** Resets the current orientation to zero. */
+  public void resetOrientation() {
+    setOrientation(new Rotation2d(0));
+  }
+  /** Resets the current heading to zero. */
   public void resetHeading() {
-    phiOffset = phiOffset.plus(getOrientation());
+    setHeading(new Rotation2d(0));
+  }
+
+  /**
+   * Resets the current position estimate to a specific value and uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated position estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * @param pos  The new current position.
+   * @param var  The new position variance.
+   */
+  public void setPosition(Translation2d pos, double var) {
+    mean.setTo(pos.getX(), pos.getY());
+    prec.setTo(var, 0, 0, var);
+    filter.setPred(0, mean);
+    filter.setCov(0, prec);
+  }
+  /**
+   * Resets the current position estimate to a specific value.
+   * 
+   * Warning: This method will overwrite the accumulated position estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * The position value is assumed to be precise, without uncertainty.
+   * 
+   * @param pos  The new current position.
+   */
+  public void setPosition(Translation2d pos) {
+    setPosition(pos, 0);
+  }
+  /**
+   * Resets the current position estimate, preserving uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated position estimate. Use
+   * only when necessary.
+   * 
+   * @param pos  The new current position.
+   */
+  public void translateTo(Translation2d pos) {
+    mean.setTo(pos.getX(), pos.getY());
+    filter.setPred(0, mean);
+  }
+
+  /**
+   * Resets the current velocity estimate to a specific value and uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated velocity estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * @param vel  The new current velocity.
+   * @param var  The new velocity variance.
+   */
+  public void setVelocity(Translation2d vel, double var) {
+    mean.setTo(vel.getX(), vel.getY());
+    prec.setTo(var, 0, 0, var);
+    filter.setPred(1, mean);
+    filter.setCov(1, prec);
+  }
+  /**
+   * Resets the current velocity estimate to a specific value.
+   * 
+   * Warning: This method will overwrite the accumulated velocity estimate and
+   * uncertainty. Use only when necessary.
+   * 
+   * The velocity value is assumed to be precise, without uncertainty.
+   * 
+   * @param vel  The new current velocity.
+   */
+  public void setVelocity(Translation2d vel) {
+    setVelocity(vel, 0);
+  }
+  /**
+   * Resets the current velocity estimate, preserving uncertainty.
+   * 
+   * Warning: This method will overwrite the accumulated velocity estimate. Use
+   * only when necessary.
+   * 
+   * @param vel  The new current velocity.
+   */
+  public void accelerateTo(Translation2d vel) {
+    mean.setTo(vel.getX(), vel.getY());
+    filter.setPred(1, mean);
   }
 
   /**
@@ -195,11 +300,20 @@ public class LocalizationSubsystem extends SubsystemBase {
   /**
    * Returns the current estimate of the orientation of the robot.
    * 
-   * @return  The current estimate of the orientation of the robot in radians
+   * @return  The current estimate of the orientation of the robot measured
    *  counterclockwise from the positive x axis.
    */
   public Rotation2d getOrientation() {
     return imu.getRotation2d().minus(phiOffset);
+  }
+  /**
+   * Returns the current estimate of the heading of the robot.
+   * 
+   * @return  The current estimate of the heading of the robot, measured
+   *  clockwise from the positive y axis.
+   */
+  public Rotation2d getHeading() {
+    return new Rotation2d(Math.PI/2).minus(getOrientation());
   }
 
   /**
