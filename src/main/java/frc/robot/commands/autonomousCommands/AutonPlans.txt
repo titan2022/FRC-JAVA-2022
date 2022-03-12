@@ -9,3 +9,32 @@ Route 4 (Cyan). Same process as route 3 but turn and get two balls from the carg
 During autonomous:
 (Upper hub scoring is 4 points)
 (Lower hub scoring is 2 points)
+
+NEW ROUTES!!!:
+
+Auton1 Route:
+-Starts from top of the tarmacs
+-Collects one team ball and shoots starter & team ball into goal
+-Goes to collect the 2 enemy balls nearby
+-Shoots enemy balls away
+*Might instead choose to go for terminal balls, needs to be tested for time
+-Goes to line to prepare for non-auton
+
+Auton2 Route:
+-Starts from middle of the tarmacs
+-Collects one team ball and shoots starter & team ball into goal
+-Goes to collect the team balls on the edge of field
+-Shoots team balls
+-While shooting, terminal gives robot one ball
+-Shoots the ball
+-Collects one enemy team ball and shoots away
+-Goes to line to prepare for non-auton
+
+Auton3 Route:
+-Starts from bottom of the tarmacs
+-Collects one team ball and shoots starter & team ball into goal
+-Goes to collect the two team balls on the edge of field
+-Shoots both balls
+-While balls are shooting, terminal gives robot one ball
+-Shoots the ball
+-Goes to line to prepare for non-auton

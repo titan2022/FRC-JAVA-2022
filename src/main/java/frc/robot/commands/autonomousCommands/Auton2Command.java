@@ -11,22 +11,26 @@ import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 
 
-public class Auton1Command extends SequentialCommandGroup {
-
-    public Auton1Command(ShooterSubsystem shooter, IntakeSubsystem intake, DriveSubsystem driveBase, LocalizationSubsystem nav) {
-        //Needs to be tuned
+public class Auton2Command extends SequentialCommandGroup {
+    
+    public Auton2Command(ShooterSubsystem shooter, IntakeSubsystem intake, DriveSubsystem driveBase, LocalizationSubsystem nav) {
+        //Needs tuning
         addCommands(
-            //Collect team ball and shoots starter and team ballsinto goal
+            //Collect team ball and shoots both starter and team ball
             new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
-            //Gets enemy team's balls
+            //Collects teams ball on the edge of field and shoots it
             new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
-
-            //Shoots enemy team balls away
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
+
+            //Terminal player inputs one ball which is shot
+            new MasterIntakeCommand(intake),
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
+
+            //Collects enemy ball and shoots it away
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Gets to the line and prepares for player control period
