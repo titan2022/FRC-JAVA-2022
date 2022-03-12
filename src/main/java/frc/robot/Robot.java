@@ -91,7 +91,7 @@ public class Robot extends TimedRobot {
     new JoystickButton(xbox, Button.kRightBumper.value)
       .whenHeld(new SpinIntake(intake, 1.0));
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
-    drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
+    drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
   }
 

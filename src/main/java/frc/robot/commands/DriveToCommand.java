@@ -2,7 +2,6 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.TranslationalDrivebase;
 
@@ -52,7 +51,7 @@ public class DriveToCommand extends WaitCommand {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-
+        drivebase.setVelocity(new Translation2d(0, 0));
     }
 
     // Returns true when the command should end.
