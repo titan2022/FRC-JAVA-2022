@@ -87,6 +87,7 @@ public class TranslationalDriveCommand extends CommandBase {
     public void execute() {
         if(controller.getBButtonPressed())
             isFieldOriented = !isFieldOriented;
+        SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
         double joyX = applyDeadband(controller.getLeftX(), 0.1);
         double joyY = applyDeadband(-controller.getLeftY(), 0.1);
         SmartDashboard.putNumber("joyX", joyX);
@@ -97,7 +98,7 @@ public class TranslationalDriveCommand extends CommandBase {
         if(isFieldOriented){
             Rotation2d heading = nav.getHeading();
             SmartDashboard.putNumber("heading", heading.getDegrees());
-            velocity = velocity.rotateBy(heading.unaryMinus());
+            velocity = velocity.rotateBy(heading);
         }
         SmartDashboard.putNumber("robotX", velocity.getX());
         SmartDashboard.putNumber("robotY", velocity.getY());

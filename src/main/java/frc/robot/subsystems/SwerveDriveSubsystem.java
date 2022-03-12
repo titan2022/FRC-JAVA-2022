@@ -100,8 +100,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   // Kinematics
   // Positions describe the position of each wheel relative to the center of the robot
   private static final Translation2d leftFrontPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
-  private static final Translation2d leftBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
-  private static final Translation2d rightFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
+  private static final Translation2d leftBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
+  private static final Translation2d rightFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
   private static final Translation2d rightBackPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
   public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(leftFrontPosition, leftBackPosition, rightFrontPosition, rightBackPosition);
 
@@ -245,6 +245,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @param rightOutputValue right side output value for ControlMode
    */
   private void setVelocities(ChassisSpeeds inputChassisSpeeds) {
+    SmartDashboard.putNumber("last x", inputChassisSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("last y", inputChassisSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("last omega", inputChassisSpeeds.omegaRadiansPerSecond);
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
     for(int i=0; i<4; i++){
