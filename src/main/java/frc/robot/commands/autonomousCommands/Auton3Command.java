@@ -17,13 +17,13 @@ public class Auton3Command extends SequentialCommandGroup {
         //Needs tuning
         addCommands(
             //Collect team ball and shoots both starter and team ball
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Collects two teams balls on the edges of field
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
 
             //Shoots two team balls
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
@@ -34,7 +34,7 @@ public class Auton3Command extends SequentialCommandGroup {
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Gets to the line and prepares for player control period
-            new DriveToCommand(driveBase, nav, 1, 1, 1)
+            new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)
         );
     }
 }

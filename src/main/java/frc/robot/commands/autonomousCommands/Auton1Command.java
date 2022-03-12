@@ -17,20 +17,20 @@ public class Auton1Command extends SequentialCommandGroup {
         //Needs to be tuned
         addCommands(
             //Collect team ball and shoots starter and team ballsinto goal
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Gets enemy team's balls
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
 
             //Shoots enemy team balls away
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Gets to the line and prepares for player control period
-            new DriveToCommand(driveBase, nav, 1, 1, 1)
+            new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)
         );
     }
 }

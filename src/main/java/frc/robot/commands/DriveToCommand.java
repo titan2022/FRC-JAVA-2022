@@ -4,14 +4,15 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
+import frc.robot.subsystems.TranslationalDrivebase;
 
 public class DriveToCommand extends WaitCommand {
     // TODO: make a class that includes all these components (hmm RobotContainer?)
     private final LocalizationSubsystem odometry;
-    private final DriveSubsystem drivebase;
+    private final TranslationalDrivebase drivebase;
     private final int x, y, sec;
     
-    public DriveToCommand(DriveSubsystem drivebase, LocalizationSubsystem odometry, int x, int y, int sec) {
+    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem odometry, int x, int y, int sec) {
         super(sec);
         this.drivebase = drivebase;
         this.odometry = odometry;
@@ -29,7 +30,7 @@ public class DriveToCommand extends WaitCommand {
      */
     private void driveTo(int x, int y, int sec) {
         Translation2d position = odometry.getPosition();
-        drivebase.setVelocities(new Translation2d((x - position.getX()) / sec, (y - position.getY()) / sec));
+        drivebase.setVelocity(new Translation2d((x - position.getX()) / sec, (y - position.getY()) / sec));
     }
 
     // Called when the command is initially scheduled.

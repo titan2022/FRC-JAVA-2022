@@ -17,12 +17,12 @@ public class Auton2Command extends SequentialCommandGroup {
         //Needs tuning
         addCommands(
             //Collect team ball and shoots both starter and team ball
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Collects teams ball on the edge of field and shoots it
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Terminal player inputs one ball which is shot
@@ -30,11 +30,11 @@ public class Auton2Command extends SequentialCommandGroup {
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Collects enemy ball and shoots it away
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase, nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Gets to the line and prepares for player control period
-            new DriveToCommand(driveBase, nav, 1, 1, 1)
+            new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)
         );
     }
 }
