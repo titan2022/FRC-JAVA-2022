@@ -93,6 +93,7 @@ public class Robot extends TimedRobot {
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
     drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
+    new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
   }
 
   /** This function is called periodically during operator control. */

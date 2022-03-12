@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -93,8 +94,11 @@ public class TranslationalDriveCommand extends CommandBase {
         Translation2d velocity = new Translation2d(scaleVelocity(joyX), scaleVelocity(joyY));
         SmartDashboard.putNumber("fieldX", velocity.getX());
         SmartDashboard.putNumber("fieldY", velocity.getY());
-        if(isFieldOriented)
-            velocity = velocity.rotateBy(nav.getHeading().unaryMinus());
+        if(isFieldOriented){
+            Rotation2d heading = nav.getHeading();
+            SmartDashboard.putNumber("heading", heading.getDegrees());
+            velocity = velocity.rotateBy(heading.unaryMinus());
+        }
         SmartDashboard.putNumber("robotX", velocity.getX());
         SmartDashboard.putNumber("robotY", velocity.getY());
         drive.setVelocity(velocity);
