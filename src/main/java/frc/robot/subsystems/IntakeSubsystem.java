@@ -17,8 +17,8 @@ import static frc.robot.Constants.*;
 
 public class IntakeSubsystem extends SubsystemBase {
 
-    private static final int INTAKE_MOTOR_PORT = 15;
-    private static final int HOPPER_MOTOR_PORT = 17;
+    private static final int INTAKE_MOTOR_PORT = 19;
+    private static final int HOPPER_MOTOR_PORT = 21;
     private static final int INTAKE_SENSOR_PORT = 0;
     private static final int HOPPER_SENSOR_PORT1 = 1;
     private static final int HOPPER_SENSOR_PORT2 = 2;
