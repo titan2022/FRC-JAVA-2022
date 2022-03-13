@@ -63,17 +63,21 @@ public class IntakeSubsystem extends SubsystemBase {
         return topHopperBeamSensor.get();
     }
 
-    /** Run the intake motor(s)
+    /**
+     * Run the intake motor(s)
      * 
      * @param intakeSpeed  Velocity of the intake, in the range [-1,1]
-     * @see https://motors.vex.com/vexpro-motors/falcon?q=&locale.name=English
      */
     public void spinIntake(double intakePct) {
-        
+        if(intakePct == 0)
+            retract();
+        else
+            extend();
         intakeMotor.set(ControlMode.PercentOutput, intakePct);
     }
 
-    /** Run the hopper motor(s)
+    /**
+     * Run the hopper motor(s)
      * 
      * @param hopperSpeed  Velocity of the hopper, in the range [-1,1]
      * @see https://motors.vex.com/vexpro-motors/falcon?q=&locale.name=English
@@ -81,14 +85,15 @@ public class IntakeSubsystem extends SubsystemBase {
     public void spinHopper(double hopperPct) {
         hopperMotor.set(ControlMode.PercentOutput, hopperPct);
     }
-    
-    public void setClaw(boolean open) {
-        //claw.set(open);
-    }
 
-    //input solenoid enum
-    public void raiseOrLowerIntake(Value direction){
-        solenoidRight.set(direction);
-        solenoidLeft.set(direction);
+    /** Extends the intake. */
+    public void extend() {
+        solenoidLeft.set(Value.kReverse);
+        solenoidRight.set(Value.kReverse);
+    }
+    /** Retracts the intake. */
+    public void retract() {
+        solenoidLeft.set(Value.kForward);
+        solenoidRight.set(Value.kForward);
     }
 }
