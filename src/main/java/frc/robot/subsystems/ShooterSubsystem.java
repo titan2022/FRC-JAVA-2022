@@ -22,10 +22,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final double FLYWHEEL_RADIUS = 2 * IN;
     private static final double SHOOTER_HEIGHT = 3.5 * FT;
 
-    private static final int RIGHT_MOTOR_PORT = 20;
-    private static final int LEFT_MOTOR_PORT = 21;
-    private static final int HOOD_MOTOR_ID = 19;
-    private static final int TRIGGER_MOTOR_ID = 18;
+    private static final int RIGHT_MOTOR_PORT = 16;
+    private static final int LEFT_MOTOR_PORT = 11;
+    private static final int HOOD_MOTOR_ID = 14;
+    private static final int TRIGGER_MOTOR_ID = 10;
     private static final int BEAM_BREAK_PORT = 1;
     private static final int QUEUE_SENSOR_PORT = 2;
     
