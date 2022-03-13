@@ -13,15 +13,13 @@ import static frc.robot.Constants.Unit.*;
 
 
 public class ShooterSubsystem extends SubsystemBase {
-    /** Raw ticks measurement at 0 degrees */
-    private static final double HOOD_OFFSET = 0;
     /** Gear ratio between the hood motor and hood rack */
-    private static final double HOOD_RATIO = 200;
-    private static final double HOOD_MIN_ANGLE = 0 * DEG;
-    private static final double HOOD_MAX_ANGLE = 20 * DEG;
+    private static final double HOOD_RATIO = 245.71;
+    private static final double HOOD_MIN_ANGLE = 0.35 * DEG;
+    private static final double HOOD_MAX_ANGLE = 27.2 * DEG;
     private static final double FLYWHEEL_RATIO = 1;
     private static final double FLYWHEEL_RADIUS = 2 * IN;
-    private static final double SHOOTER_HEIGHT = 3.5 * FT;
+    private static final double SHOOTER_HEIGHT = 26.5 * IN;
 
     private static final int RIGHT_MOTOR_PORT = 16;
     private static final int LEFT_MOTOR_PORT = 11;
@@ -47,10 +45,10 @@ public class ShooterSubsystem extends SubsystemBase {
         rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
         leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
 
-        leftMotor.config_kP(0, 100);
+        leftMotor.config_kP(0, 0.1);
         leftMotor.config_kI(0, 0);
         leftMotor.config_kD(0, 0);
-        rightMotor.config_kP(0, 100);
+        rightMotor.config_kP(0, 0.1);
         rightMotor.config_kI(0, 0);
         rightMotor.config_kD(0, 0);
 
@@ -58,11 +56,13 @@ public class ShooterSubsystem extends SubsystemBase {
         rightMotor.setNeutralMode(NeutralMode.Coast);
 
         hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hoodMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
+        hoodMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
         hoodMotor.setInverted(false);
-        hoodMotor.config_kP(0, 100);
+        hoodMotor.setSensorPhase(true);
+        hoodMotor.config_kP(0, 0.5);
         hoodMotor.config_kI(0, 0);
         hoodMotor.config_kD(0, 0);
+        hoodMotor.configAllowableClosedloopError(0, 30);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
@@ -103,7 +103,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void setAngle(double radians) {
         if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE)
-            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD) / FALCON_TICKS + HOOD_OFFSET);
+            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
     }
 
     /**
@@ -123,7 +123,7 @@ public class ShooterSubsystem extends SubsystemBase {
      *  velocity of a projectile launched from the shooter.
      */
     public double getAngle() {
-        return (hoodMotor.getSelectedSensorPosition() - HOOD_OFFSET) * FALCON_TICKS;
+        return hoodMotor.getSelectedSensorPosition() / HOOD_RATIO * FALCON_TICKS + HOOD_MIN_ANGLE;
     }
 
     /**
