@@ -4,7 +4,9 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.util.Units;
@@ -78,5 +80,25 @@ public final class Constants {
         //talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the PID controller
 
         return talon;
+    }
+
+    public static TalonFXConfiguration getHoodConfig() {
+        TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
+        hoodConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
+        hoodConfig.neutralDeadband = 0;
+        hoodConfig.peakOutputForward = 0.5;
+        hoodConfig.peakOutputReverse = -0.5;
+        hoodConfig.primaryPID.selectedFeedbackCoefficient = 1;
+        hoodConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+        hoodConfig.slot0.allowableClosedloopError = 80;
+        hoodConfig.slot0.closedLoopPeakOutput = 0.4;
+        hoodConfig.slot0.kP = 0.45;
+        hoodConfig.slot0.kI = 0;
+        hoodConfig.slot0.kD = 0;
+        hoodConfig.slot0.kF = 0;
+        hoodConfig.statorCurrLimit.enable = false;
+        hoodConfig.supplyCurrLimit.currentLimit = 10;
+        hoodConfig.supplyCurrLimit.enable = true;
+        return hoodConfig;
     }
 }

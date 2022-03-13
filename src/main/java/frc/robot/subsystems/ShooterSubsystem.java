@@ -1,42 +1,46 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import static frc.robot.Constants.Unit.*;
+import static frc.robot.Constants.getHoodConfig;
 
 
 public class ShooterSubsystem extends SubsystemBase {
-    /** Raw ticks measurement at 0 degrees */
-    private static final double HOOD_OFFSET = 0;
     /** Gear ratio between the hood motor and hood rack */
-    private static final double HOOD_RATIO = 200;
-    private static final double HOOD_MIN_ANGLE = 0 * DEG;
-    private static final double HOOD_MAX_ANGLE = 20 * DEG;
+    private static final double HOOD_RATIO = 245.71;
+    private static final double HOOD_MIN_ANGLE = 0.35 * DEG;
+    private static final double HOOD_MAX_ANGLE = 27.2 * DEG;
     private static final double FLYWHEEL_RATIO = 1;
     private static final double FLYWHEEL_RADIUS = 2 * IN;
-    private static final double SHOOTER_HEIGHT = 3.5 * FT;
+    private static final double SHOOTER_HEIGHT = 26.5 * IN;
 
     private static final int RIGHT_MOTOR_PORT = 16;
     private static final int LEFT_MOTOR_PORT = 11;
     private static final int HOOD_MOTOR_ID = 14;
-    private static final int TRIGGER_MOTOR_ID = 10;
+    private static final int QUEUE_MOTOR_ID = 10;
     private static final int BEAM_BREAK_PORT = 1;
     private static final int QUEUE_SENSOR_PORT = 2;
     
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
-    private static final WPI_TalonFX triggerMotor = new WPI_TalonFX(TRIGGER_MOTOR_ID);
+    private static final WPI_TalonFX queueMotor = new WPI_TalonFX(QUEUE_MOTOR_ID);
     private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_PORT);
     private static final DigitalInput queueSensor = new DigitalInput(QUEUE_SENSOR_PORT);
 
     public ShooterSubsystem(){
+        leftMotor.configFactoryDefault();
+        rightMotor.configFactoryDefault();
+        hoodMotor.configFactoryDefault();
+        queueMotor.configFactoryDefault();
+
         rightMotor.follow(leftMotor);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
@@ -46,21 +50,23 @@ public class ShooterSubsystem extends SubsystemBase {
         rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
         leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
 
-        leftMotor.config_kP(0, 100);
+        leftMotor.config_kP(0, 0.1);
         leftMotor.config_kI(0, 0);
         leftMotor.config_kD(0, 0);
-        rightMotor.config_kP(0, 100);
+        rightMotor.config_kP(0, 0.1);
         rightMotor.config_kI(0, 0);
         rightMotor.config_kD(0, 0);
 
-        hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hoodMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition);
-        hoodMotor.setInverted(false);
-        hoodMotor.config_kP(0, 100);
-        hoodMotor.config_kI(0, 0);
-        hoodMotor.config_kD(0, 0);
+        leftMotor.setNeutralMode(NeutralMode.Coast);
+        rightMotor.setNeutralMode(NeutralMode.Coast);
 
-        triggerMotor.setInverted(false);
+        hoodMotor.configAllSettings(getHoodConfig());
+        hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
+        hoodMotor.setInverted(false);
+        hoodMotor.setSensorPhase(true);
+
+        queueMotor.setInverted(false);
+        queueMotor.setNeutralMode(NeutralMode.Brake);
     }
 
     /**
@@ -98,7 +104,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void setAngle(double radians) {
         if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE)
-            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD) / FALCON_TICKS + HOOD_OFFSET);
+            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
     }
 
     /**
@@ -107,7 +113,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param percent  The output of the queue motor, in the range [-1,1].
      */
     public void runQueue(double percent) {
-        triggerMotor.set(ControlMode.PercentOutput, percent);
+        queueMotor.set(ControlMode.PercentOutput, percent);
     }
 
     /**
@@ -118,7 +124,7 @@ public class ShooterSubsystem extends SubsystemBase {
      *  velocity of a projectile launched from the shooter.
      */
     public double getAngle() {
-        return (hoodMotor.getSelectedSensorPosition() - HOOD_OFFSET) * FALCON_TICKS;
+        return hoodMotor.getSelectedSensorPosition() / HOOD_RATIO * FALCON_TICKS + HOOD_MIN_ANGLE;
     }
 
     /**
