@@ -7,9 +7,9 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import static frc.robot.Constants.Unit.*;
+import static frc.robot.Constants.getHoodConfig;
 
 
 public class ShooterSubsystem extends SubsystemBase {
@@ -36,6 +36,11 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final DigitalInput queueSensor = new DigitalInput(QUEUE_SENSOR_PORT);
 
     public ShooterSubsystem(){
+        leftMotor.configFactoryDefault();
+        rightMotor.configFactoryDefault();
+        hoodMotor.configFactoryDefault();
+        queueMotor.configFactoryDefault();
+
         rightMotor.follow(leftMotor);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
@@ -55,14 +60,10 @@ public class ShooterSubsystem extends SubsystemBase {
         leftMotor.setNeutralMode(NeutralMode.Coast);
         rightMotor.setNeutralMode(NeutralMode.Coast);
 
+        hoodMotor.configAllSettings(getHoodConfig());
         hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hoodMotor.configIntegratedSensorInitializationStrategy(SensorInitializationStrategy.BootToZero);
         hoodMotor.setInverted(false);
         hoodMotor.setSensorPhase(true);
-        hoodMotor.config_kP(0, 0.5);
-        hoodMotor.config_kI(0, 0);
-        hoodMotor.config_kD(0, 0);
-        hoodMotor.configAllowableClosedloopError(0, 30);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
