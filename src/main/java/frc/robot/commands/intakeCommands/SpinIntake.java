@@ -28,6 +28,7 @@ public class SpinIntake extends CommandBase {
   @Override
   public void initialize() {
     subsystem.spinIntake(speed);
+    subsystem.spinHopper(speed);
   }
 
   // Called every time the scheduler runs while the command is scheduled.
@@ -38,6 +39,7 @@ public class SpinIntake extends CommandBase {
   @Override
   public void end(boolean interrupted) {
     subsystem.spinIntake(0);
+    subsystem.spinHopper(0);
   }
 
   // Returns true when the command should end.

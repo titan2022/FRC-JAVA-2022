@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.Unit.*;
@@ -15,7 +16,7 @@ import static frc.robot.Constants.getHoodConfig;
 public class ShooterSubsystem extends SubsystemBase {
     /** Gear ratio between the hood motor and hood rack */
     private static final double HOOD_RATIO = 245.71;
-    private static final double HOOD_MIN_ANGLE = 0.35 * DEG;
+    private static final double HOOD_MIN_ANGLE = 0.5 * DEG;
     private static final double HOOD_MAX_ANGLE = 27.2 * DEG;
     private static final double FLYWHEEL_RATIO = 1;
     private static final double FLYWHEEL_RADIUS = 2 * IN;
@@ -32,8 +33,8 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
     private static final WPI_TalonFX queueMotor = new WPI_TalonFX(QUEUE_MOTOR_ID);
-    private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_PORT);
-    private static final DigitalInput queueSensor = new DigitalInput(QUEUE_SENSOR_PORT);
+    //private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_PORT);
+    //private static final DigitalInput queueSensor = new DigitalInput(QUEUE_SENSOR_PORT);
 
     public ShooterSubsystem(){
         leftMotor.configFactoryDefault();
@@ -44,8 +45,8 @@ public class ShooterSubsystem extends SubsystemBase {
         rightMotor.follow(leftMotor);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
-        leftMotor.setInverted(false);
-        rightMotor.setInverted(true);
+        leftMotor.setInverted(true);
+        rightMotor.setInverted(false);
 
         rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
         leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor,0,0);
@@ -62,8 +63,8 @@ public class ShooterSubsystem extends SubsystemBase {
 
         hoodMotor.configAllSettings(getHoodConfig());
         hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hoodMotor.setInverted(false);
-        hoodMotor.setSensorPhase(true);
+        hoodMotor.setInverted(true);
+        hoodMotor.setSensorPhase(false);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
@@ -103,8 +104,31 @@ public class ShooterSubsystem extends SubsystemBase {
      *  projectile launched from the shooter.
      */
     public void setAngle(double radians) {
-        if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE)
+        if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE){
             hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
+            SmartDashboard.putNumber("hood deg", (radians - HOOD_MIN_ANGLE) / DEG);
+        }
+        else{
+            SmartDashboard.putNumber("hood deg", -(radians - HOOD_MIN_ANGLE) / DEG);
+        }
+    }
+    public void disableHood() {
+        hoodMotor.set(ControlMode.PercentOutput, 0);
+    }
+    public void coastHood() {
+        hoodMotor.setNeutralMode(NeutralMode.Coast);
+        queueMotor.setNeutralMode(NeutralMode.Coast);
+    }
+    public void brakeHood() {
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
+        queueMotor.setNeutralMode(NeutralMode.Brake);
+    }
+
+    public double getMinAngle() {
+        return HOOD_MIN_ANGLE;
+    }
+    public double getMaxAngle() {
+        return HOOD_MAX_ANGLE;
     }
 
     /**
@@ -113,6 +137,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param percent  The output of the queue motor, in the range [-1,1].
      */
     public void runQueue(double percent) {
+        SmartDashboard.putNumber("Queue", percent);
         queueMotor.set(ControlMode.PercentOutput, percent);
     }
 
@@ -153,7 +178,7 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return  True if a cargo is detected in the shooter, or false otherwise.
      */
     public boolean hasCargo() {
-        return beamBreak.get();
+        return false;//beamBreak.get();
     }
 
     /**
@@ -163,6 +188,6 @@ public class ShooterSubsystem extends SubsystemBase {
      *  false otherwise.
      */
     public boolean hasQueue() {
-        return queueSensor.get();
+        return false;//queueSensor.get();
     }
 }

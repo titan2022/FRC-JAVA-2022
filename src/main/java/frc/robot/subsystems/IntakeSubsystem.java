@@ -19,19 +19,19 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private static final int INTAKE_MOTOR_PORT = 19;
     private static final int HOPPER_MOTOR_PORT = 21;
-    private static final int INTAKE_SENSOR_PORT = 0;
-    private static final int HOPPER_SENSOR_PORT1 = 1;
-    private static final int HOPPER_SENSOR_PORT2 = 2;
+    //private static final int INTAKE_SENSOR_PORT = 0;
+    //private static final int HOPPER_SENSOR_PORT1 = 1;
+    //private static final int HOPPER_SENSOR_PORT2 = 2;
 
     private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
     private static final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT);
-    private static final DigitalInput intakeBeamSensor = new DigitalInput(INTAKE_SENSOR_PORT);
-    private static final DigitalInput bottomHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT1);
-    private static final DigitalInput topHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT2);
+    //private static final DigitalInput intakeBeamSensor = new DigitalInput(INTAKE_SENSOR_PORT);
+    //private static final DigitalInput bottomHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT1);
+    //private static final DigitalInput topHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT2);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
-    DoubleSolenoid solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2); //Forward then Reverse Channel
-    DoubleSolenoid solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 4);
+    //DoubleSolenoid solenoidLeft = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 1, 2); //Forward then Reverse Channel
+    //DoubleSolenoid solenoidRight = new DoubleSolenoid(PneumaticsModuleType.CTREPCM, 3, 4);
 
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -47,20 +47,20 @@ public class IntakeSubsystem extends SubsystemBase {
         hopperMotor.configAllSettings(config);
         hopperMotor.setNeutralMode(NeutralMode.Brake);
         hopperMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hopperMotor.setInverted(true);
+        hopperMotor.setInverted(false);
         hopperMotor.selectProfileSlot(0, 0);
     }
 
     public boolean intakeBall() {
-        return intakeBeamSensor.get();
+        return false;//intakeBeamSensor.get();
     }
 
     public boolean bottomHopperBall(){
-        return bottomHopperBeamSensor.get();
+        return false;//bottomHopperBeamSensor.get();
     }
     
     public boolean topHopperBall(){
-        return topHopperBeamSensor.get();
+        return false;//topHopperBeamSensor.get();
     }
 
     /**
@@ -69,10 +69,10 @@ public class IntakeSubsystem extends SubsystemBase {
      * @param intakeSpeed  Velocity of the intake, in the range [-1,1]
      */
     public void spinIntake(double intakePct) {
-        if(intakePct == 0)
+        /*if(intakePct == 0)
             retract();
         else
-            extend();
+            extend();*/
         intakeMotor.set(ControlMode.PercentOutput, intakePct);
     }
 
@@ -88,12 +88,21 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Extends the intake. */
     public void extend() {
-        solenoidLeft.set(Value.kReverse);
-        solenoidRight.set(Value.kReverse);
+        //solenoidLeft.set(Value.kReverse);
+        //solenoidRight.set(Value.kReverse);
     }
     /** Retracts the intake. */
     public void retract() {
-        solenoidLeft.set(Value.kForward);
-        solenoidRight.set(Value.kForward);
+        //solenoidLeft.set(Value.kForward);
+        //solenoidRight.set(Value.kForward);
+    }
+
+    public void disable() {
+        intakeMotor.setNeutralMode(NeutralMode.Coast);
+        hopperMotor.setNeutralMode(NeutralMode.Coast);
+    }
+    public void enable() {
+        intakeMotor.setNeutralMode(NeutralMode.Brake);
+        hopperMotor.setNeutralMode(NeutralMode.Brake);
     }
 }

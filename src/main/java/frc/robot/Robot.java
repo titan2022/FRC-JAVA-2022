@@ -68,7 +68,10 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    shooter.coastHood();
+    intake.disable();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -87,18 +90,30 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
     new JoystickButton(xbox, Button.kLeftBumper.value)
-      .whenHeld(new SpinHopper(intake, 1.0));
+      .whenHeld(new SpinIntake(intake, -0.75));
     new JoystickButton(xbox, Button.kRightBumper.value)
-      .whenHeld(new SpinIntake(intake, 1.0));
-    shooter.setDefaultCommand(new ManualShooterCommand(shooter));
-    drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
+      .whenHeld(new SpinIntake(intake, 0.57));
+    //shooter.setDefaultCommand(new ManualShooterCommand(shooter));
+    drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 10.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
+    intake.enable();
+    shooter.brakeHood();
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if(xbox.getPOV() == -1)
+      shooter.runQueue(0.0);
+    else
+      shooter.runQueue(0.5 * Math.cos(Math.PI * xbox.getPOV() / 180.0));
+    shooter.runPercent(0.4*xbox.getRightTriggerAxis());
+    if(xbox.getYButton())
+      shooter.setAngle(shooter.getMinAngle() + (shooter.getMaxAngle() - shooter.getMinAngle()) * xbox.getLeftTriggerAxis());
+    else
+      shooter.disableHood();
+  }
 
   @Override
   public void testInit() {
