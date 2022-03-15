@@ -86,12 +86,12 @@ public final class Constants {
         TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
         hoodConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
         hoodConfig.neutralDeadband = 0;
-        hoodConfig.peakOutputForward = 0.5;
-        hoodConfig.peakOutputReverse = -0.5;
+        hoodConfig.peakOutputForward = 0.3;
+        hoodConfig.peakOutputReverse = -0.3;
         hoodConfig.primaryPID.selectedFeedbackCoefficient = 1;
         hoodConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
         hoodConfig.slot0.allowableClosedloopError = 80;
-        hoodConfig.slot0.closedLoopPeakOutput = 0.4;
+        hoodConfig.slot0.closedLoopPeakOutput = 0.2;
         hoodConfig.slot0.kP = 0.45;
         hoodConfig.slot0.kI = 0;
         hoodConfig.slot0.kD = 0;

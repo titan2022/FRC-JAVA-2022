@@ -6,6 +6,7 @@ import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.Unit.*;
@@ -103,8 +104,11 @@ public class ShooterSubsystem extends SubsystemBase {
      *  projectile launched from the shooter.
      */
     public void setAngle(double radians) {
-        if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE)
+        SmartDashboard.putNumber("Hood angle requested", radians * RAD / DEG);
+        if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE){
             hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
+            SmartDashboard.putNumber("Hood angle", radians * RAD / DEG);
+        }
     }
 
     /**
@@ -145,6 +149,15 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public double getHeight() {
         return SHOOTER_HEIGHT;
+    }
+
+    /** Returns the maximum hood angle. */
+    public double getMinAngle() {
+        return HOOD_MIN_ANGLE;
+    }
+    /** Returns the minimum hood angle. */
+    public double getMaxAngle() {
+        return HOOD_MAX_ANGLE;
     }
 
     /**
