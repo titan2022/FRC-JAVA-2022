@@ -17,7 +17,7 @@ public class ShooterSubsystem extends SubsystemBase {
     /** Gear ratio between the hood motor and hood rack */
     private static final double HOOD_RATIO = 245.71;
     private static final double HOOD_MIN_ANGLE = 0.5 * DEG;
-    private static final double HOOD_MAX_ANGLE = 27.2 * DEG;
+    private static final double HOOD_MAX_ANGLE = 27.5 * DEG;
     private static final double FLYWHEEL_RATIO = 1;
     private static final double FLYWHEEL_RADIUS = 2 * IN;
     private static final double SHOOTER_HEIGHT = 26.5 * IN;
@@ -122,6 +122,12 @@ public class ShooterSubsystem extends SubsystemBase {
     public void brakeHood() {
         hoodMotor.setNeutralMode(NeutralMode.Brake);
         queueMotor.setNeutralMode(NeutralMode.Brake);
+    }
+    public void runHood(double pct) {
+        if((pct > 0 && getAngle() < getMaxAngle()) || (pct < 0 && getAngle() > getMinAngle()))
+            hoodMotor.set(ControlMode.PercentOutput, pct);
+        else
+            hoodMotor.set(ControlMode.PercentOutput, 0);
     }
 
     public double getMinAngle() {
