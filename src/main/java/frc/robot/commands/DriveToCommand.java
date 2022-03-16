@@ -9,9 +9,9 @@ public class DriveToCommand extends WaitCommand {
     // TODO: make a class that includes all these components (hmm RobotContainer?)
     private final LocalizationSubsystem odometry;
     private final TranslationalDrivebase drivebase;
-    private final int x, y, sec;
+    private final double x, y, sec;
     
-    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem odometry, int x, int y, int sec) {
+    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem odometry, double x, double y, double sec) {
         super(sec);
         this.drivebase = drivebase;
         this.odometry = odometry;
@@ -27,7 +27,7 @@ public class DriveToCommand extends WaitCommand {
      * @param rot desired absolute position (radians)
      * @param sec amount of seconds for the robot to make the move
      */
-    private void driveTo(int x, int y, int sec) {
+    private void driveTo(double x, double y, double sec) {
         Translation2d position = odometry.getPosition();
         drivebase.setVelocity(new Translation2d((x - position.getX()) / sec, (y - position.getY()) / sec));
     }
