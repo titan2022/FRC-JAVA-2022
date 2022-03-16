@@ -47,7 +47,7 @@ public class IntakeSubsystem extends SubsystemBase {
         hopperMotor.configAllSettings(config);
         hopperMotor.setNeutralMode(NeutralMode.Brake);
         hopperMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hopperMotor.setInverted(true);
+        hopperMotor.setInverted(false);
         hopperMotor.selectProfileSlot(0, 0);
     }
 
