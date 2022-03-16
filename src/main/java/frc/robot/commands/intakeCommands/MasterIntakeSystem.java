@@ -1,9 +1,9 @@
 package frc.robot.commands.intakeCommands;
 
-import edu.wpi.first.wpilibj.DoubleSolenoid.Value;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 
+@Deprecated
 public class MasterIntakeSystem extends CommandBase {
     
     private IntakeSubsystem intake;
