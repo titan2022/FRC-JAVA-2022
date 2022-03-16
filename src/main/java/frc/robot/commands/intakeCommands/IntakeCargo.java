@@ -30,24 +30,9 @@ public class IntakeCargo extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         intake.spinHopper(0.0);
-        if(interrupted)
-            new StartEndCommand(() -> intake.spinIntake(-1.0), () -> intake.spinIntake(0.0), intake)
-                .until(() -> !intake.intakeBall()).schedule();
-        else{
-            intake.spinIntake(0.0);
-            new SequentialCommandGroup(
-                new StartEndCommand(() -> intake.spinHopper(1.0), () -> intake.spinHopper(0.0), intake)
-                    .until(intake::topHopperBall),
-                new WaitUntilCommand(() -> !shooter.hasQueue() && shooter.getCurrentCommand() == null),
-                new ScheduleCommand(new StartEndCommand(() -> {
-                        intake.spinHopper(1.0);
-                        shooter.runQueue(0.5);
-                    }, () -> {
-                        intake.spinHopper(0.0);
-                        shooter.runQueue(0.5);
-                    }, intake, shooter
-                ).until(shooter::hasQueue).withTimeout(2.0))
-            ).schedule();
-        }
+        intake.spinIntake(0.0);
+        if(!interrupted)
+            new StartEndCommand(() -> intake.spinHopper(1.0), () -> intake.spinHopper(0.0), intake)
+                .until(shooter::hasQueue).schedule();
     }
 }
