@@ -2,6 +2,7 @@ package frc.robot.commands.autonomousCommands;
 
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
+import frc.robot.Constants.Unit;
 import frc.robot.commands.DriveToCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.intakeCommands.MasterIntakeCommand;
@@ -17,13 +18,13 @@ public class Auton3Command extends SequentialCommandGroup {
         //Needs tuning
         addCommands(
             //Collect team ball and shoots both starter and team ball
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 150.790 * Unit.IN, -25.910 * Unit.IN, 1)),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
 
             //Collects two teams balls on the edges of field
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
-            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 88.303 * Unit.IN, -121.095 * Unit.IN, 1)),
+            new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 117.725 * Unit.IN, -282.080 * Unit.IN, 1)),
 
             //Shoots two team balls
             new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
@@ -31,10 +32,7 @@ public class Auton3Command extends SequentialCommandGroup {
 
             //While shooting, terminal inputs ball which is shot into goal again
             new MasterIntakeCommand(intake),
-            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
-
-            //Gets to the line and prepares for player control period
-            new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02)
         );
     }
 }

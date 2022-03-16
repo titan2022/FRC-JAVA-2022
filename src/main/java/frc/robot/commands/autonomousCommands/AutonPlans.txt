@@ -10,15 +10,33 @@ During autonomous:
 (Upper hub scoring is 4 points)
 (Lower hub scoring is 2 points)
 
+X and Y positions(inches) of balls starting from the two blue balls and ging clockwise
+(150.790, -25.910)
+(88.303, -121.095)
+(33.767, -149.227)
+(-81.643, 129.396)
+(-124.946, -88.303)
+(-149.227, -33.767)
+(-150.790, 25.910)
+(-88.303, 124.946)
+(-33.767, 149.227)
+(81.643, 129.396)
+(124.946, 88.303)
+(149.227, 33.767)
+
+Team Terminal ball
+(117.725, -282.080)
+
+Enemy Terminal ball
+(-117.725, 282.080)
+
 NEW ROUTES!!!:
 
 Auton1 Route:
 -Starts from top of the tarmacs
 -Collects one team ball and shoots starter & team ball into goal
--Goes to collect the 2 enemy balls nearby
--Shoots enemy balls away
-*Might instead choose to go for terminal balls, needs to be tested for time
--Goes to line to prepare for non-auton
+-Goes to collect terminal balls
+-Shoots terminal balls away
 
 Auton2 Route:
 -Starts from middle of the tarmacs
@@ -28,7 +46,6 @@ Auton2 Route:
 -While shooting, terminal gives robot one ball
 -Shoots the ball
 -Collects one enemy team ball and shoots away
--Goes to line to prepare for non-auton
 
 Auton3 Route:
 -Starts from bottom of the tarmacs
@@ -37,4 +54,3 @@ Auton3 Route:
 -Shoots both balls
 -While balls are shooting, terminal gives robot one ball
 -Shoots the ball
--Goes to line to prepare for non-auton
