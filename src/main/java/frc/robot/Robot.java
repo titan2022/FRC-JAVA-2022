@@ -8,8 +8,12 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ManualShooterCommand;
+import frc.robot.commands.intakeCommands.IntakeCargo;
 import frc.robot.commands.intakeCommands.SpinHopper;
 import frc.robot.commands.intakeCommands.SpinIntake;
 import frc.robot.commands.RotationalDriveCommand;
@@ -87,9 +91,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
     new JoystickButton(xbox, Button.kLeftBumper.value)
-      .whenHeld(new SpinHopper(intake, 1.0));
-    new JoystickButton(xbox, Button.kRightBumper.value)
-      .whenHeld(new SpinIntake(intake, 1.0));
+      .whenHeld(new IntakeCargo(intake, shooter));
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
     drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
