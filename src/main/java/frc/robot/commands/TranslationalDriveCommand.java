@@ -58,7 +58,7 @@ public class TranslationalDriveCommand extends CommandBase {
      *  correction. This will not be added as a requirement of this command.
      */
     public TranslationalDriveCommand(TranslationalDrivebase drivebase, XboxController xbox, LocalizationSubsystem localizer) {
-        this(drivebase, xbox, localizer, 5.);
+        this(drivebase, xbox, localizer, 10.);
     }
     /**
      * Creates a new TranlationalDriveCommand using intrinsic orientation.
