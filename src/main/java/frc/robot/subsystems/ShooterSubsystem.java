@@ -4,9 +4,14 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
+import com.revrobotics.ColorMatch;
+import com.revrobotics.ColorMatchResult;
+import com.revrobotics.ColorSensorV3;
 
 import edu.wpi.first.wpilibj.DigitalInput;
+import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.Unit.*;
@@ -35,6 +40,16 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final WPI_TalonFX queueMotor = new WPI_TalonFX(QUEUE_MOTOR_ID);
     private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_PORT);
     private static final DigitalInput queueSensor = new DigitalInput(QUEUE_SENSOR_PORT);
+    private static final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kOnboard);
+
+    private static final Color kRed = new Color(1, 0, 0);
+    private static final Color kBlue = new Color(0, 0, 1);
+    private static final Color kWhite = new Color(1, 1, 1);
+    private final ColorMatch colorMatch = new ColorMatch();
+
+    public static enum CargoColor {
+        NONE, RED, BLUE;
+    }
 
     public ShooterSubsystem(){
         leftMotor.configFactoryDefault();
@@ -68,6 +83,10 @@ public class ShooterSubsystem extends SubsystemBase {
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
+
+        colorMatch.addColorMatch(kRed);
+        colorMatch.addColorMatch(kBlue);
+        colorMatch.addColorMatch(kWhite);
     }
 
     /**
@@ -170,12 +189,26 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
+     * Determines the color of the cargo currently in the queue.
+     * 
+     * @return  The color of the cargo currently in the queue.
+     */
+    public CargoColor getQueueColor() {
+        ColorMatchResult result = colorMatch.matchClosestColor(colorSensor.getColor());
+        if(result.color == kRed)
+            return CargoColor.RED;
+        else if(result.color == kBlue)
+            return CargoColor.BLUE;
+        else
+            return CargoColor.NONE;
+    }
+    /**
      * Checks whether there is a cargo ready to be fed into the shooter.
      * 
      * @return  True if a cargo is detected ready to be fed into the shooter,
      *  false otherwise.
      */
     public boolean hasQueue() {
-        return queueSensor.get();
+        return getQueueColor() != CargoColor.NONE;
     }
 }
