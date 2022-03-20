@@ -3,6 +3,7 @@ package frc.robot.commands;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.TranslationalDrivebase;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import com.titanrobotics2022.motion.generation.rmpflow.RMPRoot;
 
@@ -44,6 +45,10 @@ public class RMPMotionGenerationCommand extends CommandBase {
         // Translation2d loc1 = new Translation2d(3, 2); // TEST
         SimpleMatrix x = new SimpleMatrix(1, 2, false, new double[] { loc0.getX(), loc0.getY() });
         SimpleMatrix x_dot = new SimpleMatrix(1, 2, false, new double[] { loc1.getX(), loc1.getY() });
+        SmartDashboard.putNumber("x0", x.get(0));
+        SmartDashboard.putNumber("x1", x.get(1));
+        SmartDashboard.putNumber("x_dot0", x_dot.get(0));
+        SmartDashboard.putNumber("x_dot1", x_dot.get(1));
         // System.out.printf("x: (%f, %f)\n", x.get(0), x.get(1));
         // System.out.printf("x_dot: (%f, %f)\n", x_dot.get(0), x_dot.get(1));
 

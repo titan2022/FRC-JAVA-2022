@@ -299,6 +299,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
   }
 
   public double getEncoderVelocity(int module) {
+    SmartDashboard.putNumber("encoder velocity " + module,
+        motors[module].getSelectedSensorVelocity() * METERS_PER_TICKS * 10);
     return motors[module].getSelectedSensorVelocity() * METERS_PER_TICKS * 10;
   }
 
