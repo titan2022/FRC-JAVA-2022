@@ -39,12 +39,12 @@ public class RMPMotionGenerationCommand extends CommandBase {
     @Override
     public void execute() {
 
-        Translation2d loc0 = localization.getPred(0);
-        Translation2d loc1 = localization.getPred(1);
-        // Translation2d loc0 = new Translation2d(1, 4); // TEST
-        // Translation2d loc1 = new Translation2d(3, 2); // TEST
-        SimpleMatrix x = new SimpleMatrix(1, 2, false, new double[] { loc0.getX(), loc0.getY() });
-        SimpleMatrix x_dot = new SimpleMatrix(1, 2, false, new double[] { loc1.getX(), loc1.getY() });
+        // Translation2d pos = localization.getPred(0);
+        // Translation2d vel = localization.getPred(1);
+        Translation2d pos = new Translation2d(0, 0); // TEST
+        Translation2d vel = new Translation2d(1, 1); // TEST
+        SimpleMatrix x = new SimpleMatrix(1, 2, false, new double[] { pos.getX(), pos.getY() });
+        SimpleMatrix x_dot = new SimpleMatrix(1, 2, false, new double[] { vel.getX(), vel.getY() });
         SmartDashboard.putNumber("x0", x.get(0));
         SmartDashboard.putNumber("x1", x.get(1));
         SmartDashboard.putNumber("x_dot0", x_dot.get(0));

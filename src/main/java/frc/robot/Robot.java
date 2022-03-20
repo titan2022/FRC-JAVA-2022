@@ -47,7 +47,7 @@ public class Robot extends TimedRobot {
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final DriveSubsystem drivebase = new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(),
       getSwerveDriveTalonRotaryConfig());
-  private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02);
+  private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02, 1.0);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -100,7 +100,7 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // TODO: Create autonomous
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(5, 5);
+    Translation2d goal = new Translation2d(4, 5);
     TranslationalDrivebase translational = drivebase.getTranslational();
     double v = 5;
     new RMPMoveToPositionCommand(root, goal, nav, v).schedule();
