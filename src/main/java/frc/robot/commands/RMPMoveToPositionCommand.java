@@ -28,7 +28,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
     public void initialize() {
         Translation2d pos = localization.getPred(0);
         path = new LinearSegment(new Point(pos), new Point(goal));
-        double P = 0.1, I = 0, A = 1, B = 1, K = 1, h = 0.5;
+        double P = 1.5, I = 0.5, A = 0.5, B = 0.5, K = 1, h = 0.5;
         leaf = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h);
     }
 

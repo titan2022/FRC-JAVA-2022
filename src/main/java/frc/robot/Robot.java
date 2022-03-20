@@ -101,14 +101,10 @@ public class Robot extends TimedRobot {
     // TODO: Create autonomous
     RMPRoot root = new RMPRoot("root");
     Translation2d goal = new Translation2d(5, 5);
-    LocalizationSubsystem localization = new LocalizationSubsystem(0.02);
-    SwerveDriveSubsystem swerve = new SwerveDriveSubsystem();
-    TranslationalDrivebase drivebase = swerve.getTranslational();
+    TranslationalDrivebase translational = drivebase.getTranslational();
     double v = 5;
-    RMPMoveToPositionCommand mtp = new RMPMoveToPositionCommand(root, goal, localization, v);
-    RMPMotionGenerationCommand mg = new RMPMotionGenerationCommand(localization, root, drivebase);
-    mtp.schedule();
-    mg.schedule();
+    new RMPMoveToPositionCommand(root, goal, nav, v).schedule();
+    new RMPMotionGenerationCommand(nav, root, translational).schedule();
   }
 
   /** This function is called periodically during autonomous. */
