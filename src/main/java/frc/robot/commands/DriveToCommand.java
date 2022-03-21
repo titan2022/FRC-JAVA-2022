@@ -9,15 +9,16 @@ public class DriveToCommand extends CommandBase {
     // TODO: make a class that includes all these components (hmm RobotContainer?)
     private final LocalizationSubsystem nav;
     private final TranslationalDrivebase drivebase;
-    private final double vel, tolerance;
+    private final double vel, tolerance, acceleration;
     private final Translation2d target;
     
-    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem nav, double x, double y, double vel, double tolerance) {
+    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem nav, double x, double y, double vel, double tolerance, double acceleration) {
         this.drivebase = drivebase;
         this.nav = nav;
         target = new Translation2d(x, y);
         this.vel = vel;
         this.tolerance = tolerance;
+        this.acceleration = acceleration;
     }
 
     // Called when the command is initially scheduled.
@@ -28,7 +29,9 @@ public class DriveToCommand extends CommandBase {
     @Override
     public void execute() {
         Translation2d offset = target.minus(nav.getPosition());
-        drivebase.setVelocity(offset.times(vel / offset.getNorm()));
+        double dist = offset.getNorm();
+        double v = Math.min(vel, Math.sqrt(2 * acceleration * dist));
+        drivebase.setVelocity(offset.times(v / dist));
     }
 
     // Called once the command ends or is interrupted.
