@@ -4,15 +4,18 @@
 
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-import com.ctre.phoenix.sensors.WPI_Pigeon2;
-import com.titanrobotics2022.localization.KalmanFilter;
+import edu.wpi.first.math.Matrix;
+import org.ejml.simple.SimpleMatrix;
+import edu.wpi.first.math.numbers.N1;
+import edu.wpi.first.math.numbers.N3;
 
-import org.ejml.data.DMatrix2;
-import org.ejml.data.DMatrix2x2;
+import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
 /**
  * A localizer based around a Kalman filter.
@@ -20,12 +23,13 @@ import org.ejml.data.DMatrix2x2;
  * This subsystem should not be declared as a requirement for commands.
  */
 public class LocalizationSubsystem extends SubsystemBase {
-  private KalmanFilter filter;
+  private SwerveDrivePoseEstimator estimator;
   private double step;
-  private DMatrix2 mean = new DMatrix2();
-  private DMatrix2x2 prec = new DMatrix2x2();
   private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
   private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
+  private SwerveDriveSubsystem drivebase;
+  private Translation2d pos = new Translation2d(0, 0);
+  private Translation2d vel = new Translation2d(0, 0);
 
   /**
    * Creates a new LocalizationSubsystem.
@@ -37,9 +41,17 @@ public class LocalizationSubsystem extends SubsystemBase {
    * @param drift The intrinsic covariance due to noise of the highest order
    *              derivative of position considered.
    */
-  public LocalizationSubsystem(double step, int depth, double drift) {
-    filter = new KalmanFilter(depth, new DMatrix2x2(drift, 0, 0, drift));
+  public LocalizationSubsystem(double step, int depth, double drift, SwerveDriveSubsystem drivebase) {
+    this.drivebase = drivebase;
     this.step = step;
+    SimpleMatrix stateStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.2, 0.2, 0.1 }); // TODO: tune values
+    SimpleMatrix localMeasurementStdDevs = new SimpleMatrix(1, 1, false, new double[] { 0.005 }); // TODO: tune values
+    SimpleMatrix visionMeasurementStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.02, 0.02, 0.01 }); // TODO:
+                                                                                                              // tune
+                                                                                                              // values
+    estimator = new SwerveDrivePoseEstimator(getOrientation(), new Pose2d(new Translation2d(0, 0), getOrientation()),
+        drivebase.getKinematics(), new Matrix<N3, N1>(stateStdDevs), new Matrix<N1, N1>(localMeasurementStdDevs),
+        new Matrix<N3, N1>(visionMeasurementStdDevs), step);
   }
 
   /**
@@ -52,8 +64,8 @@ public class LocalizationSubsystem extends SubsystemBase {
    * @param depth The maximum derivative of position to consider. For instance,
    *              1 for velocity, or 2 for acceleration.
    */
-  public LocalizationSubsystem(double step, int depth) {
-    this(step, depth, 0.0);
+  public LocalizationSubsystem(double step, int depth, SwerveDriveSubsystem drivebase) {
+    this(step, depth, 0.0, drivebase);
   }
 
   /**
@@ -66,8 +78,8 @@ public class LocalizationSubsystem extends SubsystemBase {
    * @param drift The intrinsic covariance due to noise of the highest order
    *              derivative of position considered.
    */
-  public LocalizationSubsystem(double step, double drift) {
-    this(step, 1, drift);
+  public LocalizationSubsystem(double step, double drift, SwerveDriveSubsystem drivebase) {
+    this(step, 1, drift, drivebase);
   }
 
   /**
@@ -79,65 +91,8 @@ public class LocalizationSubsystem extends SubsystemBase {
    * @param step The time difference between calls to the periodic method of
    *             this subsystem.
    */
-  public LocalizationSubsystem(double step) {
-    this(step, 1, 0.0);
-  }
-
-  /**
-   * Updates the state of the localizer with a new measurement.
-   * 
-   * @param degree The order of the derivative of position to update.
-   * @param x      The x component of the measurement.
-   * @param y      The y component of the measurement.
-   * @param varX   The variance in the x component of the measurement.
-   * @param varY   The variance in the y component of the measurement.
-   * @param covar  The covariance of the x and y components of the measurement.
-   */
-  public void addData(int degree, double x, double y, double varX, double varY, double covar) {
-    mean.setTo(x, y);
-    double idet = 1 / (varX * varY - covar * covar);
-    prec.setTo(varY * idet, -covar * idet, -covar * idet, varX * idet);
-    filter.update(degree, mean, prec);
-  }
-
-  /**
-   * Updates the state of the localizer with a new measurement.
-   * 
-   * @param degree The order of the derivative of position to update.
-   * @param pred   The measurement.
-   * @param varX   The variance in the x component of the measurement.
-   * @param varY   The variance in the y component of the measurement.
-   * @param covar  The covariance of the x and y components of the measurement.
-   */
-  public void addData(int degree, Translation2d pred, double varX, double varY, double covar) {
-    addData(degree, pred.getX(), pred.getY(), varX, varY, covar);
-  }
-
-  /**
-   * Updates the state of the localizer with a new measurement.
-   * 
-   * @param degree The order of the derivative of position to update.
-   * @param x      The x component of the measurement.
-   * @param y      The y component of the measurement.
-   * @param var    The variance of the noise in the measurement, which is assumed
-   *               to be isotropic.
-   */
-  public void addData(int degree, double x, double y, double var) {
-    mean.setTo(x, y);
-    prec.setTo(1 / var, 0, 0, 1 / var);
-    filter.update(degree, mean, prec);
-  }
-
-  /**
-   * Updates the state of the localizer with a new measurement.
-   * 
-   * @param degree The order of the derivative of position to update.
-   * @param pred   The measurement.
-   * @param var    The variance of the noise in the measurement, which is assumed
-   *               to be isotropic.
-   */
-  public void addData(int degree, Translation2d pred, double var) {
-    addData(degree, pred.getX(), pred.getY(), var);
+  public LocalizationSubsystem(double step, SwerveDriveSubsystem drivebase) {
+    this(step, 1, 0.0, drivebase);
   }
 
   /**
@@ -171,110 +126,12 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
 
   /**
-   * Resets the current position estimate to a specific value and uncertainty.
-   * 
-   * Warning: This method will overwrite the accumulated position estimate and
-   * uncertainty. Use only when necessary.
-   * 
-   * @param pos The new current position.
-   * @param var The new position variance.
-   */
-  public void setPosition(Translation2d pos, double var) {
-    mean.setTo(pos.getX(), pos.getY());
-    prec.setTo(var, 0, 0, var);
-    filter.setPred(0, mean);
-    filter.setCov(0, prec);
-  }
-
-  /**
-   * Resets the current position estimate to a specific value.
-   * 
-   * Warning: This method will overwrite the accumulated position estimate and
-   * uncertainty. Use only when necessary.
-   * 
-   * The position value is assumed to be precise, without uncertainty.
-   * 
-   * @param pos The new current position.
-   */
-  public void setPosition(Translation2d pos) {
-    setPosition(pos, 0);
-  }
-
-  /**
-   * Resets the current position estimate, preserving uncertainty.
-   * 
-   * Warning: This method will overwrite the accumulated position estimate. Use
-   * only when necessary.
-   * 
-   * @param pos The new current position.
-   */
-  public void translateTo(Translation2d pos) {
-    mean.setTo(pos.getX(), pos.getY());
-    filter.setPred(0, mean);
-  }
-
-  /**
-   * Resets the current velocity estimate to a specific value and uncertainty.
-   * 
-   * Warning: This method will overwrite the accumulated velocity estimate and
-   * uncertainty. Use only when necessary.
-   * 
-   * @param vel The new current velocity.
-   * @param var The new velocity variance.
-   */
-  public void setVelocity(Translation2d vel, double var) {
-    mean.setTo(vel.getX(), vel.getY());
-    prec.setTo(var, 0, 0, var);
-    filter.setPred(1, mean);
-    filter.setCov(1, prec);
-  }
-
-  /**
-   * Resets the current velocity estimate to a specific value.
-   * 
-   * Warning: This method will overwrite the accumulated velocity estimate and
-   * uncertainty. Use only when necessary.
-   * 
-   * The velocity value is assumed to be precise, without uncertainty.
-   * 
-   * @param vel The new current velocity.
-   */
-  public void setVelocity(Translation2d vel) {
-    setVelocity(vel, 0);
-  }
-
-  /**
-   * Resets the current velocity estimate, preserving uncertainty.
-   * 
-   * Warning: This method will overwrite the accumulated velocity estimate. Use
-   * only when necessary.
-   * 
-   * @param vel The new current velocity.
-   */
-  public void accelerateTo(Translation2d vel) {
-    mean.setTo(vel.getX(), vel.getY());
-    filter.setPred(1, mean);
-  }
-
-  /**
-   * Returns the current estimate of a given derivative of position.
-   * 
-   * @param degree The order of the derivative of position to return the
-   *               estimate of.
-   * @return The current estimate of the requested derivative of position.
-   */
-  public Translation2d getPred(int degree) {
-    filter.getPred(degree, mean);
-    return new Translation2d(mean.a1, mean.a2);
-  }
-
-  /**
    * Returns the current estimate of the position of the robot.
    * 
    * @return The current estimate of the position of the robot in meters.
    */
   public Translation2d getPosition() {
-    return getPred(0);
+    return pos;
   }
 
   /**
@@ -284,7 +141,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *         second.
    */
   public Translation2d getVelocity() {
-    return getPred(1);
+    return vel;
   }
 
   /**
@@ -309,11 +166,14 @@ public class LocalizationSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    filter.step(step);
+    Translation2d lastPos = pos;
+    pos = estimator.update(getOrientation(), drivebase.getSwerveModuleStates()).getTranslation();
+    vel = pos.minus(lastPos).div(step);
   }
 
   @Override
   public void simulationPeriodic() {
     // This method will be called once per scheduler run during simulation
   }
+
 }

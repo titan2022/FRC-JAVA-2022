@@ -45,9 +45,9 @@ public class Robot extends TimedRobot {
   // Subsystems
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
-  private final DriveSubsystem drivebase = new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(),
+  private final SwerveDriveSubsystem drivebase = new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(),
       getSwerveDriveTalonRotaryConfig());
-  private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02, 1.0);
+  private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02, 1.0, drivebase);
 
   /**
    * This function is run when the robot is first started up and should be used

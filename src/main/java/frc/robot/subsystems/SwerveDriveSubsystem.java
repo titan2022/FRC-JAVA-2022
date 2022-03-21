@@ -320,4 +320,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
   public RotationalDrivebase getRotational() {
     return rotationalLock;
   }
+
+  public SwerveDriveKinematics getKinematics() {
+    return kinematics;
+  }
+
 }
