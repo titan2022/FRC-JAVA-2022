@@ -1,51 +1,34 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.TranslationalDrivebase;
 
-public class DriveToCommand extends WaitCommand {
+public class DriveToCommand extends CommandBase {
     // TODO: make a class that includes all these components (hmm RobotContainer?)
-    private final LocalizationSubsystem odometry;
+    private final LocalizationSubsystem nav;
     private final TranslationalDrivebase drivebase;
-    private final double x, y, sec;
+    private final double vel, tolerance;
+    private final Translation2d target;
     
-    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem odometry, double x, double y, double sec) {
-        super(sec);
+    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem nav, double x, double y, double vel, double tolerance) {
         this.drivebase = drivebase;
-        this.odometry = odometry;
-        this.x = x;
-        this.y = y;
-        this.sec = sec;
-    }
-
-    /**
-     * 
-     * @param x desired x position (meters)
-     * @param y desired y position (meters)
-     * @param rot desired absolute position (radians)
-     * @param sec amount of seconds for the robot to make the move
-     */
-    private void driveTo(double x, double y, double sec) {
-        Translation2d position = odometry.getPosition();
-        drivebase.setVelocity(new Translation2d((x - position.getX()) / sec, (y - position.getY()) / sec));
+        this.nav = nav;
+        target = new Translation2d(x, y);
+        this.vel = vel;
+        this.tolerance = tolerance;
     }
 
     // Called when the command is initially scheduled.
     @Override
-    public void initialize() {
-        driveTo(x, y, sec);
-    }
+    public void initialize() {}
 
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        if (isFinished()) {
-            end(false);
-        } else {
-            driveTo(x, y, sec);
-        }
+        Translation2d offset = target.minus(nav.getPosition());
+        drivebase.setVelocity(offset.times(vel / offset.getNorm()));
     }
 
     // Called once the command ends or is interrupted.
@@ -57,10 +40,6 @@ public class DriveToCommand extends WaitCommand {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        if (odometry.getPosition().getX() == x && odometry.getPosition().getY() == y) {
-            return true;
-        } else {
-            return false;
-        }
+        return target.minus(nav.getPosition()).getNorm() < tolerance;
     }
 }
