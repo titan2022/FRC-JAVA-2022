@@ -11,24 +11,27 @@ public class GetDriveInformationCommand extends CommandBase {
     private TranslationalDrivebase translator;
     private double var;
 
-    public GetDriveInformationCommand(LocalizationSubsystem loc, TranslationalDrivebase trans, double std){
+    public GetDriveInformationCommand(LocalizationSubsystem loc, TranslationalDrivebase trans, double std) {
         nav = loc;
         translator = trans;
-        var = std*std;
+        var = std * std;
     }
+
     public GetDriveInformationCommand(LocalizationSubsystem loc, TranslationalDrivebase trans) {
         this(loc, trans, 0.1);
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+    }
 
     public void execute() {
-        nav.addData(1, translator.getVelocity().rotateBy(nav.getHeading()), var);
+        // nav.addData(1, translator.getVelocity().rotateBy(nav.getHeading()), var);
     }
 
     @Override
-    public void end(boolean interrupted) {}
+    public void end(boolean interrupted) {
+    }
 
     public boolean isFinished() {
         return false;
