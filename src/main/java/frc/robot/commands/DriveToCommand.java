@@ -12,13 +12,42 @@ public class DriveToCommand extends CommandBase {
     private final double vel, tolerance, acceleration;
     private final Translation2d target;
     
-    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem nav, double x, double y, double vel, double tolerance, double acceleration) {
+    /**
+     * Creates a new DriveToCommand.
+     * 
+     * @param drivebase  The drivebase to control.
+     * @param nav  The localizer to use.
+     * @param target  The target position to drive to.
+     * @param vel  The target cruise velocity.
+     * @param tolerance  The tolerance to allow when determining if the
+     *  current position matches the target position.
+     * @param acceleration  The deceleration to use while approaching the
+     *  target. Note that smooth deceleration cannot be guarunteed within the
+     *  tolerance radius of the target.
+     */
+    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem nav, Translation2d target, double vel, double tolerance, double acceleration) {
         this.drivebase = drivebase;
         this.nav = nav;
-        target = new Translation2d(x, y);
+        this.target = target;
         this.vel = vel;
         this.tolerance = tolerance;
         this.acceleration = acceleration;
+    }
+    /**
+     * Creates a new DriveToCommand.
+     * 
+     * Acceleration is set such that the robot does not decelerate outside of
+     * the tolerance radius around the target position.
+     * 
+     * @param drivebase  The drivebase to control.
+     * @param nav  The localizer to use.
+     * @param target  The target position to drive to.
+     * @param vel  The target cruise velocity.
+     * @param tolerance  The tolerance to allow when determining if the
+     *  current position matches the target position.
+     */
+    public DriveToCommand(TranslationalDrivebase drivebase, LocalizationSubsystem nav, Translation2d target, double vel, double tolerance) {
+        this(drivebase, nav, target, vel, tolerance, vel*vel/tolerance/2);
     }
 
     // Called when the command is initially scheduled.
