@@ -25,12 +25,16 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int RIGHT_MOTOR_PORT = 20;
     private static final int LEFT_MOTOR_PORT = 21;
     private static final int HOOD_MOTOR_ID = 19;
+    private static final int TRIGGER_MOTOR_ID = 18;
     private static final int BEAM_BREAK_PORT = 1;
+    private static final int QUEUE_SENSOR_PORT = 2;
     
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
+    private static final WPI_TalonFX triggerMotor = new WPI_TalonFX(TRIGGER_MOTOR_ID);
     private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_PORT);
+    private static final DigitalInput queueSensor = new DigitalInput(QUEUE_SENSOR_PORT);
 
     public ShooterSubsystem(){
         rightMotor.follow(leftMotor);
@@ -55,6 +59,8 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodMotor.config_kP(0, 100);
         hoodMotor.config_kI(0, 0);
         hoodMotor.config_kD(0, 0);
+
+        triggerMotor.setInverted(false);
     }
 
     /**
@@ -96,6 +102,15 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
+     * Runs the queue motor at a specified percent output.
+     * 
+     * @param percent  The output of the queue motor, in the range [-1,1].
+     */
+    public void runQueue(double percent) {
+        triggerMotor.set(ControlMode.PercentOutput, percent);
+    }
+
+    /**
      * Returns the current angle of the hood.
      * 
      * @return  The current measure angle of inclination of the hood in radians.
@@ -133,5 +148,15 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public boolean hasCargo() {
         return beamBreak.get();
+    }
+
+    /**
+     * Checks whether there is a cargo ready to be fed into the shooter.
+     * 
+     * @return  True if a cargo is detected ready to be fed into the shooter,
+     *  false otherwise.
+     */
+    public boolean hasQueue() {
+        return queueSensor.get();
     }
 }

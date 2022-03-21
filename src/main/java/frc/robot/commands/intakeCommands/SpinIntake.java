@@ -8,6 +8,7 @@ import frc.robot.subsystems.IntakeSubsystem;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 /** An example command that uses an example subsystem. */
+@Deprecated
 public class SpinIntake extends CommandBase {
   private final IntakeSubsystem subsystem;
   private final double speed;

@@ -67,7 +67,7 @@ dependencies {
 
     testImplementation 'junit:junit:4.13.1'
 
-    //implementation 'com.titanrobotics2022.titan-algorithms:titan-algorithms-lib:0.0.1'
+    implementation 'com.titanrobotics2022.titan-algorithms:titan-algorithms-lib:0.0.1'
 }
 
 // Simulation configuration (e.g. environment variables).
