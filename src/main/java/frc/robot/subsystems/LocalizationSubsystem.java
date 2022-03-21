@@ -44,14 +44,12 @@ public class LocalizationSubsystem extends SubsystemBase {
   public LocalizationSubsystem(double step, int depth, double drift, SwerveDriveSubsystem drivebase) {
     this.drivebase = drivebase;
     this.step = step;
-    SimpleMatrix stateStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.2, 0.2, 0.1 }); // TODO: tune values
-    SimpleMatrix localMeasurementStdDevs = new SimpleMatrix(1, 1, false, new double[] { 0.005 }); // TODO: tune values
-    SimpleMatrix visionMeasurementStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.02, 0.02, 0.01 }); // TODO:
-                                                                                                              // tune
-                                                                                                              // values
+    SimpleMatrix stateStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.2, 0.2, 0.1 });
+    SimpleMatrix localMeasurementStdDevs = new SimpleMatrix(1, 1, false, new double[] { 0.005 });
+    SimpleMatrix visionMeasurementStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.02, 0.02, 0.01 });
     estimator = new SwerveDrivePoseEstimator(getOrientation(), new Pose2d(new Translation2d(0, 0), getOrientation()),
-        drivebase.getKinematics(), new Matrix<N3, N1>(stateStdDevs), new Matrix<N1, N1>(localMeasurementStdDevs),
-        new Matrix<N3, N1>(visionMeasurementStdDevs), step);
+        drivebase.getKinematics(), new Matrix<>(stateStdDevs), new Matrix<>(localMeasurementStdDevs),
+        new Matrix<>(visionMeasurementStdDevs), step);
   }
 
   /**
@@ -169,6 +167,8 @@ public class LocalizationSubsystem extends SubsystemBase {
     Translation2d lastPos = pos;
     pos = estimator.update(getOrientation(), drivebase.getSwerveModuleStates()).getTranslation();
     vel = pos.minus(lastPos).div(step);
+    System.out.printf("pos: (%f, %f)\n", pos.getX(), pos.getY());
+    System.out.printf("vel: (%f, %f)\n", vel.getX(), vel.getY());
   }
 
   @Override
