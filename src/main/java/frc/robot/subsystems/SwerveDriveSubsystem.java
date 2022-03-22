@@ -248,6 +248,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
     SmartDashboard.putNumber("last omega", inputChassisSpeeds.omegaRadiansPerSecond);
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
+    // savedStates = modules;
     for (int i = 0; i < 4; i++) {
       applyModuleState(modules[i], i);
       SmartDashboard.putNumber("tgt vel " + i, modules[0].speedMetersPerSecond);
@@ -304,7 +305,12 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
     return motors[module].getSelectedSensorVelocity() * METERS_PER_TICKS * 10;
   }
 
+  // private SwerveModuleState[] savedStates = new SwerveModuleState[] { new
+  // SwerveModuleState(), new SwerveModuleState(),
+  // new SwerveModuleState(), new SwerveModuleState() };
+
   public SwerveModuleState[] getSwerveModuleStates() {
+    // return savedStates;
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++)
       states[i] = new SwerveModuleState(getEncoderVelocity(i), new Rotation2d(getRotatorEncoderPosition(i)));

@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -96,6 +97,8 @@ public class LocalizationSubsystem extends SubsystemBase {
    * @param varY   The variance in the y component of the measurement.
    * @param covar  The covariance of the x and y components of the measurement.
    */
+  private double dataX = 0, dataY = 0;
+
   public void addData(int degree, double x, double y, double varX, double varY, double covar) {
     mean.setTo(x, y);
     double idet = 1 / (varX * varY - covar * covar);
@@ -140,6 +143,12 @@ public class LocalizationSubsystem extends SubsystemBase {
    *               to be isotropic.
    */
   public void addData(int degree, Translation2d pred, double var) {
+    if (degree == 1) {
+      SmartDashboard.putNumber("addData x", pred.getX());
+      SmartDashboard.putNumber("addData y", pred.getY());
+      dataX = pred.getX();
+      dataY = pred.getY();
+    }
     addData(degree, pred.getX(), pred.getY(), var);
   }
 
@@ -267,6 +276,8 @@ public class LocalizationSubsystem extends SubsystemBase {
    * @return The current estimate of the requested derivative of position.
    */
   public Translation2d getPred(int degree) {
+    // if (degree == 1)
+    // return new Translation2d(dataX, dataY);
     filter.getPred(degree, mean);
     return new Translation2d(mean.a1, mean.a2);
   }
@@ -311,9 +322,9 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
 
   private void pigeonUpdate() {
-    short[] accArr = new short[]{0, 0, 0};
+    short[] accArr = new short[] { 0, 0, 0 };
     imu.getBiasedAccelerometer(accArr);
-    Translation2d rawAcc = new Translation2d(9.8 * accArr[0] / (1<<14), 9.8 * accArr[1] / (1<<14));
+    Translation2d rawAcc = new Translation2d(9.8 * accArr[0] / (1 << 14), 9.8 * accArr[1] / (1 << 14));
     addData(2, rawAcc.minus(pigeonBias).rotateBy(pigeonOrientation).rotateBy(getHeading()), 0.001);
   }
 

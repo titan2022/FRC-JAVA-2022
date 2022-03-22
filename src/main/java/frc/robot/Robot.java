@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.GetDriveInformationCommand;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RMPMotionGenerationCommand;
 import frc.robot.commands.RMPMoveToPositionCommand;
@@ -23,6 +24,7 @@ import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
 import frc.robot.subsystems.TranslationalDrivebase;
+import edu.wpi.first.math.geometry.Translation2d;
 
 import static frc.robot.Constants.getSwerveDriveTalonDirectionalConfig;
 import static frc.robot.Constants.getSwerveDriveTalonRotaryConfig;
@@ -48,6 +50,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem drivebase = new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(),
       getSwerveDriveTalonRotaryConfig());
   private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02, 1.0);
+  private final GetDriveInformationCommand odometry = new GetDriveInformationCommand(nav, drivebase.getTranslational());
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -100,11 +103,12 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // TODO: Create autonomous
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(4, 5);
-    TranslationalDrivebase translational = drivebase.getTranslational();
+    Translation2d goal = new Translation2d(1, 2);
     double v = 5;
     new RMPMoveToPositionCommand(root, goal, nav, v).schedule();
-    new RMPMotionGenerationCommand(nav, root, translational).schedule();
+    new RMPMotionGenerationCommand(nav, root, drivebase.getTranslational()).schedule();
+    // odometry.schedule();
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -142,4 +146,5 @@ public class Robot extends TimedRobot {
   @Override
   public void testPeriodic() {
   }
+
 }
