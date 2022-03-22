@@ -1,6 +1,5 @@
 package frc.robot.commands;
 
-import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -17,20 +16,20 @@ public class ManualShooterCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        shooter.shootPercent(0);
+        shooter.runPercent(0);
     }
 
     @Override
     public void execute() {
-        shooter.shootPercent(XBOX_CONTROLLER.getTriggerAxis(Hand.kRight));
-        shooter.setAngle(XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) * Math.PI / 18 + Math.PI / 6);
-        SmartDashboard.putNumber("shooter", XBOX_CONTROLLER.getTriggerAxis(Hand.kRight));
-        SmartDashboard.putNumber("hood (deg)", (XBOX_CONTROLLER.getTriggerAxis(Hand.kLeft) * Math.PI / 18 + Math.PI / 6) * (180 / Math.PI));
+        shooter.runPercent(XBOX_CONTROLLER.getRightTriggerAxis());
+        shooter.setAngle(XBOX_CONTROLLER.getLeftTriggerAxis() * Math.PI / 18 + Math.PI / 6);
+        SmartDashboard.putNumber("shooter", XBOX_CONTROLLER.getRightTriggerAxis());
+        SmartDashboard.putNumber("hood (deg)", (XBOX_CONTROLLER.getLeftTriggerAxis() * Math.PI / 18 + Math.PI / 6) * (180 / Math.PI));
     }
 
     @Override
     public void end(boolean interrupted) {
-        shooter.shootPercent(0);
+        shooter.runPercent(0);
         SmartDashboard.putNumber("shooter", -2);
     }
 
