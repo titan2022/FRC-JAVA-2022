@@ -54,8 +54,12 @@ public class RMPMotionGenerationCommand extends CommandBase {
 
         SimpleMatrix x_ddot = root.solve(x, x_dot);
         // System.out.printf("x_ddot: (%f, %f)\n\n", x_ddot.get(0), x_ddot.get(1));
-        x_dot.set(0, x_dot.get(0) + x_ddot.get(0) * deltaT);
-        x_dot.set(1, x_dot.get(1) + x_ddot.get(1) * deltaT);
+        SmartDashboard.putNumber("x_ddot0", x_ddot.get(0));
+        SmartDashboard.putNumber("x_ddot1", x_ddot.get(1));
+        // x_dot.set(0, x_dot.get(0) + x_ddot.get(0) * deltaT);
+        // x_dot.set(1, x_dot.get(1) + x_ddot.get(1) * deltaT);
+        x_dot.set(0, 1); // TEST
+        x_dot.set(1, 2); // TEST
         drivebase.setVelocity(new Translation2d(x_dot.get(0), x_dot.get(1)));
 
     }

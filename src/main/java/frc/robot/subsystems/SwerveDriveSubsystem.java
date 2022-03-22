@@ -118,7 +118,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
     @Override
     public Translation2d getVelocity() {
       ChassisSpeeds speeds = getVelocities();
-      return new Translation2d(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+      return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
   };
   private final RotationalDrivebase rotationalLock = new RotationalDrivebase() {
@@ -212,7 +212,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
       return;
     }
     double currTicks = getRotatorEncoderCount(module);
-    double targetTicks = CANCODER_CPR / 2 - state.angle.getRadians() * RAD / CANCODER_TICKS + OFFSETS[module];
+    double targetTicks = CANCODER_CPR / 2 - state.angle.getRadians() * RAD / CANCODER_TICKS;
     double deltaTicks = (targetTicks - currTicks) % CANCODER_CPR;
     if (deltaTicks >= CANCODER_CPR / 2)
       deltaTicks -= CANCODER_CPR;
@@ -225,12 +225,12 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
       deltaTicks += CANCODER_CPR / 2;
       velTicks *= -1;
     }
-    SmartDashboard.putNumber("set vel " + module, velTicks);
-    SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks - OFFSETS[module]);
-    SmartDashboard.putNumber("cur rot " + module, currTicks - OFFSETS[module]);
+    SmartDashboard.putNumber("set vel " + module, velTicks * METERS_PER_TICKS * 10);
+    SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks);
+    SmartDashboard.putNumber("cur rot " + module, currTicks);
     SmartDashboard.putNumber("delta " + module, deltaTicks);
     motors[module].set(ControlMode.Velocity, velTicks);
-    rotators[module].set(ControlMode.Position, currTicks + deltaTicks);
+    rotators[module].set(ControlMode.Position, currTicks + deltaTicks + OFFSETS[module]);
   }
 
   /**
@@ -242,6 +242,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
    * @param leftOutputValue  left side output value for ControlMode
    * @param rightOutputValue right side output value for ControlMode
    */
+  private SwerveModuleState[] savedModules = new SwerveModuleState[] { new SwerveModuleState(),
+      new SwerveModuleState(), new SwerveModuleState(), new SwerveModuleState() };
+
   private void setVelocities(ChassisSpeeds inputChassisSpeeds) {
     SmartDashboard.putNumber("last x", inputChassisSpeeds.vxMetersPerSecond);
     SmartDashboard.putNumber("last y", inputChassisSpeeds.vyMetersPerSecond);
@@ -253,6 +256,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
       SmartDashboard.putNumber("tgt vel " + i, modules[0].speedMetersPerSecond);
       SmartDashboard.putNumber("tgt deg " + i, modules[0].angle.getDegrees());
     }
+    savedModules = modules;
   }
 
   private void updateVelocity(Translation2d velocity) {
@@ -285,7 +289,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
    * @return Encoder count for specified primary motor.
    */
   public double getRotatorEncoderCount(int module) {
-    return rotators[module].getSelectedSensorPosition();
+    SmartDashboard.putNumber("encoder rotator position " + module,
+        rotators[module].getSelectedSensorPosition() - OFFSETS[module]);
+    return rotators[module].getSelectedSensorPosition() - OFFSETS[module];
   }
 
   /**
@@ -305,6 +311,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
   }
 
   public SwerveModuleState[] getSwerveModuleStates() {
+    // return savedModules;
     SwerveModuleState[] states = new SwerveModuleState[4];
     for (int i = 0; i < 4; i++)
       states[i] = new SwerveModuleState(getEncoderVelocity(i), new Rotation2d(getRotatorEncoderPosition(i)));

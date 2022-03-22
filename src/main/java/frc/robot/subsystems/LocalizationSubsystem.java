@@ -8,12 +8,14 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import edu.wpi.first.math.Matrix;
 import org.ejml.simple.SimpleMatrix;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
 
@@ -47,7 +49,7 @@ public class LocalizationSubsystem extends SubsystemBase {
     SimpleMatrix stateStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.2, 0.2, 0.1 });
     SimpleMatrix localMeasurementStdDevs = new SimpleMatrix(1, 1, false, new double[] { 0.005 });
     SimpleMatrix visionMeasurementStdDevs = new SimpleMatrix(3, 1, false, new double[] { 0.02, 0.02, 0.01 });
-    estimator = new SwerveDrivePoseEstimator(getOrientation(), new Pose2d(new Translation2d(0, 0), getOrientation()),
+    estimator = new SwerveDrivePoseEstimator(getHeading(), new Pose2d(new Translation2d(0, 0), getHeading()),
         drivebase.getKinematics(), new Matrix<>(stateStdDevs), new Matrix<>(localMeasurementStdDevs),
         new Matrix<>(visionMeasurementStdDevs), step);
   }
@@ -139,7 +141,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *         second.
    */
   public Translation2d getVelocity() {
-    return vel;
+    return vel.rotateBy(getHeading());
   }
 
   /**
@@ -165,10 +167,17 @@ public class LocalizationSubsystem extends SubsystemBase {
   @Override
   public void periodic() {
     Translation2d lastPos = pos;
-    pos = estimator.update(getOrientation(), drivebase.getSwerveModuleStates()).getTranslation();
+    SwerveModuleState[] states = drivebase.getSwerveModuleStates();
+    for (int i = 0; i < 4; i++) {
+      SmartDashboard.putNumber("state" + i + "velocity", states[i].speedMetersPerSecond);
+      SmartDashboard.putNumber("state" + i + "angle", states[i].angle.getDegrees());
+    }
+    pos = estimator.update(getHeading(), drivebase.getSwerveModuleStates()).getTranslation();
     vel = pos.minus(lastPos).div(step);
-    System.out.printf("pos: (%f, %f)\n", pos.getX(), pos.getY());
-    System.out.printf("vel: (%f, %f)\n", vel.getX(), vel.getY());
+    SmartDashboard.putNumber("pos x", pos.getX());
+    SmartDashboard.putNumber("pos y", pos.getY());
+    SmartDashboard.putNumber("vel x", vel.getX());
+    SmartDashboard.putNumber("vel y", vel.getY());
   }
 
   @Override
