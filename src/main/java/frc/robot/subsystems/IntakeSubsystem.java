@@ -29,8 +29,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final DigitalInput collisionSensor = new DigitalInput(COLLISION_SENSOR_PORT);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
-    DoubleSolenoid solenoidLeft = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 1, 2);
-    DoubleSolenoid solenoidRight = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 3, 4);
+    DoubleSolenoid solenoid = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 0, 1);
 
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -87,13 +86,11 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Extends the intake. */
     public void extend() {
-        solenoidLeft.set(Value.kReverse);
-        solenoidRight.set(Value.kReverse);
+        solenoid.set(Value.kReverse);
     }
     /** Retracts the intake. */
     public void retract() {
-        solenoidLeft.set(Value.kForward);
-        solenoidRight.set(Value.kForward);
+        solenoid.set(Value.kForward);
     }
 
     @Override
