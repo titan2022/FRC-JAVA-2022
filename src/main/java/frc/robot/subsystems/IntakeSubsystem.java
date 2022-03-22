@@ -16,9 +16,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private static final int INTAKE_MOTOR_PORT = 19;
     private static final int HOPPER_MOTOR_PORT = 21;
-    private static final int INTAKE_SENSOR_PORT = 0;
-    private static final int HOPPER_SENSOR_PORT1 = 1;
-    private static final int HOPPER_SENSOR_PORT2 = 2;
+    private static final int INTAKE_SENSOR_PORT = 6;
+    private static final int HOPPER_SENSOR_PORT1 = 7;
+    private static final int HOPPER_SENSOR_PORT2 = 8;
     private static final int COLLISION_SENSOR_PORT = 9;
 
     private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
@@ -95,7 +95,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if(collisionSensor.get())
-            retract();
+        //if(collisionSensor.get())
+            //retract();
     }
 }

@@ -38,7 +38,7 @@ public class Robot extends TimedRobot {
   private static final XboxController xbox = new XboxController(0);
 
   // Subsystems
-  private final ShooterSubsystem shooter = new ShooterSubsystem();
+  //private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final DriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
@@ -90,16 +90,21 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
-    new JoystickButton(xbox, Button.kLeftBumper.value)
-      .whenHeld(new IntakeCargo(intake, shooter));
-    shooter.setDefaultCommand(new ManualShooterCommand(shooter));
+    /*new JoystickButton(xbox, Button.kLeftBumper.value)
+      .whenHeld(new IntakeCargo(intake, shooter));*/
+    //shooter.setDefaultCommand(new ManualShooterCommand(shooter));
     drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if(xbox.getLeftBumperPressed())
+      intake.extend();
+    else if(xbox.getRightBumperPressed())
+      intake.retract();
+  }
 
   @Override
   public void testInit() {
