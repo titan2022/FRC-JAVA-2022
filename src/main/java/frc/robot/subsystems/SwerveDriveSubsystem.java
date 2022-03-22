@@ -229,8 +229,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
     SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks);
     SmartDashboard.putNumber("cur rot " + module, currTicks);
     SmartDashboard.putNumber("delta " + module, deltaTicks);
-    motors[module].set(ControlMode.Velocity, velTicks + OFFSETS[module]);
-    rotators[module].set(ControlMode.Position, currTicks + deltaTicks);
+    motors[module].set(ControlMode.Velocity, velTicks);
+    rotators[module].set(ControlMode.Position, currTicks + deltaTicks + OFFSETS[module]);
   }
 
   /**
