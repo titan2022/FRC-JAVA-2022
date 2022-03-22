@@ -117,7 +117,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     @Override
     public Translation2d getVelocity() {
       ChassisSpeeds speeds = getVelocities();
-      return new Translation2d(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+      return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
   };
   private final RotationalDrivebase rotationalLock = new RotationalDrivebase() {
@@ -213,7 +213,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
       return;
     }
     double currTicks = getRotatorEncoderCount(module);
-    double targetTicks = CANCODER_CPR/2 - state.angle.getRadians() * RAD / CANCODER_TICKS + OFFSETS[module];
+    double targetTicks = CANCODER_CPR/2 - state.angle.getRadians() * RAD / CANCODER_TICKS;
     double deltaTicks = (targetTicks - currTicks) % CANCODER_CPR;
     if(deltaTicks >= CANCODER_CPR / 2)
       deltaTicks -= CANCODER_CPR;
@@ -228,10 +228,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
       velTicks *= -1;
     }
     SmartDashboard.putNumber("set vel " + module, velTicks);
-    SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks - OFFSETS[module]);
-    SmartDashboard.putNumber("cur rot " + module, currTicks - OFFSETS[module]);
+    SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks);
+    SmartDashboard.putNumber("cur rot " + module, currTicks);
     SmartDashboard.putNumber("delta " + module, deltaTicks);
-    motors[module].set(ControlMode.Velocity, velTicks);
+    motors[module].set(ControlMode.Velocity, velTicks + OFFSETS[module]);
     rotators[module].set(ControlMode.Position, currTicks + deltaTicks);
   }
 
@@ -286,7 +286,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    */
   public double getRotatorEncoderCount(int module)
   {
-    return rotators[module].getSelectedSensorPosition();
+    return rotators[module].getSelectedSensorPosition() - OFFSETS[module];
   }
 
   /**
