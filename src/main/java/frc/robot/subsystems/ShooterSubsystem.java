@@ -45,6 +45,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final Color kWhite = new Color(1, 1, 1);
     private final ColorMatch colorMatch = new ColorMatch();
 
+    public boolean queueEnabled = true;
     public boolean hoodEnabled = true;
     public boolean colorEnabled = true;
     public CargoColor colorOverride = CargoColor.NONE;

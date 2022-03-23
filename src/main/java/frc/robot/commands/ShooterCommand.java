@@ -101,9 +101,9 @@ public class ShooterCommand extends CommandBase {
         Translation2d vel = nav.getVelocity();
         Rotation2d phi = nav.getOrientation();
         double h = TARGET_HEIGHT - shooter.getHeight();
-        if(calcError(vel, phi, h) < threshold)
+        if(calcError(vel, phi, h) < threshold && shooter.queueEnabled)
             intake.spinHopper(1.0);
-        else
+        else if(shooter.queueEnabled)
             intake.spinIntake(0);
         double r = nav.getDistance();
         if(shooter.hoodEnabled)

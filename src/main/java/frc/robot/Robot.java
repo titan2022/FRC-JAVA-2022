@@ -140,6 +140,8 @@ public class Robot extends TimedRobot {
       () -> shooter.runQueue(-0.5),
       () -> shooter.runQueue(0.0)));
     
+    xinmotek.rightPad.topLeft.whenPressed(() -> {shooter.queueEnabled = false;});
+    xinmotek.rightPad.bottomLeft.whenPressed(() -> {shooter.queueEnabled = true;});
     xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(0.65), () -> climb.runClimb(0.0), climb));
     xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.65), () -> climb.runClimb(0.0), climb));
 
