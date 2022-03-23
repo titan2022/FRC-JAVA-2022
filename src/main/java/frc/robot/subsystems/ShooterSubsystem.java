@@ -145,6 +145,21 @@ public class ShooterSubsystem extends SubsystemBase {
             SmartDashboard.putNumber("Hood angle", radians * RAD / DEG);
         }
     }
+    /**
+     * Rotates the hood at a given relative speed.
+     * 
+     * @param percent  The rate to run the hood motor, in the range [-1,1]
+     */
+    public void spinHood(double percent) {
+        double currentAngle = getAngle();
+        SmartDashboard.putNumber("Hood angle", currentAngle / DEG);
+        if(percent > 0 && currentAngle < getMaxAngle())
+            hoodMotor.set(ControlMode.PercentOutput, percent * 0.2);
+        else if(percent < 0 && currentAngle > getMinAngle())
+            hoodMotor.set(ControlMode.PercentOutput, percent * 0.2);
+        else
+            hoodMotor.set(ControlMode.PercentOutput, 0);
+    }
 
     /** Coasts the hood motor for easy manual actuation. */
     public void coastHood() {
