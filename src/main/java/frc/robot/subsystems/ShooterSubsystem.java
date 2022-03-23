@@ -132,7 +132,15 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void setAngle(double radians) {
         SmartDashboard.putNumber("Hood angle requested", radians * RAD / DEG);
-        if(HOOD_MIN_ANGLE < radians && radians < HOOD_MAX_ANGLE){
+        if(radians < HOOD_MIN_ANGLE){
+            hoodMotor.set(ControlMode.Position, 0);
+            SmartDashboard.putNumber("Hood angle", 0);
+        }
+        else if(radians > HOOD_MAX_ANGLE){
+            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (HOOD_MAX_ANGLE - HOOD_MIN_ANGLE) / FALCON_TICKS);
+            SmartDashboard.putNumber("Hood angle", HOOD_MAX_ANGLE / DEG);
+        }
+        else{
             hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
             SmartDashboard.putNumber("Hood angle", radians * RAD / DEG);
         }
