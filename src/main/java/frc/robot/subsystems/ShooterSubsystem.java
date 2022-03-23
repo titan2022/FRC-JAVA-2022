@@ -7,6 +7,7 @@ import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
+import com.revrobotics.ColorSensorV3.RawColor;
 
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C.Port;
@@ -92,8 +93,10 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param speed  The target velocity of the shooter in meters per second.
      */
     public void run(double speed) {
+        SmartDashboard.putNumber("Shooter vel requested", speed);
+        SmartDashboard.putBoolean("Shooter mode velocity", true);
         leftMotor.set(ControlMode.Velocity,
-                FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
+            FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
     }
 
     /**
@@ -103,12 +106,14 @@ public class ShooterSubsystem extends SubsystemBase {
      *  maximum output, [-1,1].
      */
     public void runPercent(double percent) {
+        SmartDashboard.putNumber("Shooter vel requested", percent);
+        SmartDashboard.putBoolean("Shooter mode velocity", false);
         leftMotor.set(ControlMode.PercentOutput, percent);
     }
 
     /** Turns off the shooter */
     public void coast() {
-        leftMotor.set(ControlMode.PercentOutput, 0);
+        runPercent(0);
     }
 
     /**
@@ -208,5 +213,30 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public boolean hasQueue() {
         return getQueueColor() != CargoColor.NONE;
+    }
+
+    public void sendDebug() {
+        RawColor rawColor = colorSensor.getRawColor();
+        SmartDashboard.putNumber("raw red", rawColor.red);
+        SmartDashboard.putNumber("raw green", rawColor.green);
+        SmartDashboard.putNumber("raw blue", rawColor.blue);
+        SmartDashboard.putNumber("raw IR", rawColor.ir);
+        switch(getQueueColor()){
+            case RED:
+                SmartDashboard.putString("Cargo Color", "Red");
+                break;
+            case BLUE:
+                SmartDashboard.putString("Cargo Color", "Blue");
+                break;
+            case NONE:
+                SmartDashboard.putString("Cargo Color", "None");
+                break;
+            default:
+                SmartDashboard.putString("Cargo Color", "Error");
+                break;
+        }
+        SmartDashboard.putNumber("Hood angle", getAngle());
+        SmartDashboard.putNumber("Shooter velocity", getVelocity());
+        SmartDashboard.putBoolean("Flywheel Cargo", hasCargo());
     }
 }
