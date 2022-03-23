@@ -27,14 +27,23 @@ public class ClimbSubsystem extends SubsystemBase {
         rightMotor.configAllSettings(config);
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
-        rightMotor.follow(leftMotor);
         leftMotor.setInverted(true);
     }
 
     public void runClimb(double pct) {
-        SmartDashboard.putNumber("running climb (before)", pct);
+        SmartDashboard.putNumber("climb left", pct);
+        SmartDashboard.putNumber("climb right", pct);
         leftMotor.set(ControlMode.PercentOutput, pct);
-        SmartDashboard.putNumber("running climb (after)", pct);
+        rightMotor.set(ControlMode.PercentOutput, pct);
+    }
+
+    public void spinLeft(double pct) {
+        SmartDashboard.putNumber("climb left", pct);
+        leftMotor.set(ControlMode.PercentOutput, pct);
+    }
+    public void spinRight(double pct) {
+        SmartDashboard.putNumber("climb right", pct);
+        rightMotor.set(ControlMode.PercentOutput, pct);
     }
 
     public void coast() {

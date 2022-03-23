@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
@@ -143,15 +144,17 @@ public class Robot extends TimedRobot {
     xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.65), () -> climb.runClimb(0.0), climb));
 
     Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
-    new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride);
-    new Trigger(() -> xinmotek.getRightX() < 0).cancelWhenActive(flywheelOverride);
+    Command rightClimbControl = new RunCommand(() -> climb.spinRight(0.65 * xinmotek.getRightY()));
+    new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride).cancelWhenActive(rightClimbControl);
+    new Trigger(() -> xinmotek.getRightX() < 0).cancelWhenActive(flywheelOverride).whenActive(rightClimbControl);
 
     Command hoodOverride = new FunctionalCommand(
       () -> {shooter.hoodEnabled = false;},
       () -> shooter.spinHood(xinmotek.getLeftY()),
       (interrupted) -> {shooter.hoodEnabled = true;}, () -> false);
-    new Trigger(() -> xinmotek.getLeftX() > 0).whenActive(hoodOverride);
-    new Trigger(() -> xinmotek.getLeftX() < 0).cancelWhenActive(hoodOverride);
+    Command leftClimbControl = new RunCommand(() -> climb.spinLeft(0.65 * xinmotek.getLeftY()));
+    new Trigger(() -> xinmotek.getLeftX() > 0).whenActive(hoodOverride).cancelWhenActive(leftClimbControl);
+    new Trigger(() -> xinmotek.getLeftX() < 0).cancelWhenActive(hoodOverride).whenActive(leftClimbControl);
   }
 
   /** This function is called periodically during operator control. */
