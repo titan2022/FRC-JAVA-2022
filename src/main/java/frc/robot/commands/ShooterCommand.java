@@ -71,11 +71,21 @@ public class ShooterCommand extends CommandBase {
 
     private void setVTheta(double r, double h) {
         double vx = Math.sqrt(g*r*r / (h - m*r) / 2);
-        Translation2d targetVel = new Translation2d(vx, g*r / vx + m*vx);
-        shooter.run(targetVel.getNorm());
-        shooter.setAngle(Math.PI - Math.atan2(targetVel.getY(), targetVel.getX()));
-        SmartDashboard.putNumber("Tgt Shooter Vel", targetVel.getNorm());
-        SmartDashboard.putNumber("Tgt Hood Angle", Math.PI - Math.atan2(targetVel.getY(), targetVel.getX()));
+        double vy = g*r / vx + m*vx;
+        double theta = Math.PI - Math.atan2(vy, vx);
+        shooter.setAngle(theta);
+        if(theta < shooter.getMinAngle()){
+            setV(r, shooter.getMinAngle(), h);
+        }
+        else if(theta > shooter.getMaxAngle()){
+            setV(r, shooter.getMaxAngle(), h);
+        }
+        else{
+            double vel = Math.hypot(vx, vy);
+            shooter.run(vel);
+            SmartDashboard.putNumber("Tgt Shooter Vel", vel);
+            SmartDashboard.putNumber("Tgt Hood Angle", theta);
+        }
     }
 
     private void setV(double r, double theta, double h) {
