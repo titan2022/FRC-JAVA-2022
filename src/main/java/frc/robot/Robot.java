@@ -100,8 +100,15 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     enableRobot();
     nav.translateTo(new Translation2d(0, 0));
-    new GetDriveInformationCommand(nav, drivebase.getTranslational()).schedule();;
-    new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 1), 1, 0.1, 2).schedule();
+    nav.resetHeading();
+    new GetDriveInformationCommand(nav, drivebase.getTranslational()).schedule();
+    new SequentialCommandGroup(
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 1.5), 1, 0.1, 2),
+      new StartEndCommand(() -> intake.spinIntake(1.0), () -> intake.spinIntake(0.0), intake).withTimeout(1.0),
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(1.5, 1.5), 1, 0.1, 2),
+      new StartEndCommand(() -> shooter.runPercent(0.5), () -> shooter.runPercent(0.0), shooter).withTimeout(2.0),
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 3), 1, 0.1, 2)
+    ).schedule();
   }
 
   /** This function is called periodically during autonomous. */
