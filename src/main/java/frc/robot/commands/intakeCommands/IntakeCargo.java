@@ -12,7 +12,7 @@ public class IntakeCargo extends SequentialCommandGroup {
             new StartEndCommand(
                 () -> {intake.spinIntake(1.0); intake.spinHopper(1.0);},
                 () -> {intake.spinIntake(0.0); intake.spinHopper(0.0);},
-                intake).until(intake::bottomHopperBall),
+                intake).until(intake::hasCargo),
             new ScheduleCommand(new EnqueueCargo(intake, shooter))
         );
     }

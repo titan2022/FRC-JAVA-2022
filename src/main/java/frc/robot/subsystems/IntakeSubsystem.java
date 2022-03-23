@@ -16,21 +16,14 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private static final int INTAKE_MOTOR_PORT = 19;
     private static final int HOPPER_MOTOR_PORT = 21;
-    private static final int INTAKE_SENSOR_PORT = 6;
-    private static final int HOPPER_SENSOR_PORT1 = 7;
-    private static final int HOPPER_SENSOR_PORT2 = 8;
-    private static final int COLLISION_SENSOR_PORT = 9;
+    private static final int HOPPER_SENSOR_PORT = 9;
 
     private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
     private static final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT);
-    private static final DigitalInput intakeBeamSensor = new DigitalInput(INTAKE_SENSOR_PORT);
-    private static final DigitalInput bottomHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT1);
-    private static final DigitalInput topHopperBeamSensor = new DigitalInput(HOPPER_SENSOR_PORT2);
-    private static final DigitalInput collisionSensor = new DigitalInput(COLLISION_SENSOR_PORT);
+    private static final DigitalInput hopperSensor = new DigitalInput(HOPPER_SENSOR_PORT);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
-    //DoubleSolenoid solenoidLeft = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 1, 2);
-    //DoubleSolenoid solenoidRight = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 3, 4);
+    DoubleSolenoid solenoid = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 0, 1);
 
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -50,16 +43,13 @@ public class IntakeSubsystem extends SubsystemBase {
         hopperMotor.selectProfileSlot(0, 0);
     }
 
-    public boolean intakeBall() {
-        return intakeBeamSensor.get();
-    }
-
-    public boolean bottomHopperBall(){
-        return bottomHopperBeamSensor.get();
-    }
-    
-    public boolean topHopperBall(){
-        return topHopperBeamSensor.get();
+    /**
+     * Determines whether there is a cargo in the sequencer.
+     * 
+     * @return  True if there is a cargo in the sequencer, otherwise false.
+     */
+    public boolean hasCargo() {
+        return hopperSensor.get();
     }
 
     /**
@@ -87,18 +77,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Extends the intake. */
     public void extend() {
-        //solenoidLeft.set(Value.kReverse);
-        //solenoidRight.set(Value.kReverse);
+        solenoid.set(Value.kReverse);
     }
     /** Retracts the intake. */
     public void retract() {
-        //solenoidLeft.set(Value.kForward);
-        //solenoidRight.set(Value.kForward);
+        solenoid.set(Value.kForward);
     }
 
     @Override
-    public void periodic() {
-        if(collisionSensor.get())
-            retract();
-    }
+    public void periodic() {}
 }
