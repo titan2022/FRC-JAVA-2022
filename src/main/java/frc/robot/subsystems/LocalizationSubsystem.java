@@ -6,6 +6,7 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -27,6 +28,8 @@ public class LocalizationSubsystem extends SubsystemBase {
   private DMatrix2x2 prec = new DMatrix2x2();
   private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
   private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
+  private Translation2d pigeonBias = new Translation2d();
+  private Rotation2d pigeonOrientation = new Rotation2d();
 
   /**
    * Creates a new LocalizationSubsystem.
@@ -66,7 +69,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  derivative of position considered.
    */
   public LocalizationSubsystem(double step, double drift) {
-    this(step, 1, drift);
+    this(step, 2, drift);
   }
   /**
    * Creates a new LocalizationSubsystem.
@@ -78,7 +81,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  this subsystem.
    */
   public LocalizationSubsystem(double step) {
-    this(step, 1, 0.0);
+    this(step, 2, 0.0);
   }
 
   /**
@@ -316,18 +319,16 @@ public class LocalizationSubsystem extends SubsystemBase {
     return new Rotation2d(Math.PI/2).minus(getOrientation());
   }
 
-  /**
-   * Estimates the angle from the robot heading to the origin.
-   * 
-   * @return  The current estimate of the angle from the robot heading to the
-   *  origin.
-   */
-  public Rotation2d getDeltaPhi() {
-    return new Rotation2d(-1, 0).minus(getOrientation()).plus(getTheta());  // TODO: Incorporate limelight.
+  private void pigeonUpdate() {
+    short[] accArr = new short[]{0, 0, 0};
+    imu.getBiasedAccelerometer(accArr);
+    Translation2d rawAcc = new Translation2d(9.8 * accArr[0] / (1<<14), 9.8 * accArr[1] / (1<<14));
+    addData(2, rawAcc.minus(pigeonBias).rotateBy(pigeonOrientation).rotateBy(getHeading()), 0.001);
   }
 
   @Override
   public void periodic() {
+    pigeonUpdate();
     filter.step(step);
   }
 
