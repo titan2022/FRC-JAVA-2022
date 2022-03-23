@@ -8,12 +8,14 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.intakeCommands.SpinHopper;
 import frc.robot.commands.intakeCommands.SpinIntake;
 import frc.robot.commands.RotationalDriveCommand;
 import frc.robot.commands.TranslationalDriveCommand;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
@@ -39,6 +41,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
   private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02);
+  private final ClimbSubsystem climb = new ClimbSubsystem();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -93,7 +96,11 @@ public class Robot extends TimedRobot {
     shooter.setDefaultCommand(new ManualShooterCommand(shooter));
     drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
-    new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
+    new JoystickButton(xbox, Button.kX.value).whenPressed(() -> nav.resetHeading());
+    new JoystickButton(xbox, Button.kY.value)
+      .whenHeld(new StartEndCommand(() -> climb.runClimb(1.0), () -> climb.runClimb(0.0), climb));
+    new JoystickButton(xbox, Button.kA.value)
+      .whenHeld(new StartEndCommand(() -> climb.runClimb(-1.0), () -> climb.runClimb(0.0), climb));
   }
 
   /** This function is called periodically during operator control. */
