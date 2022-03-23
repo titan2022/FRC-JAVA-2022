@@ -1,9 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.kinematics.ChassisSpeeds;
-import edu.wpi.first.wpilibj2.command.Subsystem;
-
-public interface DriveSubsystem extends Subsystem {
-    public void setVelocities(ChassisSpeeds velocities);
-    public ChassisSpeeds getVelocities();
+/** Due to how WPI handles resource locking, Translational and Rotational are implemented as two sub-subsystems so that each can be controlled indidually */
+public interface DriveSubsystem {
+    public TranslationalDrivebase getTranlational();
+    public RotationalDrivebase getRotational();
 }

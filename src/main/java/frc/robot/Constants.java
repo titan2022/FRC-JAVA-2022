@@ -7,7 +7,7 @@ package frc.robot;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.util.Units;
+import edu.wpi.first.math.util.Units;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -46,12 +46,12 @@ public final class Constants {
     {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 0.05;
+        talon.slot0.kP = 0.06;
         talon.slot0.kI = 0;  // 250
-        talon.slot0.kD = 0;        
-        talon.slot0.kF = 0;
+        talon.slot0.kD = 0.2;
+        talon.slot0.kF = 0.045;
         talon.slot0.integralZone = 900;
-        talon.slot0.allowableClosedloopError = 217;
+        talon.slot0.allowableClosedloopError = 20;
         talon.slot0.maxIntegralAccumulator = 254.000000;
         //talon.slot0.closedLoopPeakOutput = 0.869990; // Sets maximum output of the PID controller
         //talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the PID controller
