@@ -54,6 +54,8 @@ public class ShooterSubsystem extends SubsystemBase {
         NONE, RED, BLUE;
     }
 
+    public CargoColor robotColor = CargoColor.RED;
+
     public ShooterSubsystem(){
         leftMotor.configFactoryDefault();
         rightMotor.configFactoryDefault();

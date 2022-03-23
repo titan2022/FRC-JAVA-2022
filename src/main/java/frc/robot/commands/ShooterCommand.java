@@ -105,7 +105,7 @@ public class ShooterCommand extends CommandBase {
         double hoodAngle = Math.PI - target.theta.getRadians();
         if(shooter.hoodEnabled && (hoodAngle > shooter.getMaxAngle() || hoodAngle < shooter.getMinAngle()))
             target = new Trajectory(r, h, drift, theta);
-        shooter.run(target.vel);
+        shooter.run(shooter.getQueueColor() == shooter.robotColor ? target.vel : 1.5);
         if(shooter.hoodEnabled)
             shooter.setAngle(Math.PI - target.theta.getRadians());
         base.setRotation(updateRotationPID(r, nav.getTheta(), fieldVel, deltaPhi.getRadians()));
