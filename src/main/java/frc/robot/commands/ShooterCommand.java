@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.RotationalDrivebase;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -13,7 +12,6 @@ import static frc.robot.Constants.Unit.*;
 public class ShooterCommand extends CommandBase {
     private ShooterSubsystem shooter;
     private RotationalDrivebase base;
-    private IntakeSubsystem intake;
     private LocalizationSubsystem nav;
     private double m;
     private double kP, kI, kD, kF;
@@ -59,10 +57,9 @@ public class ShooterCommand extends CommandBase {
         }
     }
 
-    public ShooterCommand(ShooterSubsystem shooter, RotationalDrivebase base, IntakeSubsystem intake, LocalizationSubsystem nav, double targetSlope, double P, double I, double D, double F, double threshold, double step) {
+    public ShooterCommand(ShooterSubsystem shooter, RotationalDrivebase base, LocalizationSubsystem nav, double targetSlope, double P, double I, double D, double F, double threshold, double step) {
         this.shooter = shooter;
         this.base = base;
-        this.intake = intake;
         this.nav = nav;
         m = targetSlope;
         kP = P;
@@ -71,7 +68,7 @@ public class ShooterCommand extends CommandBase {
         kF = F;
         this.threshold = threshold;
         this.step = step;
-        addRequirements(shooter, base, intake);
+        addRequirements(shooter, base);
     }
 
     @Override
