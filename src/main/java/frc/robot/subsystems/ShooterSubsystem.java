@@ -37,7 +37,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
     private static final WPI_TalonFX queueMotor = new WPI_TalonFX(QUEUE_MOTOR_ID);
     private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_SENSOR_PORT);
-    private static final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kOnboard);
+    private static final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kMXP);
 
     private static final Color kRed = new Color(1, 0, 0);
     private static final Color kBlue = new Color(0, 0, 1);
