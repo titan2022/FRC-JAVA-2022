@@ -7,6 +7,7 @@ package frc.robot.subsystems;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -28,7 +29,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   private DMatrix2x2 prec = new DMatrix2x2();
   private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
   private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
-  private Translation2d pigeonBias = new Translation2d();
+  private Translation2d pigeonBias = new Translation2d(-0.324, -0.659);
   private Rotation2d pigeonOrientation = new Rotation2d();
 
   /**
@@ -319,11 +320,27 @@ public class LocalizationSubsystem extends SubsystemBase {
     return new Rotation2d(Math.PI/2).minus(getOrientation());
   }
 
+  private Translation2d accum = new Translation2d();
+  private double accum_t = 0;
+
   private void pigeonUpdate() {
     short[] accArr = new short[]{0, 0, 0};
     imu.getBiasedAccelerometer(accArr);
     Translation2d rawAcc = new Translation2d(9.8 * accArr[0] / (1<<14), 9.8 * accArr[1] / (1<<14));
-    addData(2, rawAcc.minus(pigeonBias).rotateBy(pigeonOrientation).rotateBy(getHeading()), 0.001);
+    Translation2d finalAcc = rawAcc.minus(pigeonBias).rotateBy(pigeonOrientation).rotateBy(getHeading());
+    SmartDashboard.putNumber("acc x", rawAcc.getX());
+    SmartDashboard.putNumber("acc y", rawAcc.getY());
+    accum_t += 0.02;
+    accum = accum.plus(rawAcc.minus(accum).times(0.02 / accum_t));
+    SmartDashboard.putNumber("accum x", accum.getX());
+    SmartDashboard.putNumber("accum y", accum.getY());
+    SmartDashboard.putNumber("accum time", accum_t);
+    if(accum_t > 60){
+      accum_t = 0;
+      System.out.println("x: " + accum.getX());
+      System.out.println("y: " + accum.getY());
+    }
+    addData(2, finalAcc, 0.001);
   }
 
   @Override

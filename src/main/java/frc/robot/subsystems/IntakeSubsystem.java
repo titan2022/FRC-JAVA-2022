@@ -16,9 +16,9 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private static final int INTAKE_MOTOR_PORT = 19;
     private static final int HOPPER_MOTOR_PORT = 21;
-    private static final int INTAKE_SENSOR_PORT = 0;
-    private static final int HOPPER_SENSOR_PORT1 = 1;
-    private static final int HOPPER_SENSOR_PORT2 = 2;
+    private static final int INTAKE_SENSOR_PORT = 6;
+    private static final int HOPPER_SENSOR_PORT1 = 7;
+    private static final int HOPPER_SENSOR_PORT2 = 8;
     private static final int COLLISION_SENSOR_PORT = 9;
 
     private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
@@ -29,8 +29,8 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final DigitalInput collisionSensor = new DigitalInput(COLLISION_SENSOR_PORT);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
-    DoubleSolenoid solenoidLeft = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 1, 2);
-    DoubleSolenoid solenoidRight = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 3, 4);
+    //DoubleSolenoid solenoidLeft = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 1, 2);
+    //DoubleSolenoid solenoidRight = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 3, 4);
 
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -87,13 +87,13 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Extends the intake. */
     public void extend() {
-        solenoidLeft.set(Value.kReverse);
-        solenoidRight.set(Value.kReverse);
+        //solenoidLeft.set(Value.kReverse);
+        //solenoidRight.set(Value.kReverse);
     }
     /** Retracts the intake. */
     public void retract() {
-        solenoidLeft.set(Value.kForward);
-        solenoidRight.set(Value.kForward);
+        //solenoidLeft.set(Value.kForward);
+        //solenoidRight.set(Value.kForward);
     }
 
     @Override
