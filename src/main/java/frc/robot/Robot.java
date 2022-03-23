@@ -72,7 +72,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    shooter.disable();
+  }
 
   @Override
   public void disabledPeriodic() {}
@@ -81,6 +83,7 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // TODO: Create autonomous
+    shooter.enable();
   }
 
   /** This function is called periodically during autonomous. */
@@ -96,6 +99,7 @@ public class Robot extends TimedRobot {
     drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
+    shooter.enable();
   }
 
   /** This function is called periodically during operator control. */

@@ -2,6 +2,7 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
@@ -53,7 +54,9 @@ public class ShooterCommand extends CommandBase {
         double vy = v * incl.getSin();
         double v_ground = v * incl.getCos();
         double t = (Math.sqrt(vy*vy - 2*g*h) - vy) / g;
-        return new Translation2d(v_ground, phi).plus(vel).times(t).plus(pos).getNorm();
+        double error = new Translation2d(v_ground, phi).plus(vel).times(t).plus(pos).getNorm();
+        SmartDashboard.putNumber("Shooter error", error);
+        return error;
     }
 
     private double updateRotationPID(double r, Rotation2d theta, Translation2d vel, Rotation2d phi) {
@@ -66,6 +69,33 @@ public class ShooterCommand extends CommandBase {
         return omega;
     }
 
+    private void setVTheta(double r, double h) {
+        double vx = Math.sqrt(g*r*r / (h - m*r) / 2);
+        double vy = g*r / vx + m*vx;
+        double theta = Math.PI - Math.atan2(vy, vx);
+        shooter.setAngle(theta);
+        if(theta < shooter.getMinAngle()){
+            setV(r, shooter.getMinAngle(), h);
+        }
+        else if(theta > shooter.getMaxAngle()){
+            setV(r, shooter.getMaxAngle(), h);
+        }
+        else{
+            double vel = Math.hypot(vx, vy);
+            shooter.run(vel);
+            SmartDashboard.putNumber("Tgt Shooter Vel", vel);
+            SmartDashboard.putNumber("Tgt Hood Angle", theta);
+        }
+    }
+
+    private void setV(double r, double theta, double h) {
+        double drop = Math.tan(theta) * r - h;
+        double vel = r * Math.sqrt(g / drop / 2) / Math.cos(theta);
+        shooter.run(vel);
+        SmartDashboard.putNumber("Tgt Shooter Vel", vel);
+        SmartDashboard.putNumber("Tgt Hood Angle", theta);
+    }
+
     @Override
     public void execute() {
         Translation2d vel = nav.getVelocity();
@@ -76,15 +106,16 @@ public class ShooterCommand extends CommandBase {
         else
             intake.spinIntake(0);
         double r = nav.getDistance();
-        double vx = Math.sqrt(g*r*r / (h - m*r) / 2);
-        Translation2d targetVel = new Translation2d(vx, g*r / vx + m*vx);
-        shooter.run(targetVel.getNorm());
-        shooter.setAngle(Math.PI - Math.atan2(targetVel.getY(), targetVel.getX()));
+        if(shooter.hoodEnabled)
+            setVTheta(r, h);
+        else
+            setV(r, Math.PI - shooter.getAngle(), h);
         base.setRotation(updateRotationPID(r, nav.getTheta(), vel, phi));
         if(shooter.hasCargo())
             state = 1;
         else if(state == 1)
             state = 2;
+        shooter.sendDebug();
     }
 
     @Override
