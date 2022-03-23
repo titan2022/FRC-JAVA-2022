@@ -345,7 +345,7 @@ public class LocalizationSubsystem extends SubsystemBase {
 
   @Override
   public void periodic() {
-    pigeonUpdate();
+    //pigeonUpdate();
     filter.step(step);
   }
 
