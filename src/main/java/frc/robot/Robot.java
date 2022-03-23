@@ -83,16 +83,22 @@ public class Robot extends TimedRobot {
   @Override
   public void disabledInit() {
     shooter.disable();
+    climb.coast();
   }
 
   @Override
   public void disabledPeriodic() {}
 
+  private void enableRobot() {
+    shooter.enable();
+    climb.brake();
+  }
+
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
     // TODO: Create autonomous
-    shooter.enable();
+    enableRobot();
   }
 
   /** This function is called periodically during autonomous. */
@@ -102,6 +108,8 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
+    enableRobot();
+
     drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
