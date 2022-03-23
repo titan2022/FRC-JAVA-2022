@@ -52,7 +52,7 @@ public class RotationalDriveCommand extends CommandBase {
     public void execute() {
         double joy = applyDeadband(controller.getRightX(), 0.1);
         SmartDashboard.putNumber("joyOmega", joy);
-        double omega = scaleVelocity(joy);
+        double omega = -scaleVelocity(joy);
         SmartDashboard.putNumber("omega", omega);
         drive.setRotation(omega);
     }
