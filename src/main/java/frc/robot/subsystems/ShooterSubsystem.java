@@ -45,6 +45,10 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final Color kWhite = new Color(1, 1, 1);
     private final ColorMatch colorMatch = new ColorMatch();
 
+    public boolean hoodEnabled = true;
+    public boolean colorEnabled = true;
+    public CargoColor colorOverride = CargoColor.NONE;
+
     public static enum CargoColor {
         NONE, RED, BLUE;
     }
@@ -220,6 +224,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return  The color of the cargo currently in the queue.
      */
     public CargoColor getQueueColor() {
+        if(!colorEnabled)
+            return colorOverride;
         ColorMatchResult result = colorMatch.matchClosestColor(colorSensor.getColor());
         if(result.color == kRed)
             return CargoColor.RED;

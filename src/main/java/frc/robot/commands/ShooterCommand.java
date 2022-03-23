@@ -66,6 +66,18 @@ public class ShooterCommand extends CommandBase {
         return omega;
     }
 
+    private void setVTheta(double r, double h) {
+        double vx = Math.sqrt(g*r*r / (h - m*r) / 2);
+        Translation2d targetVel = new Translation2d(vx, g*r / vx + m*vx);
+        shooter.run(targetVel.getNorm());
+        shooter.setAngle(Math.PI - Math.atan2(targetVel.getY(), targetVel.getX()));
+    }
+
+    private void setV(double r, double theta, double h) {
+        double drop = Math.tan(theta) * r - h;
+        shooter.run(r * Math.sqrt(g / drop / 2) / Math.cos(theta));
+    }
+
     @Override
     public void execute() {
         Translation2d vel = nav.getVelocity();
@@ -76,10 +88,10 @@ public class ShooterCommand extends CommandBase {
         else
             intake.spinIntake(0);
         double r = nav.getDistance();
-        double vx = Math.sqrt(g*r*r / (h - m*r) / 2);
-        Translation2d targetVel = new Translation2d(vx, g*r / vx + m*vx);
-        shooter.run(targetVel.getNorm());
-        shooter.setAngle(Math.PI - Math.atan2(targetVel.getY(), targetVel.getX()));
+        if(shooter.hoodEnabled)
+            setVTheta(r, h);
+        else
+            setV(r, shooter.getAngle(), h);
         base.setRotation(updateRotationPID(r, nav.getTheta(), vel, phi));
         if(shooter.hasCargo())
             state = 1;
