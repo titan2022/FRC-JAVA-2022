@@ -289,6 +289,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     return rotators[module].getSelectedSensorPosition() - OFFSETS[module];
   }
 
+  public double getEncoderCount(int module) {
+    return motors[module].getSelectedSensorPosition();
+  }
+
   /**
    * Gets the amount of rotation from a primary motor.
    * 
