@@ -103,9 +103,10 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // TODO: Create autonomous
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(1, 2);
+    Translation2d goal = new Translation2d(0, 1);
     double v = 5;
-    new RMPMoveToPositionCommand(root, goal, nav, v).schedule();
+    double tolerance = 0.1;
+    new RMPMoveToPositionCommand(root, goal, nav, v, tolerance).schedule();
     new RMPMotionGenerationCommand(nav, root, drivebase.getTranslational()).schedule();
     // odometry.schedule();
 

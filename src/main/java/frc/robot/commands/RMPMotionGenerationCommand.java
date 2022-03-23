@@ -15,8 +15,8 @@ public class RMPMotionGenerationCommand extends CommandBase {
     private RMPRoot root;
     private TranslationalDrivebase drivebase;
     private double deltaT;
-    private Translation2d pos = new Translation2d(0, 0); // TEST
-    private Translation2d vel = new Translation2d(0, 0); // TEST
+    // private Translation2d pos = new Translation2d(0, 0); // TEST
+    // private Translation2d vel = new Translation2d(0, 0); // TEST
 
     public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root,
             TranslationalDrivebase drivebase,
@@ -41,8 +41,8 @@ public class RMPMotionGenerationCommand extends CommandBase {
     @Override
     public void execute() {
 
-        // Translation2d pos = localization.getPred(0);
-        // Translation2d vel = localization.getPred(1);
+        Translation2d pos = localization.getPred(0);
+        Translation2d vel = localization.getPred(1);
         // Translation2d pos = new Translation2d(0, 0); // TEST
         // Translation2d vel = new Translation2d(1, 1); // TEST
         SimpleMatrix x = new SimpleMatrix(1, 2, false, new double[] { pos.getX(), pos.getY() });
@@ -64,8 +64,8 @@ public class RMPMotionGenerationCommand extends CommandBase {
         SmartDashboard.putNumber("rmp vel1", x_dot.get(1));
         drivebase.setVelocity(new Translation2d(x_dot.get(0), x_dot.get(1)));
 
-        vel = new Translation2d(x_dot.get(0), x_dot.get(1)); // TEST
-        pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY() + vel.getY() * deltaT); // TEST
+        // vel = new Translation2d(x_dot.get(0), x_dot.get(1)); // TEST
+        // pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY() + vel.getY() * deltaT); // TEST
 
     }
 

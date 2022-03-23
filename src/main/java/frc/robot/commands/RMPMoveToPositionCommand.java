@@ -16,20 +16,23 @@ public class RMPMoveToPositionCommand extends CommandBase {
     private LocalizationSubsystem localization;
     private LinearSegment path;
     private double v;
+    private double tolerance;
 
-    public RMPMoveToPositionCommand(RMPRoot root, Translation2d goal, LocalizationSubsystem localization, double v) {
+    public RMPMoveToPositionCommand(RMPRoot root, Translation2d goal, LocalizationSubsystem localization, double v,
+            double tolerance) {
         this.root = root;
         this.goal = goal;
         this.localization = localization;
         this.v = v;
+        this.tolerance = tolerance;
     }
 
     @Override
     public void initialize() {
-        // Translation2d pos = localization.getPred(0);
-        Translation2d pos = new Translation2d(0, 0); // TEST
+        Translation2d pos = localization.getPred(0);
+        // Translation2d pos = new Translation2d(0, 0); // TEST
         path = new LinearSegment(new Point(pos), new Point(goal));
-        double P = 1.5, I = 0.5, A = 0.5, B = 0.5, K = 1, h = 0.5;
+        double P = 5, I = 0, A = 1, B = 0.5, K = 1, h = 0.5;
         leaf = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h);
     }
 
@@ -47,7 +50,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return goal.minus(localization.getPosition()).getNorm() < tolerance;
     }
 
 }
