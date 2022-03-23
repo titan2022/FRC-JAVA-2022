@@ -108,7 +108,7 @@ public class Robot extends TimedRobot {
     double tolerance = 0.1;
     new RMPMoveToPositionCommand(root, goal, nav, v, tolerance).schedule();
     new RMPMotionGenerationCommand(nav, root, drivebase.getTranslational()).schedule();
-    // odometry.schedule();
+    odometry.schedule();
 
   }
 

@@ -65,7 +65,8 @@ public class RMPMotionGenerationCommand extends CommandBase {
         drivebase.setVelocity(new Translation2d(x_dot.get(0), x_dot.get(1)));
 
         // vel = new Translation2d(x_dot.get(0), x_dot.get(1)); // TEST
-        // pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY() + vel.getY() * deltaT); // TEST
+        // pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY() +
+        // vel.getY() * deltaT); // TEST
 
     }
 
