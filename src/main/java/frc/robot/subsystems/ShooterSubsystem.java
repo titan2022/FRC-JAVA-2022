@@ -78,6 +78,7 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
         hoodMotor.setInverted(false);
         hoodMotor.setSensorPhase(true);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
@@ -133,6 +134,17 @@ public class ShooterSubsystem extends SubsystemBase {
         }
     }
 
+    /** Coasts the hood motor for easy manual actuation. */
+    public void coastHood() {
+        hoodMotor.setNeutralMode(NeutralMode.Coast);
+        hoodMotor.set(ControlMode.PercentOutput, 0);
+    }
+    /** Brakes the hood motor to passively resist slippage. */
+    public void brakeHood() {
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
+        hoodMotor.set(ControlMode.PercentOutput, 0);
+    }
+
     /**
      * Runs the queue motor at a specified percent output.
      * 
@@ -140,6 +152,17 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void runQueue(double percent) {
         queueMotor.set(ControlMode.PercentOutput, percent);
+    }
+
+    /** Coasts the queue motor for easy manual actuation. */
+    public void coastQueue() {
+        queueMotor.setNeutralMode(NeutralMode.Coast);
+        queueMotor.set(ControlMode.PercentOutput, 0);
+    }
+    /** Brakes the queue motor to passively resist slippage. */
+    public void brakeQueue() {
+        queueMotor.setNeutralMode(NeutralMode.Coast);
+        queueMotor.set(ControlMode.PercentOutput, 0);
     }
 
     /**
@@ -238,5 +261,23 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Hood angle", getAngle());
         SmartDashboard.putNumber("Shooter velocity", getVelocity());
         SmartDashboard.putBoolean("Flywheel Cargo", hasCargo());
+    }
+
+    /** Prepares the shooter for regular use. */
+    public void enable() {
+        brakeHood();
+        brakeQueue();
+    }
+    /**
+     * Turns off the shooter.
+     * 
+     * <p>WARNING: Calling this method does not prevent other methods from using
+     * this subsystem. Do not manually actuate the shooter while the robot is
+     * enabled.
+     */
+    public void disable() {
+        coastHood();
+        coastQueue();
+        runPercent(0.0);
     }
 }
