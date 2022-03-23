@@ -23,8 +23,8 @@ public class AutonRoute extends SequentialCommandGroup {
                 new IntakeCargo(intake, shooter)
             ));
             if(hasCargo){
-                addCommands(new ShooterCommand(shooter, drive.getRotational(), intake, nav, 2, 2, 0, 0, 1, 6*IN, 0.02));
-                addCommands(new ShooterCommand(shooter, drive.getRotational(), intake, nav, 2, 2, 0, 0, 1, 6*IN, 0.02));
+                addCommands(new ShooterCommand(shooter, drive.getRotational(), nav, 2, 2, 0, 0, 1, 6*IN, 0.02));
+                addCommands(new ShooterCommand(shooter, drive.getRotational(), nav, 2, 2, 0, 0, 1, 6*IN, 0.02));
                 hasCargo = false;
             }
             else{
@@ -32,6 +32,6 @@ public class AutonRoute extends SequentialCommandGroup {
             }
         }
         if(hasCargo)
-            addCommands(new ShooterCommand(shooter, drive.getRotational(), intake, nav, 2, 2, 0, 0, 1, 6*IN, 0.02));
+            addCommands(new ShooterCommand(shooter, drive.getRotational(), nav, 2, 2, 0, 0, 1, 6*IN, 0.02));
     }
 }
