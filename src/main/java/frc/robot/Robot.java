@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -12,6 +13,7 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.DriveToCommand;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RotationalDriveCommand;
 import frc.robot.commands.TranslationalDriveCommand;
@@ -78,7 +80,8 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // TODO: Create autonomous
+    nav.translateTo(new Translation2d(0, 0));
+    new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 1), 1, 0.1, 2).schedule();
   }
 
   /** This function is called periodically during autonomous. */

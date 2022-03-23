@@ -1,6 +1,7 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.TranslationalDrivebase;
@@ -57,10 +58,16 @@ public class DriveToCommand extends CommandBase {
     // Called every time the scheduler runs while the command is scheduled.
     @Override
     public void execute() {
-        Translation2d offset = target.minus(nav.getPosition());
+        Translation2d p = nav.getPosition();
+        Translation2d offset = target.minus(p);
         double dist = offset.getNorm();
         double v = Math.min(vel, Math.sqrt(2 * acceleration * dist));
         drivebase.setVelocity(offset.times(v / dist));
+        SmartDashboard.putNumber("dist", dist);
+        SmartDashboard.putNumber("y", p.getY());
+        SmartDashboard.putNumber("x", p.getX());
+        SmartDashboard.putNumber("v_x", offset.times(v / dist).getX());
+        SmartDashboard.putNumber("v_y", offset.times(v / dist).getY());
     }
 
     // Called once the command ends or is interrupted.
