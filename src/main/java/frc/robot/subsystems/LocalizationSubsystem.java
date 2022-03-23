@@ -27,7 +27,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   private DMatrix2x2 prec = new DMatrix2x2();
   private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
   private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
-  private Translation2d pigeonBias = new Translation2d();
+  private Translation2d pigeonBias = new Translation2d(-0.35, -0.59);
   private Rotation2d pigeonOrientation = new Rotation2d();
 
   /**
