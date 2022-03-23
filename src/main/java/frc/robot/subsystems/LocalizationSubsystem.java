@@ -13,6 +13,7 @@ import com.titanrobotics2022.localization.KalmanFilter;
 
 import org.ejml.data.DMatrix2;
 import org.ejml.data.DMatrix2x2;
+import org.ejml.dense.fixed.NormOps_DDF2;
 
 /**
  * A localizer based around a Kalman filter.
@@ -273,6 +274,30 @@ public class LocalizationSubsystem extends SubsystemBase {
   }
 
   /**
+   * Returns the current estimate of the distance from the origin.
+   * 
+   * @return  The current estimate of the distance from the origin in meters.
+   */
+  public double getDistance() {
+    filter.getPred(0, mean);
+    filter.getCov(0, prec);
+    double sqNorm = mean.a1*mean.a1 + mean.a2*mean.a2;
+    double lower = Math.sqrt(sqNorm);
+    double upper = Math.sqrt(sqNorm + prec.a11 + prec.a22);
+    return (upper + lower) / 2;
+  }
+  /**
+   * Returns the current estimate of the theta component of the polar position.
+   * 
+   * @return  the current estimate of the theta component of the polar position
+   *  in radians.
+   */
+  public Rotation2d getTheta() {
+    filter.getPred(0, mean);
+    return new Rotation2d(mean.a1, mean.a2);  // TODO: Replace with a more efficient estimator.
+  }
+
+  /**
    * Returns the current estimate of the orientation of the robot.
    * 
    * @return  The current estimate of the orientation of the robot measured
@@ -289,6 +314,16 @@ public class LocalizationSubsystem extends SubsystemBase {
    */
   public Rotation2d getHeading() {
     return new Rotation2d(Math.PI/2).minus(getOrientation());
+  }
+
+  /**
+   * Estimates the angle from the robot heading to the origin.
+   * 
+   * @return  The current estimate of the angle from the robot heading to the
+   *  origin.
+   */
+  public Rotation2d getDeltaPhi() {
+    return new Rotation2d(-1, 0).minus(getOrientation()).plus(getTheta());  // TODO: Incorporate limelight.
   }
 
   @Override

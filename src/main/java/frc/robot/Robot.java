@@ -8,11 +8,15 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.ManualShooterCommand;
+import frc.robot.commands.intakeCommands.IntakeCargo;
+import frc.robot.commands.intakeCommands.SpinHopper;
+import frc.robot.commands.intakeCommands.SpinIntake;
 import frc.robot.commands.RotationalDriveCommand;
-import frc.robot.commands.SpinHopper;
-import frc.robot.commands.SpinIntake;
 import frc.robot.commands.TranslationalDriveCommand;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -34,7 +38,7 @@ public class Robot extends TimedRobot {
   private static final XboxController xbox = new XboxController(0);
 
   // Subsystems
-  private final ShooterSubsystem shooter = new ShooterSubsystem();
+  //private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
   private final DriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
@@ -86,11 +90,9 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
-    new JoystickButton(xbox, Button.kLeftBumper.value)
-      .whenHeld(new SpinHopper(intake, 5 * Math.PI));
-    new JoystickButton(xbox, Button.kRightBumper.value)
-      .whenHeld(new SpinIntake(intake, 5 * Math.PI));
-    shooter.setDefaultCommand(new ManualShooterCommand(shooter));
+    /*new JoystickButton(xbox, Button.kLeftBumper.value)
+      .whenHeld(new IntakeCargo(intake, shooter));*/
+    //shooter.setDefaultCommand(new ManualShooterCommand(shooter));
     drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
@@ -98,7 +100,12 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    if(xbox.getLeftBumperPressed())
+      intake.extend();
+    else if(xbox.getRightBumperPressed())
+      intake.retract();
+  }
 
   @Override
   public void testInit() {
