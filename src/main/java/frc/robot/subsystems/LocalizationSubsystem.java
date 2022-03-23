@@ -6,6 +6,9 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -31,6 +34,7 @@ public class LocalizationSubsystem extends SubsystemBase {
   private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
   private Translation2d pigeonBias = new Translation2d(-0.35, -0.59);
   private Rotation2d pigeonOrientation = new Rotation2d();
+  private final NetworkTableEntry tv, tx, ty;
 
   /**
    * Creates a new LocalizationSubsystem.
@@ -45,6 +49,10 @@ public class LocalizationSubsystem extends SubsystemBase {
   public LocalizationSubsystem(double step, int depth, double drift) {
     filter = new KalmanFilter(depth, new DMatrix2x2(drift, 0, 0, drift));
     this.step = step;
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    tv = table.getEntry("tv");
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
   }
   /**
    * Creates a new LocalizationSubsystem.
@@ -318,6 +326,16 @@ public class LocalizationSubsystem extends SubsystemBase {
    */
   public Rotation2d getHeading() {
     return new Rotation2d(Math.PI/2).minus(getOrientation());
+  }
+
+  public Rotation2d getDeltaPhi() {
+    double diff = new Rotation2d(Math.PI).minus(getOrientation()).plus(getTheta()).getRadians();
+    if(tv.getDouble(0) == 1){
+      double cam = Math.toDegrees(tx.getDouble(180));
+      double delta = Math.asin(Math.sin(cam - diff));
+      diff += delta * 0.25;
+    }
+    return new Rotation2d(diff);
   }
 
   private Translation2d accum = new Translation2d();
