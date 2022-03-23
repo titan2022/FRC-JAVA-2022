@@ -328,6 +328,12 @@ public class LocalizationSubsystem extends SubsystemBase {
     return new Rotation2d(Math.PI/2).minus(getOrientation());
   }
 
+  /**
+   * Estimates the angle from the robot heading to the origin.
+   * 
+   * @return  The current estimate of the angle from the robot heading to the
+   *  origin.
+   */
   public Rotation2d getDeltaPhi() {
     double diff = new Rotation2d(Math.PI).minus(getOrientation()).plus(getTheta()).getRadians();
     if(tv.getDouble(0) == 1){
