@@ -117,7 +117,7 @@ public class Robot extends TimedRobot {
 
     xinmotek.downButton.or(new JoystickButton(xbox, Button.kRightBumper.value)).whileActiveOnce(new IntakeCargo(intake, shooter));
     xinmotek.upButton.whenHeld(
-      new ShooterCommand(shooter, drivebase.getRotational(), intake, nav, 0.0, 2.0, 0.0, 0.0, 1.0, 5 * IN, 0.02));
+      new ShooterCommand(shooter, drivebase.getRotational(), nav, 0.0, 2.0, 0.0, 0.0, 1.0, 5 * IN, 0.02));
     
     xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {shooter.colorOverride = CargoColor.NONE;});
     xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft.negate()).whenActive(() -> {shooter.colorOverride = CargoColor.RED;});

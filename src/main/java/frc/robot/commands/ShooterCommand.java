@@ -87,8 +87,7 @@ public class ShooterCommand extends CommandBase {
         return omega;
     }
 
-    @Override
-    public void execute() {
+    private void aim() {
         Translation2d fieldVel = nav.getVelocity();
         Rotation2d deltaPhi = nav.getDeltaPhi();
         Translation2d drift = fieldVel.rotateBy(deltaPhi);
@@ -96,25 +95,34 @@ public class ShooterCommand extends CommandBase {
         double r = nav.getDistance();
         Rotation2d theta = new Rotation2d(Math.PI - shooter.getAngle());
         Trajectory current = new Trajectory(shooter.getVelocity(), theta, deltaPhi);
-        boolean sameColor = shooter.getQueueColor() == shooter.robotColor;
         if(shooter.queueEnabled)
-            shooter.runQueue((!sameColor || current.getError(r, h, drift) < threshold) ? 1.0 : 0.0);
+            shooter.runQueue(current.getError(r, h, drift) < threshold ? 1.0 : 0.0);
         Trajectory target = shooter.hoodEnabled ? new Trajectory(r, h, drift) : new Trajectory(r, h, drift, theta);
         double hoodAngle = Math.PI - target.theta.getRadians();
         if(shooter.hoodEnabled && (hoodAngle > shooter.getMaxAngle() || hoodAngle < shooter.getMinAngle()))
             target = new Trajectory(r, h, drift, theta);
-        shooter.run(sameColor ? target.vel : 1.5);
+        shooter.run(target.vel);
         if(shooter.hoodEnabled)
             shooter.setAngle(Math.PI - target.theta.getRadians());
         base.setRotation(updateRotationPID(r, nav.getTheta(), fieldVel, deltaPhi.getRadians()));
-        if(shooter.hasCargo())
-            state = 1;
-        else if(state == 1)
-            state = 2;
         SmartDashboard.putNumber("Tgt Angle", hoodAngle / DEG);
         SmartDashboard.putNumber("Tgt Velocity", target.vel);
         SmartDashboard.putNumber("Tgt Phi", target.phi.getDegrees());
         shooter.sendDebug();
+    }
+
+    @Override
+    public void execute() {
+        boolean sameColor = shooter.getQueueColor() == shooter.robotColor;
+        if(sameColor)
+            aim();
+        else
+            shooter.run(1.5);
+        if(shooter.hasCargo())
+            state = 1;
+        else if(state == 1)
+            state = 2;
+        
     }
 
     @Override
