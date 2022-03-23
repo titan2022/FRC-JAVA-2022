@@ -119,9 +119,24 @@ public class Robot extends TimedRobot {
     xinmotek.upButton.whenHeld(
       new ShooterCommand(shooter, drivebase.getRotational(), intake, nav, 0.0, 2.0, 0.0, 0.0, 1.0, 5 * IN, 0.02));
     
-    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {shooter.colorOverride = CargoColor.NONE;});
-    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft.negate()).whenActive(() -> {shooter.colorOverride = CargoColor.RED;});
-    xinmotek.leftPad.bottomLeft.and(xinmotek.leftPad.topLeft.negate()).whenActive(() -> {shooter.colorOverride = CargoColor.BLUE;});
+    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {
+      if(shooter.colorEnabled)
+        shooter.robotColor = CargoColor.NONE;
+      else
+        shooter.colorOverride = CargoColor.NONE;
+    });
+    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft.negate()).whenActive(() -> {
+      if(shooter.colorEnabled)
+        shooter.robotColor = CargoColor.RED;
+      else
+        shooter.colorOverride = CargoColor.RED;
+    });
+    xinmotek.leftPad.bottomLeft.and(xinmotek.leftPad.topLeft.negate()).whenActive(() -> {
+      if(shooter.colorEnabled)
+        shooter.robotColor = CargoColor.BLUE;
+      else
+        shooter.colorOverride = CargoColor.BLUE;
+    });
     xinmotek.leftPad.topRight.whenPressed(() -> {shooter.colorEnabled = false;});
     xinmotek.leftPad.bottomRight.whenPressed(() -> {shooter.colorEnabled = true;});
 
