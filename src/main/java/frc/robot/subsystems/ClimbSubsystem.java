@@ -28,7 +28,7 @@ public class ClimbSubsystem extends SubsystemBase {
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.follow(leftMotor);
-        rightMotor.setInverted(true);
+        leftMotor.setInverted(true);
     }
 
     public void runClimb(double pct) {

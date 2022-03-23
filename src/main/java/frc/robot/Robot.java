@@ -139,8 +139,8 @@ public class Robot extends TimedRobot {
       () -> shooter.runQueue(-0.5),
       () -> shooter.runQueue(0.0)));
     
-    xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(1.0), () -> climb.runClimb(0.0), climb));
-    xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-1.0), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(0.65), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.65), () -> climb.runClimb(0.0), climb));
 
     Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
     new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride);
