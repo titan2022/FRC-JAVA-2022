@@ -270,7 +270,9 @@ public class ShooterSubsystem extends SubsystemBase {
         return getQueueColor() != CargoColor.NONE;
     }
 
-    public void sendDebug() {
+    public void sendDebug() {}
+
+    public void periodic() {
         RawColor rawColor = colorSensor.getRawColor();
         SmartDashboard.putNumber("raw red", rawColor.red);
         SmartDashboard.putNumber("raw green", rawColor.green);
