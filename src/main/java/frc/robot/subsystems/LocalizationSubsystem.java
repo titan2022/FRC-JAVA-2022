@@ -147,6 +147,19 @@ public class LocalizationSubsystem extends SubsystemBase {
     addData(degree, pred.getX(), pred.getY(), var);
   }
 
+  public void addPosition(Translation2d pos, double varX, double varY, double covar) {
+    addData(0, pos, varX, varY, covar);
+  }
+  public void addPosition(Translation2d pos, double var) {
+    addData(0, pos, var);
+  }
+  public void addVelocity(Translation2d pos, double varX, double varY, double covar) {
+    addData(1, pos, varX, varY, covar);
+  }
+  public void addVelocity(Translation2d pos, double var) {
+    addData(1, pos, var);
+  }
+
   /**
    * Sets the current orientation to a specified value.
    * 
