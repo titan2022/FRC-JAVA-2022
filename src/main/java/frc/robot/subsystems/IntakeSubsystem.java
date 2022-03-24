@@ -17,7 +17,7 @@ public class IntakeSubsystem extends SubsystemBase {
 
     private static final int INTAKE_MOTOR_PORT = 19;
     private static final int HOPPER_MOTOR_PORT = 21;
-    private static final int HOPPER_SENSOR_PORT = 9;
+    private static final int HOPPER_SENSOR_PORT = 0;
 
     private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
     private static final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT);

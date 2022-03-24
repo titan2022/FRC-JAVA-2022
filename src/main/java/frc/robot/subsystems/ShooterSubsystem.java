@@ -31,7 +31,7 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int LEFT_MOTOR_PORT = 11;
     private static final int HOOD_MOTOR_ID = 14;
     private static final int QUEUE_MOTOR_ID = 10;
-    private static final int BEAM_BREAK_SENSOR_PORT = 2;
+    private static final int BEAM_BREAK_SENSOR_PORT = 1;
 
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
@@ -278,6 +278,10 @@ public class ShooterSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("raw green", rawColor.green);
         SmartDashboard.putNumber("raw blue", rawColor.blue);
         SmartDashboard.putNumber("raw IR", rawColor.ir);
+        Color normColor = colorSensor.getColor();
+        SmartDashboard.putNumber("norm red", normColor.red);
+        SmartDashboard.putNumber("norm green", normColor.green);
+        SmartDashboard.putNumber("norm blue", normColor.blue);
         switch(getQueueColor()){
             case RED:
                 SmartDashboard.putString("Cargo Color", "Red");
