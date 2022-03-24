@@ -110,6 +110,7 @@ public class Robot extends TimedRobot {
       new StartEndCommand(() -> shooter.runPercent(0.5), () -> shooter.runPercent(0.0), shooter).withTimeout(2.0),
       new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 3), 1, 0.1, 2)
     ).schedule();
+    shooter.robotColor = shooter.getQueueColor();
   }
 
   /** This function is called periodically during autonomous. */
