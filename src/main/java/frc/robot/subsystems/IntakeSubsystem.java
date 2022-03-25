@@ -24,7 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final DigitalInput hopperSensor = new DigitalInput(HOPPER_SENSOR_PORT);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
-    DoubleSolenoid solenoid = new DoubleSolenoid(41, PneumaticsModuleType.REVPH, 0, 1);
+    DoubleSolenoid solenoid = new DoubleSolenoid(41, PneumaticsModuleType.CTREPCM, 0, 1);
 
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
