@@ -33,6 +33,7 @@ Enemy Terminal ball
 NEW ROUTES!!!:
 
 Offset point (-23.526,-90.975)
+Offset angle (-1.5 degrees)
 
 Auton1 Route:
 -Starts from top of the tarmacs
@@ -51,6 +52,7 @@ Auton2 Route:
 -Collects one enemy team ball and shoots away
 
 Offset point (80.505, -23.997)
+Offset angle (91.5 degrees)
 
 Auton3 Route:
 -Starts from bottom of the tarmacs
