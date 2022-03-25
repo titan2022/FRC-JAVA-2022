@@ -21,8 +21,8 @@ import static frc.robot.Constants.getHoodConfig;
 public class ShooterSubsystem extends SubsystemBase {
     /** Gear ratio between the hood motor and hood rack */
     private static final double HOOD_RATIO = 245.71;
-    private static final double HOOD_MIN_ANGLE = 0.35 * DEG;
-    private static final double HOOD_MAX_ANGLE = 27.2 * DEG;
+    private static final double HOOD_MIN_ANGLE = 11.235 * DEG;
+    private static final double HOOD_MAX_ANGLE = 43.812 * DEG;
     private static final double FLYWHEEL_RATIO = 1;
     private static final double FLYWHEEL_RADIUS = 2 * IN;
     private static final double SHOOTER_HEIGHT = 26.5 * IN;
