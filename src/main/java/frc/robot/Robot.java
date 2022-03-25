@@ -17,6 +17,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveToCommand;
+import frc.robot.commands.FirstAutoCommand;
 import frc.robot.commands.GetDriveInformationCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualShooterCommand;
@@ -100,17 +101,8 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     enableRobot();
-    nav.translateTo(new Translation2d(0, 0));
-    nav.resetHeading();
-    new GetDriveInformationCommand(nav, drivebase.getTranslational()).schedule();
-    new SequentialCommandGroup(
-      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 1.5), 1, 0.1, 2),
-      new StartEndCommand(() -> intake.spinIntake(1.0), () -> intake.spinIntake(0.0), intake).withTimeout(1.0),
-      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(1.5, 1.5), 1, 0.1, 2),
-      new StartEndCommand(() -> shooter.runPercent(0.5), () -> shooter.runPercent(0.0), shooter).withTimeout(2.0),
-      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 3), 1, 0.1, 2)
-    ).schedule();
-    shooter.robotColor = shooter.getQueueColor();
+    shooter.robotColor = CargoColor.BLUE;
+    new FirstAutoCommand(drivebase.getTranslational(), shooter, intake, climb).schedule();
   }
 
   /** This function is called periodically during autonomous. */
