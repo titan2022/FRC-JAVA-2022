@@ -4,7 +4,6 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.RotationalDrivebase;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -13,7 +12,6 @@ import static frc.robot.Constants.Unit.*;
 public class ShooterCommand extends CommandBase {
     private ShooterSubsystem shooter;
     private RotationalDrivebase base;
-    private IntakeSubsystem intake;
     private LocalizationSubsystem nav;
     private double m;
     private double kP, kI, kD, kF;
@@ -59,10 +57,9 @@ public class ShooterCommand extends CommandBase {
         }
     }
 
-    public ShooterCommand(ShooterSubsystem shooter, RotationalDrivebase base, IntakeSubsystem intake, LocalizationSubsystem nav, double targetSlope, double P, double I, double D, double F, double threshold, double step) {
+    public ShooterCommand(ShooterSubsystem shooter, RotationalDrivebase base, LocalizationSubsystem nav, double targetSlope, double P, double I, double D, double F, double threshold, double step) {
         this.shooter = shooter;
         this.base = base;
-        this.intake = intake;
         this.nav = nav;
         m = targetSlope;
         kP = P;
@@ -71,7 +68,7 @@ public class ShooterCommand extends CommandBase {
         kF = F;
         this.threshold = threshold;
         this.step = step;
-        addRequirements(shooter, base, intake);
+        addRequirements(shooter, base);
     }
 
     @Override
@@ -90,8 +87,7 @@ public class ShooterCommand extends CommandBase {
         return omega;
     }
 
-    @Override
-    public void execute() {
+    private void aim() {
         Translation2d fieldVel = nav.getVelocity();
         Rotation2d deltaPhi = nav.getDeltaPhi();
         Translation2d drift = fieldVel.rotateBy(deltaPhi);
@@ -105,18 +101,28 @@ public class ShooterCommand extends CommandBase {
         double hoodAngle = Math.PI - target.theta.getRadians();
         if(shooter.hoodEnabled && (hoodAngle > shooter.getMaxAngle() || hoodAngle < shooter.getMinAngle()))
             target = new Trajectory(r, h, drift, theta);
-        shooter.run(shooter.getQueueColor() == shooter.robotColor ? target.vel : 1.5);
+        shooter.run(target.vel);
         if(shooter.hoodEnabled)
             shooter.setAngle(Math.PI - target.theta.getRadians());
         base.setRotation(updateRotationPID(r, nav.getTheta(), fieldVel, deltaPhi.getRadians()));
-        if(shooter.hasCargo())
-            state = 1;
-        else if(state == 1)
-            state = 2;
         SmartDashboard.putNumber("Tgt Angle", hoodAngle / DEG);
         SmartDashboard.putNumber("Tgt Velocity", target.vel);
         SmartDashboard.putNumber("Tgt Phi", target.phi.getDegrees());
         shooter.sendDebug();
+    }
+
+    @Override
+    public void execute() {
+        boolean sameColor = shooter.getQueueColor() == shooter.robotColor;
+        if(sameColor)
+            aim();
+        else
+            shooter.run(1.5);
+        if(shooter.hasCargo())
+            state = 1;
+        else if(state == 1)
+            state = 2;
+        
     }
 
     @Override

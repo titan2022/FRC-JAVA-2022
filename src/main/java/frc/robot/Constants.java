@@ -9,6 +9,8 @@ import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -38,6 +40,17 @@ public final class Constants {
         public static final double SECONDS = 1.0, S = 1.0;
         public static final double MIN = 1.0/60;
         public static final double MS = 0.001;
+    }
+
+    public static final class Cargo {
+        public static final Translation2d LEFT = new Translation2d(-81.643 * Unit.IN, -129.396 * Unit.IN);
+        public static final Translation2d CENTER = new Translation2d(88.3033 * Unit.IN, -124.946 * Unit.IN);
+        public static final Translation2d RIGHT = new Translation2d(150.790 * Unit.IN, -25.910 * Unit.IN);
+        public static final Translation2d OPP_LEFT = new Translation2d(-124.946 * Unit.IN, -88.303 * Unit.IN);
+        public static final Translation2d OPP_CENTER = new Translation2d(33.767 * Unit.IN, -149.227 * Unit.IN);
+        public static final Translation2d OPP_RIGHT = new Translation2d(149.227 * Unit.IN, 33.767 * Unit.IN);
+        public static final Translation2d STATION = new Translation2d(119.799 * Unit.IN, -284.248 * Unit.IN);
+        public static final Translation2d HUMAN = new Translation2d(118.762 * Unit.IN, -283.164 * Unit.IN);
     }
 
     /**

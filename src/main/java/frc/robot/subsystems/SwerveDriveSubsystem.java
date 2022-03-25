@@ -312,7 +312,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   }
 
   @Override
-  public TranslationalDrivebase getTranlational() {
+  public TranslationalDrivebase getTranslational() {
     return translationalLock;
   }
 

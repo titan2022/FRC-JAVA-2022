@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -15,14 +16,14 @@ import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.DriveToCommand;
+import frc.robot.commands.GetDriveInformationCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualShooterCommand;
-import frc.robot.commands.intakeCommands.IntakeCargo;
-import frc.robot.commands.intakeCommands.SpinHopper;
-import frc.robot.commands.intakeCommands.SpinIntake;
 import frc.robot.commands.RotationalDriveCommand;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TranslationalDriveCommand;
+import frc.robot.commands.intakeCommands.IntakeCargo;
 import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
@@ -98,8 +99,18 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // TODO: Create autonomous
     enableRobot();
+    nav.translateTo(new Translation2d(0, 0));
+    nav.resetHeading();
+    new GetDriveInformationCommand(nav, drivebase.getTranslational()).schedule();
+    new SequentialCommandGroup(
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 1.5), 1, 0.1, 2),
+      new StartEndCommand(() -> intake.spinIntake(1.0), () -> intake.spinIntake(0.0), intake).withTimeout(1.0),
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(1.5, 1.5), 1, 0.1, 2),
+      new StartEndCommand(() -> shooter.runPercent(0.5), () -> shooter.runPercent(0.0), shooter).withTimeout(2.0),
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 3), 1, 0.1, 2)
+    ).schedule();
+    shooter.robotColor = shooter.getQueueColor();
   }
 
   /** This function is called periodically during autonomous. */
@@ -111,13 +122,13 @@ public class Robot extends TimedRobot {
     // TODO: Makes sure the autonomous stops running when teleop starts
     enableRobot();
 
-    drivebase.getTranlational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranlational(), xbox, nav, 5.));
+    drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
 
     xinmotek.downButton.or(new JoystickButton(xbox, Button.kRightBumper.value)).whileActiveOnce(new IntakeCargo(intake, shooter));
     xinmotek.upButton.whenHeld(
-      new ShooterCommand(shooter, drivebase.getRotational(), intake, nav, 0.0, 2.0, 0.0, 0.0, 1.0, 5 * IN, 0.02));
+      new ShooterCommand(shooter, drivebase.getRotational(), nav, 0.0, 2.0, 0.0, 0.0, 1.0, 5 * IN, 0.02));
     
     xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {
       if(shooter.colorEnabled)
