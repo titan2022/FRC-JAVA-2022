@@ -1,5 +1,6 @@
 package frc.robot.commands;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -57,7 +58,7 @@ public class TranslationalDriveCommand extends CommandBase {
      *  correction. This will not be added as a requirement of this command.
      */
     public TranslationalDriveCommand(TranslationalDrivebase drivebase, XboxController xbox, LocalizationSubsystem localizer) {
-        this(drivebase, xbox, localizer, 5.);
+        this(drivebase, xbox, localizer, 10.);
     }
     /**
      * Creates a new TranlationalDriveCommand using intrinsic orientation.
@@ -86,6 +87,7 @@ public class TranslationalDriveCommand extends CommandBase {
     public void execute() {
         if(controller.getBButtonPressed())
             isFieldOriented = !isFieldOriented;
+        SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
         double joyX = applyDeadband(controller.getLeftX(), 0.1);
         double joyY = applyDeadband(-controller.getLeftY(), 0.1);
         SmartDashboard.putNumber("joyX", joyX);
@@ -93,8 +95,11 @@ public class TranslationalDriveCommand extends CommandBase {
         Translation2d velocity = new Translation2d(scaleVelocity(joyX), scaleVelocity(joyY));
         SmartDashboard.putNumber("fieldX", velocity.getX());
         SmartDashboard.putNumber("fieldY", velocity.getY());
-        if(isFieldOriented)
-            velocity = velocity.rotateBy(nav.getOrientation().unaryMinus());
+        if(isFieldOriented){
+            Rotation2d heading = nav.getHeading();
+            SmartDashboard.putNumber("heading", heading.getDegrees());
+            velocity = velocity.rotateBy(heading);
+        }
         SmartDashboard.putNumber("robotX", velocity.getX());
         SmartDashboard.putNumber("robotY", velocity.getY());
         drive.setVelocity(velocity);

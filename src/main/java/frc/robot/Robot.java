@@ -4,24 +4,37 @@
 
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.ScheduleCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.DriveToCommand;
+import frc.robot.commands.GetDriveInformationCommand;
+import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RotationalDriveCommand;
+import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TranslationalDriveCommand;
-import frc.robot.commands.intakeCommands.SpinHopper;
-import frc.robot.commands.intakeCommands.SpinIntake;
+import frc.robot.commands.intakeCommands.IntakeCargo;
+import frc.robot.subsystems.ClimbSubsystem;
 import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
 import frc.robot.subsystems.SwerveDriveSubsystem;
+import frc.robot.subsystems.ShooterSubsystem.CargoColor;
 
 import static frc.robot.Constants.getSwerveDriveTalonDirectionalConfig;
 import static frc.robot.Constants.getSwerveDriveTalonRotaryConfig;
+import static frc.robot.Constants.Unit.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -32,6 +45,7 @@ import static frc.robot.Constants.getSwerveDriveTalonRotaryConfig;
 public class Robot extends TimedRobot {
   // Controllers
   private static final XboxController xbox = new XboxController(0);
+  private static final Xinmotek xinmotek = new Xinmotek(1, 2);
 
   // Subsystems
   private final ShooterSubsystem shooter = new ShooterSubsystem();
@@ -39,6 +53,7 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
   private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02);
+  private final ClimbSubsystem climb = new ClimbSubsystem();
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -68,15 +83,34 @@ public class Robot extends TimedRobot {
 
   /** This function is called once each time the robot enters Disabled mode. */
   @Override
-  public void disabledInit() {}
+  public void disabledInit() {
+    shooter.disable();
+    climb.coast();
+  }
 
   @Override
   public void disabledPeriodic() {}
 
+  private void enableRobot() {
+    shooter.enable();
+    climb.brake();
+  }
+
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    // TODO: Create autonomous
+    enableRobot();
+    nav.translateTo(new Translation2d(0, 0));
+    nav.resetHeading();
+    new GetDriveInformationCommand(nav, drivebase.getTranslational()).schedule();
+    new SequentialCommandGroup(
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 1.5), 1, 0.1, 2),
+      new StartEndCommand(() -> intake.spinIntake(1.0), () -> intake.spinIntake(0.0), intake).withTimeout(1.0),
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(1.5, 1.5), 1, 0.1, 2),
+      new StartEndCommand(() -> shooter.runPercent(0.5), () -> shooter.runPercent(0.0), shooter).withTimeout(2.0),
+      new DriveToCommand(drivebase.getTranslational(), nav, new Translation2d(0, 3), 1, 0.1, 2)
+    ).schedule();
+    shooter.robotColor = shooter.getQueueColor();
   }
 
   /** This function is called periodically during autonomous. */
@@ -86,13 +120,54 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
-    new JoystickButton(xbox, Button.kLeftBumper.value)
-      .whenHeld(new SpinHopper(intake, 1.0));
-    new JoystickButton(xbox, Button.kRightBumper.value)
-      .whenHeld(new SpinIntake(intake, 1.0));
-    shooter.setDefaultCommand(new ManualShooterCommand(shooter));
+    enableRobot();
+
     drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 5.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
+    new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
+
+    xinmotek.downButton.or(new JoystickButton(xbox, Button.kRightBumper.value)).whileActiveOnce(new IntakeCargo(intake, shooter));
+    xinmotek.upButton.whenHeld(
+      new ShooterCommand(shooter, drivebase.getRotational(), nav, 0.0, 2.0, 0.0, 0.0, 1.0, 5 * IN, 0.02));
+    
+    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {shooter.colorOverride = CargoColor.NONE;});
+    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft.negate()).whenActive(() -> {shooter.colorOverride = CargoColor.RED;});
+    xinmotek.leftPad.bottomLeft.and(xinmotek.leftPad.topLeft.negate()).whenActive(() -> {shooter.colorOverride = CargoColor.BLUE;});
+    xinmotek.leftPad.topRight.whenPressed(() -> {shooter.colorEnabled = false;});
+    xinmotek.leftPad.bottomRight.whenPressed(() -> {shooter.colorEnabled = true;});
+
+    xinmotek.middlePad.topLeft.whenHeld(new StartEndCommand(
+      () -> {intake.spinIntake(1.0); intake.spinHopper(1.0);},
+      () -> {intake.spinIntake(0.0); intake.spinHopper(0.0);},
+      intake));
+    xinmotek.middlePad.bottomLeft.whenHeld(new StartEndCommand(
+      () -> {intake.spinIntake(-1.0); intake.spinHopper(-1.0);},
+      () -> {intake.spinIntake(0.0); intake.spinHopper(0.0);},
+      intake));
+    xinmotek.middlePad.topRight.whenHeld(new StartEndCommand(
+      () -> shooter.runQueue(0.5),
+      () -> shooter.runQueue(0.0)));
+    xinmotek.middlePad.bottomRight.whenHeld(new StartEndCommand(
+      () -> shooter.runQueue(-0.5),
+      () -> shooter.runQueue(0.0)));
+    
+    xinmotek.rightPad.topLeft.whenPressed(() -> {shooter.queueEnabled = false;});
+    xinmotek.rightPad.bottomLeft.whenPressed(() -> {shooter.queueEnabled = true;});
+    xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(0.65), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.65), () -> climb.runClimb(0.0), climb));
+
+    Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
+    Command rightClimbControl = new RunCommand(() -> climb.spinRight(0.65 * xinmotek.getRightY()));
+    new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride).cancelWhenActive(rightClimbControl);
+    new Trigger(() -> xinmotek.getRightX() < 0).cancelWhenActive(flywheelOverride).whenActive(rightClimbControl);
+
+    Command hoodOverride = new FunctionalCommand(
+      () -> {shooter.hoodEnabled = false;},
+      () -> shooter.spinHood(xinmotek.getLeftY()),
+      (interrupted) -> {shooter.hoodEnabled = true;}, () -> false);
+    Command leftClimbControl = new RunCommand(() -> climb.spinLeft(0.65 * xinmotek.getLeftY()));
+    new Trigger(() -> xinmotek.getLeftX() > 0).whenActive(hoodOverride).cancelWhenActive(leftClimbControl);
+    new Trigger(() -> xinmotek.getLeftX() < 0).cancelWhenActive(hoodOverride).whenActive(leftClimbControl);
   }
 
   /** This function is called periodically during operator control. */

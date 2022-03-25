@@ -31,25 +31,25 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final double ROTATOR_DEADBAND = 0.001;
     
   // CAN ID numbers
-  private static final int LEFT_FRONT_MOTOR_PORT = 6;
-  private static final int LEFT_BACK_MOTOR_PORT = 4;
-  private static final int RIGHT_FRONT_MOTOR_PORT = 7;
-  private static final int RIGHT_BACK_MOTOR_PORT = 2;
-  private static final int LEFT_FRONT_MOTOR_ROTATOR_PORT = 5;
-  private static final int LEFT_BACK_MOTOR_ROTATOR_PORT = 3;
-  private static final int RIGHT_FRONT_MOTOR_ROTATOR_PORT = 8;
-  private static final int RIGHT_BACK_MOTOR_ROTATOR_PORT = 1;
+  private static final int LEFT_FRONT_MOTOR_PORT = 7;
+  private static final int LEFT_BACK_MOTOR_PORT = 2;
+  private static final int RIGHT_FRONT_MOTOR_PORT = 6;
+  private static final int RIGHT_BACK_MOTOR_PORT = 4;
+  private static final int LEFT_FRONT_MOTOR_ROTATOR_PORT = 8;
+  private static final int LEFT_BACK_MOTOR_ROTATOR_PORT = 1;
+  private static final int RIGHT_FRONT_MOTOR_ROTATOR_PORT = 5;
+  private static final int RIGHT_BACK_MOTOR_ROTATOR_PORT = 3;
 
-  private static final int LEFT_FRONT_ENCODER_ROTATOR_PORT = 35;
-  private static final int LEFT_BACK_ENCODER_ROTATOR_PORT = 33;
-  private static final int RIGHT_FRONT_ENCODER_ROTATOR_PORT = 37;
-  private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 31;
+  private static final int LEFT_FRONT_ENCODER_ROTATOR_PORT = 37;
+  private static final int LEFT_BACK_ENCODER_ROTATOR_PORT = 31;
+  private static final int RIGHT_FRONT_ENCODER_ROTATOR_PORT = 35;
+  private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 33;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 1865;
-  private static final int BACK_LEFT_OFFSET = 1295;
-  private static final int FRONT_RIGHT_OFFSET = 887;
-  private static final int BACK_RIGHT_OFFSET = 1145;
+  private static final int FRONT_LEFT_OFFSET = 908;
+  private static final int BACK_LEFT_OFFSET = -909;
+  private static final int FRONT_RIGHT_OFFSET = -182;
+  private static final int BACK_RIGHT_OFFSET = 1287;
   private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
   // Motor inversions
@@ -99,10 +99,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   // Kinematics
   // Positions describe the position of each wheel relative to the center of the robot
-  private static final Translation2d leftFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
+  private static final Translation2d leftFrontPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
   private static final Translation2d leftBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
   private static final Translation2d rightFrontPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
-  private static final Translation2d rightBackPosition = new Translation2d(-ROBOT_TRACK_WIDTH/2, ROBOT_LENGTH/2);
+  private static final Translation2d rightBackPosition = new Translation2d(ROBOT_TRACK_WIDTH/2, -ROBOT_LENGTH/2);
   public static final SwerveDriveKinematics kinematics = new SwerveDriveKinematics(leftFrontPosition, leftBackPosition, rightFrontPosition, rightBackPosition);
 
   private ChassisSpeeds lastVelocity = new ChassisSpeeds();
@@ -117,7 +117,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     @Override
     public Translation2d getVelocity() {
       ChassisSpeeds speeds = getVelocities();
-      return new Translation2d(speeds.vyMetersPerSecond, speeds.vxMetersPerSecond);
+      return new Translation2d(speeds.vxMetersPerSecond, speeds.vyMetersPerSecond);
     }
   };
   private final RotationalDrivebase rotationalLock = new RotationalDrivebase() {
@@ -206,18 +206,19 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   }
 
   private void applyModuleState(SwerveModuleState state, int module) {
-    double velTicks = state.speedMetersPerSecond * (M/S) / (CANCODER_TICKS / (100*MS));
+    double velTicks = state.speedMetersPerSecond / (10*METERS_PER_TICKS);
     if(velTicks == 0){
       motors[module].set(ControlMode.Velocity, 0);
       SmartDashboard.putNumber("set vel " + module, 0);
       return;
     }
-    double currTicks = getRotatorEncoderCount(module) - OFFSETS[module];
-    double deltaTicks = (state.angle.getRadians() * RAD / CANCODER_TICKS - currTicks) % CANCODER_CPR;
+    double currTicks = getRotatorEncoderCount(module);
+    double targetTicks = CANCODER_CPR/2 - state.angle.getRadians() * RAD / CANCODER_TICKS;
+    double deltaTicks = (targetTicks - currTicks) % CANCODER_CPR;
     if(deltaTicks >= CANCODER_CPR / 2)
-      deltaTicks -= CANCODER_CPR / 2;
+      deltaTicks -= CANCODER_CPR;
     else if(deltaTicks <= -CANCODER_CPR / 2)
-      deltaTicks += CANCODER_CPR / 2;
+      deltaTicks += CANCODER_CPR;
     if(deltaTicks >= CANCODER_CPR / 4){
       deltaTicks -= CANCODER_CPR / 2;
       velTicks *= -1;
@@ -228,8 +229,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     }
     SmartDashboard.putNumber("set vel " + module, velTicks);
     SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks);
+    SmartDashboard.putNumber("cur rot " + module, currTicks);
+    SmartDashboard.putNumber("delta " + module, deltaTicks);
     motors[module].set(ControlMode.Velocity, velTicks);
-    rotators[module].set(ControlMode.Position, currTicks + deltaTicks);
+    rotators[module].set(ControlMode.Position, currTicks + deltaTicks + OFFSETS[module]);
   }
 
   /**
@@ -242,6 +245,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    * @param rightOutputValue right side output value for ControlMode
    */
   private void setVelocities(ChassisSpeeds inputChassisSpeeds) {
+    SmartDashboard.putNumber("last x", inputChassisSpeeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("last y", inputChassisSpeeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("last omega", inputChassisSpeeds.omegaRadiansPerSecond);
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
     for(int i=0; i<4; i++){
@@ -280,7 +286,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem
    */
   public double getRotatorEncoderCount(int module)
   {
-    return rotators[module].getSelectedSensorPosition();
+    return rotators[module].getSelectedSensorPosition() - OFFSETS[module];
   }
 
   /**

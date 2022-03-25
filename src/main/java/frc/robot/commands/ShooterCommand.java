@@ -2,8 +2,8 @@ package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
-import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.RotationalDrivebase;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -12,7 +12,6 @@ import static frc.robot.Constants.Unit.*;
 public class ShooterCommand extends CommandBase {
     private ShooterSubsystem shooter;
     private RotationalDrivebase base;
-    private IntakeSubsystem intake;
     private LocalizationSubsystem nav;
     private double m;
     private double kP, kI, kD, kF;
@@ -24,10 +23,43 @@ public class ShooterCommand extends CommandBase {
     private static final double g = 9.8 * (M / S);
     private int state = 0;
 
-    public ShooterCommand(ShooterSubsystem shooter, RotationalDrivebase base, IntakeSubsystem intake, LocalizationSubsystem nav, double targetSlope, double P, double I, double D, double F, double threshold, double step) {
+    private class Trajectory {
+        public final double vel;
+        public final Rotation2d theta, phi;
+
+        Trajectory(double vel, Rotation2d theta, Rotation2d phi){
+            this.vel = vel;
+            this.theta = theta;
+            this.phi = phi;
+        }
+        Trajectory(double r, double h, Translation2d drift) {
+            double vx = Math.sqrt(g*r*r / (h - m*r) / 2) - drift.getY();
+            double vy = g*r / vx + m*vx;
+            double v = Math.hypot(vx, vy);
+            theta = new Rotation2d(vx, vy);
+            phi = new Rotation2d(v, -drift.getX());
+            vel = Math.hypot(v, drift.getX());
+        }
+        Trajectory(double r, double h, Translation2d drift, Rotation2d theta) {
+            this.theta = theta;
+            double tmp = 2 * theta.getCos() * (h*theta.getCos() - r*theta.getSin());
+            double s = drift.getY() * theta.getSin();
+            double v = (-r*Math.sqrt(S*S - g*tmp) + r*s - 2*drift.getY()*h*theta.getCos()) / tmp;
+            vel = Math.hypot(v, drift.getX());
+            phi = new Rotation2d(v, -drift.getX());
+        }
+
+        double getError(double r, double h, Translation2d drift) {
+            double vy = vel * theta.getSin();
+            double t = (Math.sqrt(vy*vy - 2*g*h) - vy) / g;
+            Translation2d offset = new Translation2d(vel * theta.getCos(), phi).plus(drift).times(t);
+            return Math.hypot(offset.getX(), offset.getY() - r);
+        }
+    }
+
+    public ShooterCommand(ShooterSubsystem shooter, RotationalDrivebase base, LocalizationSubsystem nav, double targetSlope, double P, double I, double D, double F, double threshold, double step) {
         this.shooter = shooter;
         this.base = base;
-        this.intake = intake;
         this.nav = nav;
         m = targetSlope;
         kP = P;
@@ -36,7 +68,7 @@ public class ShooterCommand extends CommandBase {
         kF = F;
         this.threshold = threshold;
         this.step = step;
-        addRequirements(shooter, base, intake);
+        addRequirements(shooter, base);
     }
 
     @Override
@@ -46,18 +78,7 @@ public class ShooterCommand extends CommandBase {
         prev = new Rotation2d(Math.PI).minus(nav.getOrientation()).plus(nav.getTheta()).getRadians();
     }
 
-    private double calcError(Translation2d vel, Rotation2d phi, double h) {
-        Translation2d pos = nav.getPosition();
-        Rotation2d incl = new Rotation2d(Math.PI - shooter.getAngle());
-        double v = shooter.getVelocity();
-        double vy = v * incl.getSin();
-        double v_ground = v * incl.getCos();
-        double t = (Math.sqrt(vy*vy - 2*g*h) - vy) / g;
-        return new Translation2d(v_ground, phi).plus(vel).times(t).plus(pos).getNorm();
-    }
-
-    private double updateRotationPID(double r, Rotation2d theta, Translation2d vel, Rotation2d phi) {
-        double deltaPhi = new Rotation2d(Math.PI).minus(phi).plus(theta).getRadians();
+    private double updateRotationPID(double r, Rotation2d theta, Translation2d vel, double deltaPhi) {
         Translation2d predPos = new Translation2d(r, theta).plus(vel.times(step));
         Rotation2d nextTheta = new Rotation2d(predPos.getX(), predPos.getY());
         double omega = kP*deltaPhi + kI*sum + kD*(deltaPhi-prev) + kF*(theta.minus(nextTheta).getRadians());
@@ -66,25 +87,42 @@ public class ShooterCommand extends CommandBase {
         return omega;
     }
 
+    private void aim() {
+        Translation2d fieldVel = nav.getVelocity();
+        Rotation2d deltaPhi = nav.getDeltaPhi();
+        Translation2d drift = fieldVel.rotateBy(deltaPhi);
+        double h = TARGET_HEIGHT - shooter.getHeight();
+        double r = nav.getDistance();
+        Rotation2d theta = new Rotation2d(Math.PI - shooter.getAngle());
+        Trajectory current = new Trajectory(shooter.getVelocity(), theta, deltaPhi);
+        if(shooter.queueEnabled)
+            shooter.runQueue(current.getError(r, h, drift) < threshold ? 1.0 : 0.0);
+        Trajectory target = shooter.hoodEnabled ? new Trajectory(r, h, drift) : new Trajectory(r, h, drift, theta);
+        double hoodAngle = Math.PI - target.theta.getRadians();
+        if(shooter.hoodEnabled && (hoodAngle > shooter.getMaxAngle() || hoodAngle < shooter.getMinAngle()))
+            target = new Trajectory(r, h, drift, theta);
+        shooter.run(target.vel);
+        if(shooter.hoodEnabled)
+            shooter.setAngle(Math.PI - target.theta.getRadians());
+        base.setRotation(updateRotationPID(r, nav.getTheta(), fieldVel, deltaPhi.getRadians()));
+        SmartDashboard.putNumber("Tgt Angle", hoodAngle / DEG);
+        SmartDashboard.putNumber("Tgt Velocity", target.vel);
+        SmartDashboard.putNumber("Tgt Phi", target.phi.getDegrees());
+        shooter.sendDebug();
+    }
+
     @Override
     public void execute() {
-        Translation2d vel = nav.getVelocity();
-        Rotation2d phi = nav.getOrientation();
-        double h = TARGET_HEIGHT - shooter.getHeight();
-        if(calcError(vel, phi, h) < threshold)
-            intake.spinHopper(1.0);
+        boolean sameColor = shooter.getQueueColor() == shooter.robotColor;
+        if(sameColor)
+            aim();
         else
-            intake.spinIntake(0);
-        double r = nav.getDistance();
-        double vx = Math.sqrt(g*r*r / (h - m*r) / 2);
-        Translation2d targetVel = new Translation2d(vx, g*r / vx + m*vx);
-        shooter.run(targetVel.getNorm());
-        shooter.setAngle(Math.PI - Math.atan2(targetVel.getY(), targetVel.getX()));
-        base.setRotation(updateRotationPID(r, nav.getTheta(), vel, phi));
+            shooter.run(1.5);
         if(shooter.hasCargo())
             state = 1;
         else if(state == 1)
             state = 2;
+        
     }
 
     @Override

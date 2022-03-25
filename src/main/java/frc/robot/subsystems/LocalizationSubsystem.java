@@ -6,6 +6,11 @@ package frc.robot.subsystems;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import com.ctre.phoenix.sensors.WPI_Pigeon2;
@@ -27,6 +32,9 @@ public class LocalizationSubsystem extends SubsystemBase {
   private DMatrix2x2 prec = new DMatrix2x2();
   private WPI_Pigeon2 imu = new WPI_Pigeon2(40);
   private Rotation2d phiOffset = new Rotation2d(Math.PI / 4);
+  private Translation2d pigeonBias = new Translation2d(-0.35, -0.59);
+  private Rotation2d pigeonOrientation = new Rotation2d();
+  private final NetworkTableEntry tv, tx, ty;
 
   /**
    * Creates a new LocalizationSubsystem.
@@ -41,6 +49,10 @@ public class LocalizationSubsystem extends SubsystemBase {
   public LocalizationSubsystem(double step, int depth, double drift) {
     filter = new KalmanFilter(depth, new DMatrix2x2(drift, 0, 0, drift));
     this.step = step;
+    NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
+    tv = table.getEntry("tv");
+    tx = table.getEntry("tx");
+    ty = table.getEntry("ty");
   }
   /**
    * Creates a new LocalizationSubsystem.
@@ -66,7 +78,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  derivative of position considered.
    */
   public LocalizationSubsystem(double step, double drift) {
-    this(step, 1, drift);
+    this(step, 2, drift);
   }
   /**
    * Creates a new LocalizationSubsystem.
@@ -78,7 +90,7 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  this subsystem.
    */
   public LocalizationSubsystem(double step) {
-    this(step, 1, 0.0);
+    this(step, 2, 0.0);
   }
 
   /**
@@ -133,6 +145,19 @@ public class LocalizationSubsystem extends SubsystemBase {
    */
   public void addData(int degree, Translation2d pred, double var) {
     addData(degree, pred.getX(), pred.getY(), var);
+  }
+
+  public void addPosition(Translation2d pos, double varX, double varY, double covar) {
+    addData(0, pos, varX, varY, covar);
+  }
+  public void addPosition(Translation2d pos, double var) {
+    addData(0, pos, var);
+  }
+  public void addVelocity(Translation2d pos, double varX, double varY, double covar) {
+    addData(1, pos, varX, varY, covar);
+  }
+  public void addVelocity(Translation2d pos, double var) {
+    addData(1, pos, var);
   }
 
   /**
@@ -323,11 +348,41 @@ public class LocalizationSubsystem extends SubsystemBase {
    *  origin.
    */
   public Rotation2d getDeltaPhi() {
-    return new Rotation2d(-1, 0).minus(getOrientation()).plus(getTheta());  // TODO: Incorporate limelight.
+    double diff = new Rotation2d(Math.PI).minus(getOrientation()).plus(getTheta()).getRadians();
+    if(tv.getDouble(0) == 1){
+      double cam = Math.toDegrees(tx.getDouble(180));
+      double delta = Math.asin(Math.sin(cam - diff));
+      diff += delta * 0.25;
+    }
+    return new Rotation2d(diff);
+  }
+
+  private Translation2d accum = new Translation2d();
+  private double accum_t = 0;
+
+  private void pigeonUpdate() {
+    short[] accArr = new short[]{0, 0, 0};
+    imu.getBiasedAccelerometer(accArr);
+    Translation2d rawAcc = new Translation2d(9.8 * accArr[0] / (1<<14), 9.8 * accArr[1] / (1<<14));
+    Translation2d finalAcc = rawAcc.minus(pigeonBias).rotateBy(pigeonOrientation).rotateBy(getHeading());
+    SmartDashboard.putNumber("acc x", rawAcc.getX());
+    SmartDashboard.putNumber("acc y", rawAcc.getY());
+    accum_t += 0.02;
+    accum = accum.plus(rawAcc.minus(accum).times(0.02 / accum_t));
+    SmartDashboard.putNumber("accum x", accum.getX());
+    SmartDashboard.putNumber("accum y", accum.getY());
+    SmartDashboard.putNumber("accum time", accum_t);
+    if(accum_t > 60){
+      accum_t = 0;
+      System.out.println("x: " + accum.getX());
+      System.out.println("y: " + accum.getY());
+    }
+    addData(2, finalAcc, 0.001);
   }
 
   @Override
   public void periodic() {
+    //pigeonUpdate();
     filter.step(step);
   }
 
