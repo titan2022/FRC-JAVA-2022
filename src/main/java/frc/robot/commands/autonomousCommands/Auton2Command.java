@@ -19,20 +19,20 @@ public class Auton2Command extends SequentialCommandGroup {
         addCommands(
             //Collect team ball and shoots both starter and team ball
             new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 88.303 * Unit.IN, -121.095 * Unit.IN, 1)),
-            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
-            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, -2, 2, 0, 0, 1, 0.1, 0.02),
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, -2, 2, 0, 0, 1, 0.1, 0.02),
 
             //Collects teams ball on the edge of field and shoots it
             new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 117.725 * Unit.IN, -282.080 * Unit.IN, 1)),
-            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, -2, 2, 0, 0, 1, 0.1, 0.02),
 
             //Terminal player inputs one ball which is shot
             new MasterIntakeCommand(intake),
-            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, -2, 2, 0, 0, 1, 0.1, 0.02),
 
             //Collects enemy ball and shoots it away
             new ParallelCommandGroup(new MasterIntakeCommand(intake), new DriveToCommand(driveBase.getTranslational(), nav, 33.767 * Unit.IN, -149.227 * Unit.IN, 1)),
-            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, 0, 0, 0, 0, 50, 0.1, 0.02),
+            new ShooterCommand(shooter, driveBase.getRotational(), intake, nav, -2, 2, 0, 0, 1, 0.1, 0.022),
 
             //Gets to the line and prepares for player control period
             new DriveToCommand(driveBase.getTranslational(), nav, 1, 1, 1)

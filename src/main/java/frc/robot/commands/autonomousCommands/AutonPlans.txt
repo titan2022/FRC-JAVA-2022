@@ -32,12 +32,15 @@ Enemy Terminal ball
 
 NEW ROUTES!!!:
 
+Offset point (-23.526,-90.975)
+
 Auton1 Route:
 -Starts from top of the tarmacs
 -Collects one team ball and shoots starter & team ball into goal
 -Goes to collect terminal balls
 -Shoots terminal balls away
 
+Offset point()
 Auton2 Route:
 -Starts from middle of the tarmacs
 -Collects one team ball and shoots starter & team ball into goal
@@ -46,6 +49,8 @@ Auton2 Route:
 -While shooting, terminal gives robot one ball
 -Shoots the ball
 -Collects one enemy team ball and shoots away
+
+Offset point (80.505, -23.997)
 
 Auton3 Route:
 -Starts from bottom of the tarmacs
