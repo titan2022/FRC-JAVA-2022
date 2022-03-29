@@ -24,7 +24,7 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final DigitalInput hopperSensor = new DigitalInput(HOPPER_SENSOR_PORT);
     private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
-    DoubleSolenoid solenoid = new DoubleSolenoid(41, PneumaticsModuleType.CTREPCM, 0, 1);
+    private DoubleSolenoid solenoid = new DoubleSolenoid(41, PneumaticsModuleType.CTREPCM, 0, 1);
 
     public IntakeSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -78,11 +78,15 @@ public class IntakeSubsystem extends SubsystemBase {
 
     /** Extends the intake. */
     public void extend() {
+        //System.out.println("extend");
         solenoid.set(Value.kReverse);
+        //SmartDashboard.putBoolean("extended", true);
     }
     /** Retracts the intake. */
     public void retract() {
+        //System.out.println("retract");
         solenoid.set(Value.kForward);
+        //SmartDashboard.putBoolean("extended", false);
     }
 
     @Override

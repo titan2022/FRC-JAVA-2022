@@ -31,18 +31,18 @@ public class ClimbSubsystem extends SubsystemBase {
     }
 
     public void runClimb(double pct) {
-        SmartDashboard.putNumber("climb left", pct);
-        SmartDashboard.putNumber("climb right", pct);
+        //SmartDashboard.putNumber("climb left", pct);
+        //SmartDashboard.putNumber("climb right", pct);
         leftMotor.set(ControlMode.PercentOutput, pct);
         rightMotor.set(ControlMode.PercentOutput, pct);
     }
 
     public void spinLeft(double pct) {
-        SmartDashboard.putNumber("climb left", pct);
+        //SmartDashboard.putNumber("climb left", pct);
         leftMotor.set(ControlMode.PercentOutput, pct);
     }
     public void spinRight(double pct) {
-        SmartDashboard.putNumber("climb right", pct);
+        //SmartDashboard.putNumber("climb right", pct);
         rightMotor.set(ControlMode.PercentOutput, pct);
     }
 

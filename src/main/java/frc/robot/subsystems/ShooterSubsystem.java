@@ -101,8 +101,8 @@ public class ShooterSubsystem extends SubsystemBase {
      * @param speed  The target velocity of the shooter in meters per second.
      */
     public void run(double speed) {
-        SmartDashboard.putNumber("Shooter vel requested", speed);
-        SmartDashboard.putBoolean("Shooter mode velocity", true);
+        //SmartDashboard.putNumber("Shooter vel requested", speed);
+        //SmartDashboard.putBoolean("Shooter mode velocity", true);
         leftMotor.set(ControlMode.Velocity,
             FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
     }
@@ -114,8 +114,8 @@ public class ShooterSubsystem extends SubsystemBase {
      *  maximum output, [-1,1].
      */
     public void runPercent(double percent) {
-        SmartDashboard.putNumber("Shooter vel requested", percent);
-        SmartDashboard.putBoolean("Shooter mode velocity", false);
+        //SmartDashboard.putNumber("Shooter vel requested", percent);
+        //SmartDashboard.putBoolean("Shooter mode velocity", false);
         leftMotor.set(ControlMode.PercentOutput, percent);
     }
 
@@ -134,18 +134,18 @@ public class ShooterSubsystem extends SubsystemBase {
      *  projectile launched from the shooter.
      */
     public void setAngle(double radians) {
-        SmartDashboard.putNumber("Hood angle requested", radians * RAD / DEG);
+        //SmartDashboard.putNumber("Hood angle requested", radians * RAD / DEG);
         if(radians < HOOD_MIN_ANGLE){
-            hoodMotor.set(ControlMode.Position, 0);
-            SmartDashboard.putNumber("Hood angle", 0);
+            //hoodMotor.set(ControlMode.Position, 0);
+            //SmartDashboard.putNumber("Hood angle", 0);
         }
         else if(radians > HOOD_MAX_ANGLE){
-            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (HOOD_MAX_ANGLE - HOOD_MIN_ANGLE) / FALCON_TICKS);
-            SmartDashboard.putNumber("Hood angle", HOOD_MAX_ANGLE / DEG);
+            //hoodMotor.set(ControlMode.Position, HOOD_RATIO * (HOOD_MAX_ANGLE - HOOD_MIN_ANGLE) / FALCON_TICKS);
+            //SmartDashboard.putNumber("Hood angle", HOOD_MAX_ANGLE / DEG);
         }
         else{
-            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
-            SmartDashboard.putNumber("Hood angle", radians * RAD / DEG);
+            //hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
+            //SmartDashboard.putNumber("Hood angle", radians * RAD / DEG);
         }
     }
     /**
@@ -155,7 +155,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public void spinHood(double percent) {
         double currentAngle = getAngle();
-        SmartDashboard.putNumber("Hood angle", currentAngle / DEG);
+        //SmartDashboard.putNumber("Hood angle", currentAngle / DEG);
         if(percent > 0 && currentAngle < getMaxAngle())
             hoodMotor.set(ControlMode.PercentOutput, percent * 0.2);
         else if(percent < 0 && currentAngle > getMinAngle())
@@ -166,13 +166,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Coasts the hood motor for easy manual actuation. */
     public void coastHood() {
-        hoodMotor.setNeutralMode(NeutralMode.Coast);
-        hoodMotor.set(ControlMode.PercentOutput, 0);
+        //hoodMotor.setNeutralMode(NeutralMode.Coast);
+        //hoodMotor.set(ControlMode.PercentOutput, 0);
     }
     /** Brakes the hood motor to passively resist slippage. */
     public void brakeHood() {
-        hoodMotor.setNeutralMode(NeutralMode.Brake);
-        hoodMotor.set(ControlMode.PercentOutput, 0);
+        //hoodMotor.setNeutralMode(NeutralMode.Brake);
+        //hoodMotor.set(ControlMode.PercentOutput, 0);
     }
 
     /**
@@ -273,7 +273,7 @@ public class ShooterSubsystem extends SubsystemBase {
     public void sendDebug() {}
 
     public void periodic() {
-        RawColor rawColor = colorSensor.getRawColor();
+        /*RawColor rawColor = colorSensor.getRawColor();
         SmartDashboard.putNumber("raw red", rawColor.red);
         SmartDashboard.putNumber("raw green", rawColor.green);
         SmartDashboard.putNumber("raw blue", rawColor.blue);
@@ -295,10 +295,11 @@ public class ShooterSubsystem extends SubsystemBase {
             default:
                 SmartDashboard.putString("Cargo Color", "Error");
                 break;
-        }
-        SmartDashboard.putNumber("Hood angle", getAngle());
-        SmartDashboard.putNumber("Shooter velocity", getVelocity());
-        SmartDashboard.putBoolean("Flywheel Cargo", hasCargo());
+        }*/
+        //SmartDashboard.putNumber("Hood angle", getAngle());
+        //leftMotor.setControlFramePeriod(ControlFrame.Control_3_General, 100);
+        //SmartDashboard.putNumber("Shooter velocity", getVelocity());
+        //SmartDashboard.putBoolean("Flywheel Cargo", hasCargo());
     }
 
     /** Prepares the shooter for regular use. */

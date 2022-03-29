@@ -87,21 +87,21 @@ public class TranslationalDriveCommand extends CommandBase {
     public void execute() {
         if(controller.getBButtonPressed())
             isFieldOriented = !isFieldOriented;
-        SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
+        //SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
         double joyX = applyDeadband(controller.getLeftX(), 0.1);
         double joyY = applyDeadband(-controller.getLeftY(), 0.1);
-        SmartDashboard.putNumber("joyX", joyX);
-        SmartDashboard.putNumber("joyY", joyY);
+        //SmartDashboard.putNumber("joyX", joyX);
+        //SmartDashboard.putNumber("joyY", joyY);
         Translation2d velocity = new Translation2d(scaleVelocity(joyX), scaleVelocity(joyY));
-        SmartDashboard.putNumber("fieldX", velocity.getX());
-        SmartDashboard.putNumber("fieldY", velocity.getY());
+        //SmartDashboard.putNumber("fieldX", velocity.getX());
+        //SmartDashboard.putNumber("fieldY", velocity.getY());
         if(isFieldOriented){
             Rotation2d heading = nav.getHeading();
-            SmartDashboard.putNumber("heading", heading.getDegrees());
+            //SmartDashboard.putNumber("heading", heading.getDegrees());
             velocity = velocity.rotateBy(heading);
         }
-        SmartDashboard.putNumber("robotX", velocity.getX());
-        SmartDashboard.putNumber("robotY", velocity.getY());
+        //SmartDashboard.putNumber("robotX", velocity.getX());
+        //SmartDashboard.putNumber("robotY", velocity.getY());
         drive.setVelocity(velocity);
     }
 
