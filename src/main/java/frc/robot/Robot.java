@@ -5,16 +5,20 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.Compressor;
+import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveToCommand;
 import frc.robot.commands.FirstAutoCommand;
@@ -106,7 +110,19 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     enableRobot();
     shooter.robotColor = CargoColor.BLUE;
-    new FirstAutoCommand(drivebase.getTranslational(), shooter, intake, climb).schedule();
+    //new FirstAutoCommand(drivebase.getTranslational(), shooter, intake, climb).schedule();
+    //new DriveDistance(drivebase.getTranslational(), 60*IN, 3, 2).schedule();
+    new SequentialCommandGroup(
+      new InstantCommand(() -> shooter.runPercent(0.45)),
+      new WaitCommand(1.0),
+      new InstantCommand(() -> shooter.runQueue(1.0)),
+      new WaitCommand(3.0),
+      new InstantCommand(() -> {shooter.runPercent(0.0); shooter.runQueue(0.0);}),
+      new StartEndCommand(
+        () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 3)),
+        () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0)),
+        drivebase.getTranslational()).withTimeout(2)
+    ).schedule();
   }
 
   /** This function is called periodically during autonomous. */
