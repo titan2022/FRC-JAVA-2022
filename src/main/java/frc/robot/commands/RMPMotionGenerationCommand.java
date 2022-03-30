@@ -26,15 +26,12 @@ public class RMPMotionGenerationCommand extends CommandBase {
         this.drivebase = drivebase;
         this.deltaT = deltaT;
         addRequirements(localization);
+        addRequirements(drivebase);
     }
 
     public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root,
             TranslationalDrivebase drivebase) {
-        this.localization = localization;
-        this.root = root;
-        this.drivebase = drivebase;
-        deltaT = 0.02;
-        addRequirements(localization);
+        this(localization, root, drivebase, 0.02);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -65,8 +62,8 @@ public class RMPMotionGenerationCommand extends CommandBase {
         drivebase.setVelocity(new Translation2d(x_dot.get(0), x_dot.get(1)));
 
         // vel = new Translation2d(x_dot.get(0), x_dot.get(1)); // TEST
-        // pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY() +
-        // vel.getY() * deltaT); // TEST
+        // pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY(
+        // etY() * deltaT); // TEST
 
     }
 

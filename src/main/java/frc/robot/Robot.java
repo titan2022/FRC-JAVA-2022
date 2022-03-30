@@ -14,6 +14,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -124,12 +125,13 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousInit() {
     // TODO: Create autonomous
+    nav.translateTo(new Translation2d(0, 0));
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(0, 1);
+    Translation2d goal = new Translation2d(0, 10);
     double v = 5;
     double tolerance = 0.1;
-    new RMPMoveToPositionCommand(root, goal, nav, v, tolerance).schedule();
-    new RMPMotionGenerationCommand(nav, root, drivebase.getTranslational()).schedule();
+    new ParallelRaceGroup(new RMPMoveToPositionCommand(drivebase.getTranslational(), root, goal, nav, v, tolerance),
+        new RMPMotionGenerationCommand(nav, root, drivebase.getTranslational())).schedule();
     odometry.schedule();
   }
 

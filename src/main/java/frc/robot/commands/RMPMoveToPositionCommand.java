@@ -1,8 +1,11 @@
 package frc.robot.commands;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.LocalizationSubsystem;
+import frc.robot.subsystems.TranslationalDrivebase;
+
 import com.titanrobotics2022.mapping.LinearSegment;
 import com.titanrobotics2022.mapping.Point;
 import com.titanrobotics2022.motion.generation.rmpflow.rmps.PathFollowing;
@@ -10,6 +13,7 @@ import com.titanrobotics2022.motion.generation.rmpflow.RMPRoot;
 
 public class RMPMoveToPositionCommand extends CommandBase {
 
+    TranslationalDrivebase drivebase;
     private RMPRoot root;
     private PathFollowing leaf;
     private Translation2d goal;
@@ -18,8 +22,9 @@ public class RMPMoveToPositionCommand extends CommandBase {
     private double v;
     private double tolerance;
 
-    public RMPMoveToPositionCommand(RMPRoot root, Translation2d goal, LocalizationSubsystem localization, double v,
-            double tolerance) {
+    public RMPMoveToPositionCommand(TranslationalDrivebase drivebase, RMPRoot root, Translation2d goal,
+            LocalizationSubsystem localization, double v, double tolerance) {
+        this.drivebase = drivebase;
         this.root = root;
         this.goal = goal;
         this.localization = localization;
@@ -45,11 +50,13 @@ public class RMPMoveToPositionCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         root.unlinkChild(leaf);
+        drivebase.setVelocity(new Translation2d(0, 0));
     }
 
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
+        SmartDashboard.putBoolean("isFinished", goal.minus(localization.getPosition()).getNorm() < tolerance);
         return goal.minus(localization.getPosition()).getNorm() < tolerance;
     }
 
