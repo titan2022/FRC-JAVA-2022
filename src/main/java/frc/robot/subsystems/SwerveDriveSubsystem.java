@@ -1,11 +1,14 @@
 package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
+import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.CANCoder;
+import com.ctre.phoenix.sensors.CANCoderStatusFrame;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -170,6 +173,22 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
       motor.setSensorPhase(WHEEL_PHASE);
       motor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
       motor.selectProfileSlot(MAIN_MOTOR_SLOT_IDX, 0);
+      motor.setNeutralMode(NeutralMode.Coast);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 1000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 50);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
+      motor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
     }
     for (WPI_TalonFX rotator : rotators) {
       rotator.configAllSettings(rotatorConfig);
@@ -177,9 +196,28 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
       rotator.setSensorPhase(ROTATOR_PHASE);
       rotator.configSelectedFeedbackSensor(TalonFXFeedbackDevice.RemoteSensor0, 0, 0);
       rotator.selectProfileSlot(ROTATOR_SLOT_IDX, 0);
+      rotator.setNeutralMode(NeutralMode.Brake);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 1000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 50);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
+      rotator.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
     }
-    for (CANCoder encoder : encoders)
+    for (CANCoder encoder : encoders) {
       encoder.configSensorInitializationStrategy(SensorInitializationStrategy.BootToAbsolutePosition, 0);
+      encoder.setStatusFramePeriod(CANCoderStatusFrame.SensorData, 5000);
+      encoder.setStatusFramePeriod(CANCoderStatusFrame.VbatAndFaults, 5000);
+    }
     for (int i = 0; i < 4; i++)
       rotators[i].configRemoteFeedbackFilter(encoders[i], 0);
   }
@@ -208,7 +246,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
     double velTicks = state.speedMetersPerSecond / (10 * METERS_PER_TICKS);
     if (velTicks == 0) {
       motors[module].set(ControlMode.Velocity, 0);
-      SmartDashboard.putNumber("set vel " + module, 0);
+      // SmartDashboard.putNumber("set vel " + module, 0);
       return;
     }
     double currTicks = getRotatorEncoderCount(module);
@@ -225,10 +263,10 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
       deltaTicks += CANCODER_CPR / 2;
       velTicks *= -1;
     }
-    SmartDashboard.putNumber("set vel " + module, velTicks);
-    SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks);
-    SmartDashboard.putNumber("cur rot " + module, currTicks);
-    SmartDashboard.putNumber("delta " + module, deltaTicks);
+    // SmartDashboard.putNumber("set vel " + module, velTicks);
+    // SmartDashboard.putNumber("set rot " + module, currTicks + deltaTicks);
+    // SmartDashboard.putNumber("cur rot " + module, currTicks);
+    // SmartDashboard.putNumber("delta " + module, deltaTicks);
     motors[module].set(ControlMode.Velocity, velTicks);
     rotators[module].set(ControlMode.Position, currTicks + deltaTicks + OFFSETS[module]);
   }
@@ -243,16 +281,17 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
    * @param rightOutputValue right side output value for ControlMode
    */
   private void setVelocities(ChassisSpeeds inputChassisSpeeds) {
-    SmartDashboard.putNumber("last x", inputChassisSpeeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("last y", inputChassisSpeeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("last omega", inputChassisSpeeds.omegaRadiansPerSecond);
+    // SmartDashboard.putNumber("last x", inputChassisSpeeds.vxMetersPerSecond);
+    // SmartDashboard.putNumber("last y", inputChassisSpeeds.vyMetersPerSecond);
+    // SmartDashboard.putNumber("last omega",
+    // inputChassisSpeeds.omegaRadiansPerSecond);
     SwerveModuleState[] modules = kinematics.toSwerveModuleStates(inputChassisSpeeds);
     SwerveDriveKinematics.desaturateWheelSpeeds(modules, MAX_WHEEL_SPEED);
     // savedStates = modules;
     for (int i = 0; i < 4; i++) {
       applyModuleState(modules[i], i);
-      SmartDashboard.putNumber("tgt vel " + i, modules[0].speedMetersPerSecond);
-      SmartDashboard.putNumber("tgt deg " + i, modules[0].angle.getDegrees());
+      // SmartDashboard.putNumber("tgt vel " + i, modules[0].speedMetersPerSecond);
+      // SmartDashboard.putNumber("tgt deg " + i, modules[0].angle.getDegrees());
     }
   }
 
@@ -296,7 +335,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
    * @return Angle of rotator motor in radians
    */
   public double getRotatorEncoderPosition(int module) {
-    return getRotatorEncoderCount(module) * CANCODER_TICKS / RAD;
+    return (CANCODER_CPR / 2 - getRotatorEncoderCount(module)) * CANCODER_TICKS / RAD;
   }
 
   public double getEncoderVelocity(int module) {
@@ -325,5 +364,17 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
   @Override
   public RotationalDrivebase getRotational() {
     return rotationalLock;
+  }
+
+  @Override
+  public void coast() {
+    for (WPI_TalonFX rotator : rotators)
+      rotator.setNeutralMode(NeutralMode.Coast);
+  }
+
+  @Override
+  public void brake() {
+    for (WPI_TalonFX rotator : rotators)
+      rotator.setNeutralMode(NeutralMode.Brake);
   }
 }

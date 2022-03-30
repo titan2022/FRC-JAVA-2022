@@ -4,9 +4,13 @@
 
 package frc.robot;
 
+import com.ctre.phoenix.motorcontrol.FeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
 /**
@@ -38,6 +42,17 @@ public final class Constants {
         public static final double MS = 0.001;
     }
 
+    public static final class Cargo {
+        public static final Translation2d LEFT = new Translation2d(-81.643 * Unit.IN, -129.396 * Unit.IN);
+        public static final Translation2d CENTER = new Translation2d(88.3033 * Unit.IN, -124.946 * Unit.IN);
+        public static final Translation2d RIGHT = new Translation2d(150.790 * Unit.IN, -25.910 * Unit.IN);
+        public static final Translation2d OPP_LEFT = new Translation2d(-124.946 * Unit.IN, -88.303 * Unit.IN);
+        public static final Translation2d OPP_CENTER = new Translation2d(33.767 * Unit.IN, -149.227 * Unit.IN);
+        public static final Translation2d OPP_RIGHT = new Translation2d(149.227 * Unit.IN, 33.767 * Unit.IN);
+        public static final Translation2d STATION = new Translation2d(119.799 * Unit.IN, -284.248 * Unit.IN);
+        public static final Translation2d HUMAN = new Translation2d(118.762 * Unit.IN, -283.164 * Unit.IN);
+    }
+
     /**
      * Contains a velocity based PID configuration.
      * @return TalonFX Configuration Object
@@ -46,12 +61,12 @@ public final class Constants {
     {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 0.05;
+        talon.slot0.kP = 0.06;
         talon.slot0.kI = 0;  // 250
-        talon.slot0.kD = 0;        
-        talon.slot0.kF = 0;
+        talon.slot0.kD = 0.2;
+        talon.slot0.kF = 0.045;
         talon.slot0.integralZone = 900;
-        talon.slot0.allowableClosedloopError = 217;
+        talon.slot0.allowableClosedloopError = 20;
         talon.slot0.maxIntegralAccumulator = 254.000000;
         //talon.slot0.closedLoopPeakOutput = 0.869990; // Sets maximum output of the PID controller
         //talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the PID controller
@@ -78,5 +93,25 @@ public final class Constants {
         //talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the PID controller
 
         return talon;
+    }
+
+    public static TalonFXConfiguration getHoodConfig() {
+        TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
+        hoodConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
+        hoodConfig.neutralDeadband = 0;
+        hoodConfig.peakOutputForward = 0.3;
+        hoodConfig.peakOutputReverse = -0.3;
+        hoodConfig.primaryPID.selectedFeedbackCoefficient = 1;
+        hoodConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+        hoodConfig.slot0.allowableClosedloopError = 80;
+        hoodConfig.slot0.closedLoopPeakOutput = 0.2;
+        hoodConfig.slot0.kP = 0.45;
+        hoodConfig.slot0.kI = 0;
+        hoodConfig.slot0.kD = 0;
+        hoodConfig.slot0.kF = 0;
+        hoodConfig.statorCurrLimit.enable = false;
+        hoodConfig.supplyCurrLimit.currentLimit = 10;
+        hoodConfig.supplyCurrLimit.enable = true;
+        return hoodConfig;
     }
 }
