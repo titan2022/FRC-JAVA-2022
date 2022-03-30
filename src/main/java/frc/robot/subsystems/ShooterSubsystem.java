@@ -42,10 +42,6 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int HOOD_MINIMUM_TICKS = 0;
     private static final int HOOD_MAXIMUM_TICKS = 12140;
 
-    private static final int RIGHT_MOTOR_PORT = 20;
-    private static final int LEFT_MOTOR_PORT = 21;
-    private static final int HOOD_MOTOR_ID = 19;
-
     // private static final int RIGHT_ENCODER_PORT = 9;
     // private static final int LEFT_ENCODER_PORT = 10;
 

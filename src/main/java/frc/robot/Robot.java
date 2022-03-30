@@ -131,7 +131,6 @@ public class Robot extends TimedRobot {
     new RMPMoveToPositionCommand(root, goal, nav, v, tolerance).schedule();
     new RMPMotionGenerationCommand(nav, root, drivebase.getTranslational()).schedule();
     odometry.schedule();
-
   }
 
   /** This function is called periodically during autonomous. */
@@ -141,126 +140,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-    // TODO: Makes sure the autonomous stops running when teleop starts
-    enableRobot();
 
-    drivebase.getTranslational()
-        .setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 10.));
-    drivebase.getRotational()
-        .setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
-    new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
-
-    /*
-     * new JoystickButton(xbox, Button.kLeftBumper.value).whenPressed(new
-     * StartEndCommand(
-     * () -> {intake.spinIntake(1.0); intake.spinHopper(1.0); intake.extend();},
-     * () -> {intake.spinIntake(0.0); intake.spinHopper(0.0); intake.retract();},
-     * intake));
-     * new Trigger(() -> xbox.getLeftTriggerAxis() > 0).whileActiveOnce(new
-     * InstantCommand(() -> intake.retract()));
-     */
-
-    xinmotek.downButton.or(new JoystickButton(xbox, Button.kRightBumper.value)).whileActiveOnce(
-        new StartEndCommand(
-            () -> {
-              intake.spinIntake(1.0);
-              intake.spinHopper(1.0);
-              intake.extend();
-            },
-            () -> {
-              intake.spinIntake(0.0);
-              intake.spinHopper(0.0);
-              intake.retract();
-            },
-            intake));
-    xinmotek.upButton
-        .whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
-
-    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {
-      if (shooter.colorEnabled)
-        shooter.robotColor = CargoColor.NONE;
-      else
-        shooter.colorOverride = CargoColor.NONE;
-    });
-    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft.negate()).whenActive(() -> {
-      if (shooter.colorEnabled)
-        shooter.robotColor = CargoColor.RED;
-      else
-        shooter.colorOverride = CargoColor.RED;
-    });
-    xinmotek.leftPad.bottomLeft.and(xinmotek.leftPad.topLeft.negate()).whenActive(() -> {
-      if (shooter.colorEnabled)
-        shooter.robotColor = CargoColor.BLUE;
-      else
-        shooter.colorOverride = CargoColor.BLUE;
-    });
-    xinmotek.leftPad.topRight.whenPressed(() -> {
-      shooter.colorEnabled = false;
-    });
-    xinmotek.leftPad.bottomRight.whenPressed(() -> {
-      shooter.colorEnabled = true;
-    });
-
-    xinmotek.middlePad.topLeft.whenHeld(new StartEndCommand(
-        () -> {
-          intake.spinIntake(1.0);
-          intake.spinHopper(1.0);
-        },
-        () -> {
-          intake.spinIntake(0.0);
-          intake.spinHopper(0.0);
-        },
-        intake));
-    xinmotek.middlePad.bottomLeft.whenHeld(new StartEndCommand(
-        () -> {
-          intake.spinIntake(-1.0);
-          intake.spinHopper(-1.0);
-        },
-        () -> {
-          intake.spinIntake(0.0);
-          intake.spinHopper(0.0);
-        },
-        intake));
-    xinmotek.middlePad.topRight.whenHeld(new StartEndCommand(
-        () -> shooter.runQueue(0.5),
-        () -> shooter.runQueue(0.0)));
-    xinmotek.middlePad.bottomRight.whenHeld(new StartEndCommand(
-        () -> shooter.runQueue(-0.5),
-        () -> shooter.runQueue(0.0)));
-
-    xinmotek.rightPad.topLeft.whenPressed(() -> {
-      shooter.queueEnabled = false;
-    });
-    xinmotek.rightPad.bottomLeft.whenPressed(() -> {
-      shooter.queueEnabled = true;
-    });
-    xinmotek.rightPad.topRight
-        .whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
-    xinmotek.rightPad.bottomRight
-        .whenHeld(new StartEndCommand(() -> shooter.runPercent(-0.2), () -> shooter.runPercent(0.0), shooter));
-    // xinmotek.rightPad.topRight.whenHeld(new InstantCommand(() ->
-    // intake.extend()));
-    // xinmotek.rightPad.bottomRight.whenHeld(new InstantCommand(() ->
-    // intake.retract()));
-
-    Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
-    // Command rightClimbControl = new RunCommand(() -> climb.spinRight(0.65 *
-    // xinmotek.getRightY()));
-    new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride);// .cancelWhenActive(rightClimbControl);
-    new Trigger(() -> xinmotek.getRightX() < 0).cancelWhenActive(flywheelOverride);// .whenActive(rightClimbControl);
-
-    Command hoodOverride = new FunctionalCommand(
-        () -> {
-          shooter.hoodEnabled = false;
-        },
-        () -> shooter.spinHood(xinmotek.getLeftY()),
-        (interrupted) -> {
-          shooter.hoodEnabled = true;
-        }, () -> false);
-    // Command leftClimbControl = new RunCommand(() -> climb.spinLeft(0.65 *
-    // xinmotek.getLeftY()));
-    new Trigger(() -> xinmotek.getLeftX() > 0).whenActive(hoodOverride);// .cancelWhenActive(leftClimbControl);
-    new Trigger(() -> xinmotek.getLeftX() < 0).cancelWhenActive(hoodOverride);// .whenActive(leftClimbControl);
   }
 
   /** This function is called periodically during operator control. */
