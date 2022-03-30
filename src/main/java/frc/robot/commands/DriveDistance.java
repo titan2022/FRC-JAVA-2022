@@ -33,6 +33,8 @@ public class DriveDistance extends CommandBase {
     @Override
     public void initialize() {
         SmartDashboard.putString("Move Task", String.format("Rel (%.2f, %.2f)", offset.getX(), offset.getY()));
+        lastPos = new Translation2d(0, 0);
+        lastVel = new Translation2d(0, 0);
     }
 
     @Override
@@ -43,7 +45,10 @@ public class DriveDistance extends CommandBase {
         double v = Math.min(velocity, Math.sqrt(2 * acceleration * off.getNorm()));
         lastVel = off.times(v / off.getNorm());
         drive.setVelocity(lastVel);
-        SmartDashboard.putNumber("Move Target Distance", off.getNorm());
+        SmartDashboard.putNumber("Move Pos X", lastPos.getX());
+        SmartDashboard.putNumber("Move Pos Y", lastPos.getY());
+        SmartDashboard.putNumber("Move Off X", off.getX());
+        SmartDashboard.putNumber("Move Off Y", off.getY());
         SmartDashboard.putNumber("Move Velocity X", lastVel.getX());
         SmartDashboard.putNumber("Move Velocity Y", lastVel.getY());
     }
@@ -61,6 +66,6 @@ public class DriveDistance extends CommandBase {
         double pre = lastPos.minus(offset).getNorm();
         double post = lastPos.plus(lastVel.times(2 * step)).minus(offset).getNorm();
         double dist = lastVel.getNorm() * 2 * step;
-        return pre - post < dist;
+        return pre - post < Math.max(dist - 1e-4, 1e-4);
     }
 }

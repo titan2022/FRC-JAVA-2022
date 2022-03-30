@@ -20,6 +20,7 @@ import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
+import frc.robot.commands.DriveDistance;
 import frc.robot.commands.DriveToCommand;
 import frc.robot.commands.FirstAutoCommand;
 import frc.robot.commands.GetDriveInformationCommand;
@@ -111,7 +112,7 @@ public class Robot extends TimedRobot {
     enableRobot();
     shooter.robotColor = CargoColor.BLUE;
     //new FirstAutoCommand(drivebase.getTranslational(), shooter, intake, climb).schedule();
-    //new DriveDistance(drivebase.getTranslational(), 60*IN, 3, 2).schedule();
+    //new DriveDistance(drivebase.getTranslational(), 10, 3, 2).schedule();
     new SequentialCommandGroup(
       new InstantCommand(() -> shooter.runPercent(0.45)),
       new WaitCommand(1.0),
