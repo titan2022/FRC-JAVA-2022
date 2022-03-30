@@ -8,15 +8,19 @@ import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
 import com.revrobotics.ColorSensorV3;
 import com.revrobotics.ColorSensorV3.RawColor;
-
+import com.revrobotics.Rev2mDistanceSensor.RangeProfile;
+import com.revrobotics.Rev2mDistanceSensor;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.I2C.Port;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-
+import edu.wpi.first.wpilibj.I2C;
+import frc.robot.Constants.Unit;
+import frc.robot.subsystems.I2CMuxer;
 import static frc.robot.Constants.Unit.*;
 import static frc.robot.Constants.getHoodConfig;
+
 
 public class ShooterSubsystem extends SubsystemBase {
     /** Gear ratio between the hood motor and hood rack */
@@ -31,19 +35,20 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int LEFT_MOTOR_PORT = 11;
     private static final int HOOD_MOTOR_ID = 14;
     private static final int QUEUE_MOTOR_ID = 10;
-    private static final int BEAM_BREAK_SENSOR_PORT = 1;
+    //private static final int BEAM_BREAK_SENSOR_PORT = 1;
 
     private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
     private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
     private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
     private static final WPI_TalonFX queueMotor = new WPI_TalonFX(QUEUE_MOTOR_ID);
-    private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_SENSOR_PORT);
     private static final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kMXP);
+    private static final Rev2mDistanceSensor distanceSensor = new Rev2mDistanceSensor(Rev2mDistanceSensor.Port.kOnboard, Rev2mDistanceSensor.Unit.kMillimeters, RangeProfile.kDefault);
 
     private static final Color kRed = new Color(1, 0, 0);
     private static final Color kBlue = new Color(0, 0, 1);
     private static final Color kWhite = new Color(1, 1, 1);
     private final ColorMatch colorMatch = new ColorMatch();
+    private static final I2CMuxer i2cMuxer= new I2CMuxer();
 
     public boolean queueEnabled = true;
     public boolean hoodEnabled = true;
@@ -236,14 +241,31 @@ public class ShooterSubsystem extends SubsystemBase {
     }
 
     /**
-     * Checks whether there is a cargo in the shooter.
+     * Finds distance to the ball from the Rev2mDistanceSensor at the bottom of the shooter
      * 
-     * @return  True if a cargo is detected in the shooter, or false otherwise.
+     * @return The distance to the cargo in millimeters
      */
-    public boolean hasCargo() {
-        return beamBreak.get();
+    
+    public double getCargoDistance() {
+        i2cMuxer.setPort((byte) 1);
+        return 1000 *distanceSensor.getRange(Rev2mDistanceSensor.Unit.kMillimeters);
     }
 
+
+    /**
+     * Needs to best tested to see what isRangeValid() does
+     * 
+     * Checks whether cargo is in shoooter
+     * @return If ball is in shooter or not
+     * 
+     */
+    public boolean hasCargo() {
+        i2cMuxer.setPort((byte) 1);
+        if (distanceSensor.isRangeValid()) 
+            return true;
+        else
+            return false;
+    }
     /**
      * Determines the color of the cargo currently in the queue.
      * 
@@ -252,6 +274,8 @@ public class ShooterSubsystem extends SubsystemBase {
     public CargoColor getQueueColor() {
         if(!colorEnabled)
             return colorOverride;
+        //0-7 for the port ids
+        i2cMuxer.setPort((byte) 0);
         ColorMatchResult result = colorMatch.matchClosestColor(colorSensor.getColor());
         if(result.color == kRed)
             return CargoColor.RED;
