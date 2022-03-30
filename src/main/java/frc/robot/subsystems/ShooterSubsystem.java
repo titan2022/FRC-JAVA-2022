@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.ColorMatch;
@@ -93,6 +94,38 @@ public class ShooterSubsystem extends SubsystemBase {
         colorMatch.addColorMatch(kRed);
         colorMatch.addColorMatch(kBlue);
         colorMatch.addColorMatch(kWhite);
+
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 50);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
+        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
+        
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 50);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
+        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
     }
 
     /**

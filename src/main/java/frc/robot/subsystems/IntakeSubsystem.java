@@ -2,6 +2,7 @@ package frc.robot.subsystems;
 
 import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.SupplyCurrentLimitConfiguration;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
@@ -42,6 +43,38 @@ public class IntakeSubsystem extends SubsystemBase {
         hopperMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
         hopperMotor.setInverted(false);
         hopperMotor.selectProfileSlot(0, 0);
+        
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
+        intakeMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
+        
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
+        hopperMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
     }
 
     /**
