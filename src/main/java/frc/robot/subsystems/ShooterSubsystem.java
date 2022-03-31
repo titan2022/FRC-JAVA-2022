@@ -82,7 +82,7 @@ public class ShooterSubsystem extends SubsystemBase {
         leftMotor.setNeutralMode(NeutralMode.Coast);
         rightMotor.setNeutralMode(NeutralMode.Coast);
 
-        hoodMotor.configAllSettings(getHoodConfig());
+        hoodMotor.configAllSettings(getHoodConfig(HOOD_MIN_ANGLE, HOOD_MAX_ANGLE));
         hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
         hoodMotor.setInverted(false);
         hoodMotor.setSensorPhase(true);

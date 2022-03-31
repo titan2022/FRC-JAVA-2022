@@ -95,7 +95,7 @@ public final class Constants {
         return talon;
     }
 
-    public static TalonFXConfiguration getHoodConfig() {
+    public static TalonFXConfiguration getHoodConfig(double min, double max) {
         TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
         hoodConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
         hoodConfig.neutralDeadband = 0;
@@ -112,6 +112,10 @@ public final class Constants {
         hoodConfig.statorCurrLimit.enable = false;
         hoodConfig.supplyCurrLimit.currentLimit = 10;
         hoodConfig.supplyCurrLimit.enable = true;
+        hoodConfig.reverseSoftLimitEnable = true;
+        hoodConfig.reverseSoftLimitThreshold = min / Unit.FALCON_TICKS;
+        hoodConfig.forwardSoftLimitEnable = true;
+        hoodConfig.forwardSoftLimitThreshold = max / Unit.FALCON_TICKS;
         return hoodConfig;
     }
 }
