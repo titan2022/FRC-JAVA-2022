@@ -13,7 +13,14 @@ public class AutoClimb extends SequentialCommandGroup {
     public AutoClimb() {
         
         addCommands(
-        
+            new ClimbCommand(climb, -0.375, 2),
+            new ClimbCommand(climb, 0.0417, 0.1),
+            new ClimbCommand(climb, 0.0417, 0.2),
+            new ClimbCommand(climb, -0.1639, 2),
+            new ClimbCommand(climb, -0.375, 3),
+            new ClimbCommand(climb, 0.0417, 0.1),
+            new ClimbCommand(climb, 0.0417, 0.2),
+            new ClimbCommand(climb, -0.1639, 2)
         );
     }
 }   
