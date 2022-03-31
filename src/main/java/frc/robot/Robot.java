@@ -127,11 +127,14 @@ public class Robot extends TimedRobot {
     // TODO: Create autonomous
     nav.translateTo(new Translation2d(0, 0));
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(0, 10);
+    Translation2d goal = new Translation2d(2, 2);
     double v = 5;
     double tolerance = 0.1;
-    new ParallelRaceGroup(new RMPMoveToPositionCommand(drivebase.getTranslational(), root, goal, nav, v, tolerance),
-        new RMPMotionGenerationCommand(nav, root, drivebase.getTranslational())).schedule();
+    new ParallelRaceGroup(new RMPMoveToPositionCommand(drivebase.getTranslational(), root, goal, nav, v,
+        tolerance),
+        new RMPMotionGenerationCommand(nav, root,
+            drivebase.getTranslational()))
+        .schedule();
     odometry.schedule();
   }
 
