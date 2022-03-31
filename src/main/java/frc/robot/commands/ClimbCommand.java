@@ -8,10 +8,13 @@ import frc.robot.subsystems.ClimbSubsystem;
 public class ClimbCommand extends CommandBase {
     private ClimbSubsystem climb;
 
-    //The gear ratio is for the lift 190.5:1 and the max RPM of the Falcon 500 is 6380 sot the max rpm of the lift per second is 0.54516 rps or 196.2576 degrees per second
-    //The lift is around 31 degrees
-    //121 degrees
+    /**
+     * Creates climb command for the autoclimb
+     * 
+     * @param climb The ClimbSubsystem
+     * @param gearTicks T
+     */
     public ClimbCommand(ClimbSubsystem climb, double gearTicks) {
-        
+
     }
 }   
