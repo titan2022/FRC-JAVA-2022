@@ -4,14 +4,14 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.WCDriveSubsystem;
+import frc.robot.subsystems.TankDriveSubsystem;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 
 public class ArcadeDriveCommand extends CommandBase {
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
-  WCDriveSubsystem differentialDrive;
+  TankDriveSubsystem differentialDrive;
 
   //Max speed
   double speed = 10;
@@ -20,7 +20,7 @@ public class ArcadeDriveCommand extends CommandBase {
    * 
    * @param subsystem = what subsystem is being used by the command
    */
-  public ArcadeDriveCommand(WCDriveSubsystem subsystem) {
+  public ArcadeDriveCommand(TankDriveSubsystem subsystem) {
     differentialDrive = subsystem;
     addRequirements(subsystem);
   }
@@ -34,7 +34,7 @@ public class ArcadeDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    differentialDrive.move(Constants.controller.getY(Hand.kLeft) * speed, Constants.controller.getX(Hand.kLeft) * (2 * Math.PI / 3));
+    
   }
 
   // Called once the command ends or is interrupted.

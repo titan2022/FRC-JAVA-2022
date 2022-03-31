@@ -4,28 +4,23 @@
 
 package frc.robot.commands;
 
-import frc.robot.subsystems.WCDriveSubsystem;
+import frc.robot.subsystems.TankDriveSubsystem;
 import edu.wpi.first.wpilibj.GenericHID.Hand;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.Constants;
 
-public class TankDriveCommand extends CommandBase {
+public class ManualTankDriveCommand extends CommandBase {
 
   @SuppressWarnings({"PMD.UnusedPrivateField", "PMD.SingularField"})
 
   //Drivebase
-  WCDriveSubsystem differentialDrive;
+  private static final TankDriveSubsystem tankDrive = new TankDriveSubsystem();
 
   //Max speed of wheels
-  double speed = 10;
+  private double speed = 10;
   
-  /**
-   * 
-   * @param subsystem = what subsystem is being used by the command
-   */
-  public TankDriveCommand(WCDriveSubsystem subsystem) {
-    differentialDrive = subsystem;
-    addRequirements(subsystem);
+  public ManualTankDriveCommand() {
+    addRequirements(tankDrive);
   }
 
   // Called when the command is initially scheduled.
@@ -37,8 +32,8 @@ public class TankDriveCommand extends CommandBase {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    differentialDrive.rotateLeftWheel(Constants.controller.getY(Hand.kLeft) * speed);
-    differentialDrive.rotateRightWheel(Constants.controller.getY(Hand.kRight) * speed);
+    tankDrive.spinLeftWheel(Constants.controller.getY(Hand.kLeft));
+    tankDrive.spinRightWheel(Constants.controller.getY(Hand.kRight));
   }
 
   // Called once the command ends or is interrupted.
