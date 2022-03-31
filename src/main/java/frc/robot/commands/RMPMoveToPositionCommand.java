@@ -21,15 +21,17 @@ public class RMPMoveToPositionCommand extends CommandBase {
     private LinearSegment path;
     private double v;
     private double tolerance;
+    private double maxAcc;
 
     public RMPMoveToPositionCommand(TranslationalDrivebase drivebase, RMPRoot root, Translation2d goal,
-            LocalizationSubsystem localization, double v, double tolerance) {
+            LocalizationSubsystem localization, double v, double tolerance, double maxAcc) {
         this.drivebase = drivebase;
         this.root = root;
         this.goal = goal;
         this.localization = localization;
         this.v = v;
         this.tolerance = tolerance;
+        this.maxAcc = maxAcc;
     }
 
     @Override
@@ -37,7 +39,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
         Translation2d pos = localization.getPred(0);
         // Translation2d pos = new Translation2d(0, 0); // TEST
         path = new LinearSegment(new Point(pos), new Point(goal));
-        double P = 5, I = 0, A = 1, B = 0.5, K = 1, h = 0.5, maxAcc = 2;
+        double P = 5, I = 0, A = 1, B = 0.5, K = 1, h = 0.5;
         leaf = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h, maxAcc);
     }
 
