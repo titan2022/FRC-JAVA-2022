@@ -27,6 +27,7 @@ import frc.robot.commands.GetDriveInformationCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RotationalDriveCommand;
+import frc.robot.commands.ShootDistance;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TranslationalDriveCommand;
 import frc.robot.commands.intakeCommands.IntakeCargo;
@@ -151,7 +152,8 @@ public class Robot extends TimedRobot {
         () -> {intake.spinIntake(0.0); intake.spinHopper(0.0); intake.retract();},
         intake)
     );
-    xinmotek.upButton.whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
+    xinmotek.upButton.or(new JoystickButton(xbox, Button.kLeftBumper.value))
+      .whileActiveOnce(new ShootDistance(shooter, 6*FT, 2*IN));
     
     xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {
       if(shooter.colorEnabled)

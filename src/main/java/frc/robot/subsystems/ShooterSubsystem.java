@@ -126,6 +126,8 @@ public class ShooterSubsystem extends SubsystemBase {
         rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
         rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
         rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
+
+        rightMotor.follow(leftMotor);
     }
 
     /**
