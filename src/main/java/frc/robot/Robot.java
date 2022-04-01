@@ -126,11 +126,12 @@ public class Robot extends TimedRobot {
   public void autonomousInit() {
     // TODO: Create autonomous
     nav.translateTo(new Translation2d(0, 0));
+    nav.resetHeading();
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(10, 15);
-    double v = 8;
+    Translation2d goal = new Translation2d(0, 1);
+    double v = 0.5; // TODO: increase after testing
     double tolerance = 0.1;
-    double maxAcc = 4;
+    double maxAcc = 1; // TODO: increase after testing
     new ParallelRaceGroup(new RMPMoveToPositionCommand(drivebase.getTranslational(), root, goal, nav, v,
         tolerance, maxAcc),
         new RMPMotionGenerationCommand(nav, root,
