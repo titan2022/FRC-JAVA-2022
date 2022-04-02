@@ -19,7 +19,7 @@ public class ShootDistance extends CommandBase {
     private class Trajectory {
         public final double vel;
         public final Rotation2d theta;
-        private final double r = (4.5 + 1.5) * IN;
+        private final double r = (4.5 + 2) * IN;
         private final double R = 2 * FT;
 
         Trajectory(double vel, Rotation2d theta){
@@ -29,8 +29,10 @@ public class ShootDistance extends CommandBase {
         Trajectory(double d, double h) {
             double den = d*R*(d-R);
             double a = -(d*r + h*R) / den;
-            double b = -(d*d*r + 2*d*h*R - h*R*R) / den;
-            double vx = Math.sqrt(g / (2*a));
+            double b = (d*d*r + 2*d*h*R - h*R*R) / den;
+            SmartDashboard.putNumber("a", a);
+            SmartDashboard.putNumber("b", b);
+            double vx = Math.sqrt(-g / (2*a));
             double vy = b*vx;
             theta = new Rotation2d(vx, vy);
             vel = Math.hypot(vx, vy);
@@ -54,6 +56,7 @@ public class ShootDistance extends CommandBase {
     @Override
     public void initialize() {
         state = 0;
+        SmartDashboard.putBoolean("Shooter running", true);
     }
 
     private void aim() {
@@ -65,7 +68,7 @@ public class ShootDistance extends CommandBase {
         Trajectory target = new Trajectory(dist, h);
         double hoodAngle = Math.PI - target.theta.getRadians();
         shooter.run(target.vel);
-        shooter.setAngle(Math.PI - target.theta.getRadians());
+        shooter.setAngle(Math.PI/2 - target.theta.getRadians());
         SmartDashboard.putNumber("Tgt Angle", hoodAngle / DEG);
         SmartDashboard.putNumber("Tgt Velocity", target.vel);
         //shooter.sendDebug();
@@ -74,20 +77,16 @@ public class ShootDistance extends CommandBase {
     @Override
     public void execute() {
         aim();
-        if(shooter.hasCargo())
-            state = 1;
-        else if(state == 1)
-            state = 2;
-        
     }
 
     @Override
     public void end(boolean interrupted) {
         shooter.coast();
+        SmartDashboard.putBoolean("Shooter running", false);
     }
 
     @Override
     public boolean isFinished() {
-        return state > 1;
+        return false;
     }
 }

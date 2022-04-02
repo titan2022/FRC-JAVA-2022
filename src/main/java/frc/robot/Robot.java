@@ -153,7 +153,7 @@ public class Robot extends TimedRobot {
         intake)
     );
     xinmotek.upButton.or(new JoystickButton(xbox, Button.kLeftBumper.value))
-      .whileActiveOnce(new ShootDistance(shooter, 6*FT, 2*IN));
+      .whileActiveOnce(new ShootDistance(shooter, 10*FT, 2*IN));
     
     xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {
       if(shooter.colorEnabled)
