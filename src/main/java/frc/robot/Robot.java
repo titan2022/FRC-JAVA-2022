@@ -128,10 +128,10 @@ public class Robot extends TimedRobot {
     nav.translateTo(new Translation2d(0, 0));
     nav.resetHeading();
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(0, 1);
-    double v = 0.5; // TODO: increase after testing
+    Translation2d goal = new Translation2d(0, 5);
+    double v = 0.5; // TODO: CHANGE AFTER TESTING
     double tolerance = 0.1;
-    double maxAcc = 1; // TODO: increase after testing
+    double maxAcc = 0.2; // TODO: CHANGE AFTER TESTING
     new ParallelRaceGroup(new RMPMoveToPositionCommand(drivebase.getTranslational(), root, goal, nav, v,
         tolerance, maxAcc),
         new RMPMotionGenerationCommand(nav, root,

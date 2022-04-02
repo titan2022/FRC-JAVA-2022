@@ -15,8 +15,8 @@ public class RMPMotionGenerationCommand extends CommandBase {
     private RMPRoot root;
     private TranslationalDrivebase drivebase;
     private double deltaT;
-    private Translation2d pos = new Translation2d(0, 0); // TEST
-    private Translation2d vel = new Translation2d(0, 0); // TEST
+    // private Translation2d pos = new Translation2d(0, 0); // TEST
+    // private Translation2d vel = new Translation2d(0, 0); // TEST
 
     public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root,
             TranslationalDrivebase drivebase,
@@ -42,10 +42,11 @@ public class RMPMotionGenerationCommand extends CommandBase {
     @Override
     public void execute() {
 
-        // Translation2d pos = localization.getPred(0);
-        // Translation2d vel = localization.getPred(1);
-        vel = drivebase.getVelocity(); // TEST
-        pos = new Translation2d(pos.getX() + vel.getX() * 0.02, pos.getY() + vel.getY() * 0.02); // TEST
+        Translation2d pos = localization.getPred(0);
+        Translation2d vel = localization.getPred(1);
+        // vel = drivebase.getVelocity(); // TEST
+        // pos = new Translation2d(pos.getX() + vel.getX() * 0.02, pos.getY() +
+        // vel.getY() * 0.02); // TEST
 
         SimpleMatrix x = new SimpleMatrix(1, 2, false, new double[] { pos.getX(), pos.getY() });
         SimpleMatrix x_dot = new SimpleMatrix(1, 2, false, new double[] { vel.getX(), vel.getY() });
@@ -64,11 +65,13 @@ public class RMPMotionGenerationCommand extends CommandBase {
         x_dot.set(1, x_dot.get(1) + x_ddot.get(1) * deltaT);
         SmartDashboard.putNumber("rmp vel0", x_dot.get(0));
         SmartDashboard.putNumber("rmp vel1", x_dot.get(1));
+        x_dot.set(0, Double.isNaN(x_dot.get(0)) ? 0 : x_dot.get(0));
+        x_dot.set(1, Double.isNaN(x_dot.get(1)) ? 0 : x_dot.get(1));
         drivebase.setVelocity(new Translation2d(x_dot.get(0), x_dot.get(1)));
 
         // vel = new Translation2d(x_dot.get(0), x_dot.get(1)); // TEST
-        // pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY(
-        // etY() * deltaT); // TEST
+        // pos = new Translation2d(pos.getX() + vel.getX() * deltaT, pos.getY() +
+        // vel.getY() * deltaT); // TEST
 
     }
 

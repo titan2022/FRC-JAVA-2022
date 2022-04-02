@@ -290,8 +290,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
     // savedStates = modules;
     for (int i = 0; i < 4; i++) {
       applyModuleState(modules[i], i);
-      // SmartDashboard.putNumber("tgt vel " + i, modules[0].speedMetersPerSecond);
-      // SmartDashboard.putNumber("tgt deg " + i, modules[0].angle.getDegrees());
+      SmartDashboard.putNumber("tgt vel " + i, modules[i].speedMetersPerSecond);
+      SmartDashboard.putNumber("tgt deg " + i, modules[i].angle.getDegrees());
     }
   }
 
