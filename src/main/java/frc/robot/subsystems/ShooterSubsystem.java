@@ -72,21 +72,25 @@ public class ShooterSubsystem extends SubsystemBase {
         rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
         leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
 
-        leftMotor.config_kP(0, 0.1);
+        leftMotor.config_kP(0, 0.3);
         leftMotor.config_kI(0, 0);
         leftMotor.config_kD(0, 0);
-        rightMotor.config_kP(0, 0.1);
+        leftMotor.config_kF(0, 0.0475);
+        rightMotor.config_kP(0, 0.3);
         rightMotor.config_kI(0, 0);
         rightMotor.config_kD(0, 0);
+        rightMotor.config_kF(0, 0.0475);
 
         leftMotor.setNeutralMode(NeutralMode.Coast);
         rightMotor.setNeutralMode(NeutralMode.Coast);
 
         hoodMotor.configAllSettings(getHoodConfig(HOOD_MIN_ANGLE, HOOD_MAX_ANGLE));
         hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hoodMotor.setInverted(false);
-        hoodMotor.setSensorPhase(true);
+        hoodMotor.setInverted(true);
+        hoodMotor.setSensorPhase(false);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
+        hoodMotor.configForwardSoftLimitThreshold((HOOD_MAX_ANGLE - HOOD_MIN_ANGLE) * HOOD_RATIO / FALCON_TICKS);
+        hoodMotor.configReverseSoftLimitThreshold(0);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
@@ -140,6 +144,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //SmartDashboard.putBoolean("Shooter mode velocity", true);
         leftMotor.set(ControlMode.Velocity,
             FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
+        SmartDashboard.putNumber("shooter speed", FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
     }
 
     /**
@@ -171,16 +176,16 @@ public class ShooterSubsystem extends SubsystemBase {
     public void setAngle(double radians) {
         //SmartDashboard.putNumber("Hood angle requested", radians * RAD / DEG);
         if(radians < HOOD_MIN_ANGLE){
-            //hoodMotor.set(ControlMode.Position, 0);
-            //SmartDashboard.putNumber("Hood angle", 0);
+            hoodMotor.set(ControlMode.Position, 0);
+            SmartDashboard.putNumber("Hood angle", HOOD_MIN_ANGLE / DEG);
         }
         else if(radians > HOOD_MAX_ANGLE){
-            //hoodMotor.set(ControlMode.Position, HOOD_RATIO * (HOOD_MAX_ANGLE - HOOD_MIN_ANGLE) / FALCON_TICKS);
-            //SmartDashboard.putNumber("Hood angle", HOOD_MAX_ANGLE / DEG);
+            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (HOOD_MAX_ANGLE - HOOD_MIN_ANGLE) / FALCON_TICKS);
+            SmartDashboard.putNumber("Hood angle", HOOD_MAX_ANGLE / DEG);
         }
         else{
-            //hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
-            //SmartDashboard.putNumber("Hood angle", radians * RAD / DEG);
+            hoodMotor.set(ControlMode.Position, HOOD_RATIO * (radians * RAD - HOOD_MIN_ANGLE) / FALCON_TICKS);
+            SmartDashboard.putNumber("Hood angle", radians * RAD / DEG);
         }
     }
     /**
