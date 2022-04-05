@@ -10,6 +10,7 @@ import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -51,6 +52,13 @@ public final class Constants {
         public static final Translation2d OPP_RIGHT = new Translation2d(149.227 * Unit.IN, 33.767 * Unit.IN);
         public static final Translation2d STATION = new Translation2d(119.799 * Unit.IN, -284.248 * Unit.IN);
         public static final Translation2d HUMAN = new Translation2d(118.762 * Unit.IN, -283.164 * Unit.IN);
+    }
+
+    public static final class StartPositions{ 
+        public static final Pose2d RIGHT = new Pose2d(new Translation2d(91.31 * Unit.IN, -25.24 * Unit.IN), new Rotation2d(1.5*Unit.DEG));
+        public static final Pose2d LOWERRIGHT = new Pose2d(new Translation2d(81.54 * Unit.IN, -47.11 * Unit.IN), new Rotation2d(-43.5*Unit.DEG));
+        public static final Pose2d LOWERLEFT = new Pose2d(new Translation2d(-39.511 * Unit.IN, -83.75 * Unit.IN), new Rotation2d(140.92 * Unit.DEG)); //Angles need to be fixed
+        public static final Pose2d LEFT = new Pose2d(new Translation2d(-43.976 * Unit.IN, -83.75 * Unit.IN), new Rotation2d(-39.082*Unit.DEG)); // Angles need to be fixed
     }
 
     /**
