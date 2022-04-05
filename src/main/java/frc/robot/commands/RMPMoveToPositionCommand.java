@@ -20,7 +20,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
     TranslationalDrivebase drivebase;
     private RMPRoot root;
     private PathFollowing pathFollowing;
-    private CollisionAvoidance hangarPoleCA;
+    private CollisionAvoidance hangarLegCA;
     private Translation2d goal;
     private LocalizationSubsystem localization;
     private LinearSegment path;
@@ -48,7 +48,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
         pathFollowing = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h, maxAcc);
         SimpleMatrix center = new SimpleMatrix(1, 2, false, new double[] { -1.350518, -5.146802 });
         double r = 0.6096, epsilon = 1, alpha = 1, eta = 1;
-        hangarPoleCA = new CollisionAvoidance("Hangar Pole Collision Avoidance", root, center, r, epsilon, alpha, eta);
+        hangarLegCA = new CollisionAvoidance("Hangar Leg Collision Avoidance", root, center, r, epsilon, alpha, eta);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -60,7 +60,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         root.unlinkChild(pathFollowing);
-        root.unlinkChild(hangarPoleCA);
+        root.unlinkChild(hangarLegCA);
         drivebase.setVelocity(new Translation2d(0, 0));
     }
 
