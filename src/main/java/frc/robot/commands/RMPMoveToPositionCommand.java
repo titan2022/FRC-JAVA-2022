@@ -59,7 +59,8 @@ public class RMPMoveToPositionCommand extends CommandBase {
     // Called once the command ends or is interrupted.
     @Override
     public void end(boolean interrupted) {
-        root.unlinkChild(leaf);
+        root.unlinkChild(pathFollowing);
+        root.unlinkChild(hangarPoleCA);
         drivebase.setVelocity(new Translation2d(0, 0));
     }
 
