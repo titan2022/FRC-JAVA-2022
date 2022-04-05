@@ -8,14 +8,19 @@ import frc.robot.subsystems.TranslationalDrivebase;
 
 import com.titanrobotics2022.mapping.LinearSegment;
 import com.titanrobotics2022.mapping.Point;
+import com.titanrobotics2022.motion.generation.rmpflow.rmps.CollisionAvoidance;
 import com.titanrobotics2022.motion.generation.rmpflow.rmps.PathFollowing;
+
+import org.ejml.simple.SimpleMatrix;
+
 import com.titanrobotics2022.motion.generation.rmpflow.RMPRoot;
 
 public class RMPMoveToPositionCommand extends CommandBase {
 
     TranslationalDrivebase drivebase;
     private RMPRoot root;
-    private PathFollowing leaf;
+    private PathFollowing pathFollowing;
+    private CollisionAvoidance hangarPoleCA;
     private Translation2d goal;
     private LocalizationSubsystem localization;
     private LinearSegment path;
@@ -40,7 +45,10 @@ public class RMPMoveToPositionCommand extends CommandBase {
         // Translation2d pos = new Translation2d(0, 0); // TEST
         path = new LinearSegment(new Point(pos), new Point(goal));
         double P = 5, I = 0, A = 1, B = 0.5, K = 1, h = 0.5;
-        leaf = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h, maxAcc);
+        pathFollowing = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h, maxAcc);
+        SimpleMatrix center = new SimpleMatrix(1, 2, false, new double[] { -53.17, -202.63 });
+        double r = 24, epsilon = 1, alpha = 1, eta = 1;
+        hangarPoleCA = new CollisionAvoidance("Hangar Pole Collision Avoidance", root, center, r, epsilon, alpha, eta);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
