@@ -57,8 +57,8 @@ public final class Constants {
     public static final class StartPositions{ 
         public static final Pose2d RIGHT = new Pose2d(new Translation2d(91.31 * Unit.IN, -25.24 * Unit.IN), new Rotation2d(1.5*Unit.DEG));
         public static final Pose2d LOWERRIGHT = new Pose2d(new Translation2d(81.54 * Unit.IN, -47.11 * Unit.IN), new Rotation2d(-43.5*Unit.DEG));
-        public static final Pose2d LOWERLEFT = new Pose2d(new Translation2d(-39.511 * Unit.IN, -83.75 * Unit.IN), new Rotation2d(140.92 * Unit.DEG)); //Angles need to be fixed
-        public static final Pose2d LEFT = new Pose2d(new Translation2d(-43.976 * Unit.IN, -83.75 * Unit.IN), new Rotation2d(-39.082*Unit.DEG)); // Angles need to be fixed
+        public static final Pose2d LOWERLEFT = new Pose2d(new Translation2d(-24.71851082 * Unit.IN, -90.29682738 * Unit.IN), new Rotation2d(-88.50 * Unit.DEG)); 
+        public static final Pose2d LEFT = new Pose2d(new Translation2d(-42.05083336 * Unit.IN, -83.65213726 * Unit.IN), new Rotation2d(-133.5*Unit.DEG)); 
     }
 
     /**
