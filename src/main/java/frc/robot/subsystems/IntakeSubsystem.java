@@ -20,10 +20,10 @@ public class IntakeSubsystem extends SubsystemBase {
     private static final int HOPPER_MOTOR_PORT = 21;
     private static final int HOPPER_SENSOR_PORT = 0;
 
-    private static final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT);
-    private static final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT);
-    private static final DigitalInput hopperSensor = new DigitalInput(HOPPER_SENSOR_PORT);
-    private static final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
+    private final WPI_TalonFX intakeMotor = new WPI_TalonFX(INTAKE_MOTOR_PORT, "CANivore");
+    private final WPI_TalonFX hopperMotor = new WPI_TalonFX(HOPPER_MOTOR_PORT, "CANivore");
+    private final DigitalInput hopperSensor = new DigitalInput(HOPPER_SENSOR_PORT);
+    private final SupplyCurrentLimitConfiguration MAX_AMPS = new SupplyCurrentLimitConfiguration(true, 10, 0, 0);
     //Pnuematics
     private DoubleSolenoid solenoid = new DoubleSolenoid(41, PneumaticsModuleType.CTREPCM, 0, 1);
 
@@ -113,13 +113,13 @@ public class IntakeSubsystem extends SubsystemBase {
     public void extend() {
         //System.out.println("extend");
         solenoid.set(Value.kReverse);
-        //SmartDashboard.putBoolean("extended", true);
+        SmartDashboard.putBoolean("extended", true);
     }
     /** Retracts the intake. */
     public void retract() {
         //System.out.println("retract");
         solenoid.set(Value.kForward);
-        //SmartDashboard.putBoolean("extended", false);
+        SmartDashboard.putBoolean("extended", false);
     }
 
     @Override

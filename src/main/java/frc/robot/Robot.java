@@ -60,9 +60,9 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
   private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02);
-  //private final ClimbSubsystem climb = new ClimbSubsystem();
+  private final ClimbSubsystem climb = new ClimbSubsystem();
 
-  private final Compressor compressor = new Compressor(41, PneumaticsModuleType.CTREPCM);
+  //private final Compressor compressor = new Compressor(41, PneumaticsModuleType.CTREPCM);
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -95,7 +95,7 @@ public class Robot extends TimedRobot {
   public void disabledInit() {
     shooter.disable();
     drivebase.coast();
-    //climb.coast();
+    climb.coast();
   }
 
   @Override
@@ -103,7 +103,7 @@ public class Robot extends TimedRobot {
 
   private void enableRobot() {
     shooter.enable();
-    //climb.brake();
+    climb.brake();
     drivebase.brake();
   }
 
@@ -139,6 +139,8 @@ public class Robot extends TimedRobot {
     drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 10.));
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
+    new JoystickButton(xbox, Button.kX.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0.1)));
+    new JoystickButton(xbox, Button.kY.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0.1, 0)));
 
     /*new JoystickButton(xbox, Button.kLeftBumper.value).whenPressed(new StartEndCommand(
       () -> {intake.spinIntake(1.0); intake.spinHopper(1.0); intake.extend();},
@@ -153,7 +155,7 @@ public class Robot extends TimedRobot {
         intake)
     );
     xinmotek.upButton.or(new JoystickButton(xbox, Button.kLeftBumper.value))
-      .whileActiveOnce(new ShootDistance(shooter, 10*FT, 2*IN));
+      .whileActiveOnce(new ShootDistance(shooter, 5*FT, 2*IN));
     
     xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {
       if(shooter.colorEnabled)
@@ -193,10 +195,12 @@ public class Robot extends TimedRobot {
     
     xinmotek.rightPad.topLeft.whenPressed(() -> {shooter.queueEnabled = false;});
     xinmotek.rightPad.bottomLeft.whenPressed(() -> {shooter.queueEnabled = true;});
-    xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
-    xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(-0.2), () -> shooter.runPercent(0.0), shooter));
+    //xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
+    //xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(-0.2), () -> shooter.runPercent(0.0), shooter));
     //xinmotek.rightPad.topRight.whenHeld(new InstantCommand(() -> intake.extend()));
     //xinmotek.rightPad.bottomRight.whenHeld(new InstantCommand(() -> intake.retract()));
+    xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(0.25), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.25), () -> climb.runClimb(0.0), climb));
 
     Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
     //Command rightClimbControl = new RunCommand(() -> climb.spinRight(0.65 * xinmotek.getRightY()));
@@ -214,7 +218,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    shooter.runQueue(xbox.getLeftTriggerAxis());
+  }
 
   @Override
   public void testInit() {

@@ -11,11 +11,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ClimbSubsystem extends SubsystemBase {
-    private static int LEFT_MOTOR_ID = 9;
-    private static int RIGHT_MOTOR_ID = 17;
+    private static int LEFT_MOTOR_ID = 18;
+    private static int RIGHT_MOTOR_ID = 13;
 
-    private WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_ID);
-    private WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_ID);
+    private WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_ID, "CANivore");
+    private WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_ID, "CANivore");
 
     public ClimbSubsystem() {
         TalonFXConfiguration config = new TalonFXConfiguration();
@@ -28,22 +28,14 @@ public class ClimbSubsystem extends SubsystemBase {
         leftMotor.setNeutralMode(NeutralMode.Brake);
         rightMotor.setNeutralMode(NeutralMode.Brake);
         leftMotor.setInverted(true);
+        rightMotor.setInverted(false);
+        rightMotor.follow(leftMotor);
     }
 
     public void runClimb(double pct) {
         //SmartDashboard.putNumber("climb left", pct);
         //SmartDashboard.putNumber("climb right", pct);
         leftMotor.set(ControlMode.PercentOutput, pct);
-        rightMotor.set(ControlMode.PercentOutput, pct);
-    }
-
-    public void spinLeft(double pct) {
-        //SmartDashboard.putNumber("climb left", pct);
-        leftMotor.set(ControlMode.PercentOutput, pct);
-    }
-    public void spinRight(double pct) {
-        //SmartDashboard.putNumber("climb right", pct);
-        rightMotor.set(ControlMode.PercentOutput, pct);
     }
 
     public void coast() {

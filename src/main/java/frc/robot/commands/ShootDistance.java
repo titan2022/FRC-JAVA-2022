@@ -40,6 +40,8 @@ public class ShootDistance extends CommandBase {
 
         double getError(double r, double h) {
             double vy = vel * theta.getSin();
+            SmartDashboard.putNumber("vy", vy);
+            SmartDashboard.putNumber("sqrt of", vy*vy - 2*g*h);
             double t = (Math.sqrt(vy*vy - 2*g*h) - vy) / g;
             Translation2d offset = new Translation2d(0, vel * theta.getCos()).times(t);
             return Math.hypot(offset.getX(), offset.getY() - r);
@@ -61,10 +63,16 @@ public class ShootDistance extends CommandBase {
 
     private void aim() {
         double h = TARGET_HEIGHT - shooter.getHeight();
-        Rotation2d theta = new Rotation2d(Math.PI - shooter.getAngle());
+        Rotation2d theta = new Rotation2d(Math.PI/2 - shooter.getAngle());
         Trajectory current = new Trajectory(shooter.getVelocity(), theta);
-        SmartDashboard.putNumber("Error", current.getError(dist, h));
-        shooter.runQueue(current.getError(dist, h) < threshold ? 1.0 : 0.0);
+        double error = 0;//current.getError(dist, h);
+        //SmartDashboard.putNumber("Error", error);
+        //SmartDashboard.putBoolean("Error isNaN", Double.isNaN(error));
+        //SmartDashboard.putNumber("Threshold", threshold);
+        SmartDashboard.putNumber("cur vel", shooter.getVelocity());
+        SmartDashboard.putNumber("cur theta", Math.toDegrees(Math.PI/2 - shooter.getAngle()));
+        SmartDashboard.putBoolean("Queue Running", error < threshold);
+        //shooter.runQueue((error < threshold) ? 1.0 : 0.0);
         Trajectory target = new Trajectory(dist, h);
         double hoodAngle = Math.PI - target.theta.getRadians();
         shooter.run(target.vel);
@@ -82,6 +90,7 @@ public class ShootDistance extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         shooter.coast();
+        shooter.runQueue(0.0);
         SmartDashboard.putBoolean("Shooter running", false);
     }
 

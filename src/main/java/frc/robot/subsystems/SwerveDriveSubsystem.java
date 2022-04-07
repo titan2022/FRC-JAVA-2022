@@ -49,9 +49,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 33;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 908;
-  private static final int BACK_LEFT_OFFSET = -909;
-  private static final int FRONT_RIGHT_OFFSET = -182;
+  private static final int FRONT_LEFT_OFFSET = 908; // -95
+  private static final int BACK_LEFT_OFFSET = -840;
+  private static final int FRONT_RIGHT_OFFSET = -182; // -1200
   private static final int BACK_RIGHT_OFFSET = 1287;
   private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
@@ -77,19 +77,19 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   }
 
   // Physical Hardware
-  private static final WPI_TalonFX[] motors = new WPI_TalonFX[]{
+  private final WPI_TalonFX[] motors = new WPI_TalonFX[]{
     new WPI_TalonFX(LEFT_FRONT_MOTOR_PORT),
     new WPI_TalonFX(LEFT_BACK_MOTOR_PORT),
     new WPI_TalonFX(RIGHT_FRONT_MOTOR_PORT),
     new WPI_TalonFX(RIGHT_BACK_MOTOR_PORT)
   };
-  private static final WPI_TalonFX[] rotators = new WPI_TalonFX[]{
+  private final WPI_TalonFX[] rotators = new WPI_TalonFX[]{
     new WPI_TalonFX(LEFT_FRONT_MOTOR_ROTATOR_PORT),
     new WPI_TalonFX(LEFT_BACK_MOTOR_ROTATOR_PORT),
     new WPI_TalonFX(RIGHT_FRONT_MOTOR_ROTATOR_PORT),
     new WPI_TalonFX(RIGHT_BACK_MOTOR_ROTATOR_PORT)
   };
-  private static final CANCoder[] encoders = new CANCoder[]{
+  private final CANCoder[] encoders = new CANCoder[]{
     new CANCoder(LEFT_FRONT_ENCODER_ROTATOR_PORT),
     new CANCoder(LEFT_BACK_ENCODER_ROTATOR_PORT),
     new CANCoder(RIGHT_FRONT_ENCODER_ROTATOR_PORT),

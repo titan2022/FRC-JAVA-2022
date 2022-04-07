@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -18,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.Unit.*;
 import static frc.robot.Constants.getHoodConfig;
+import static frc.robot.Constants.getShooterConfig;
+import static frc.robot.Constants.setTalonStatusFrames;
 
 public class ShooterSubsystem extends SubsystemBase {
     /** Gear ratio between the hood motor and hood rack */
@@ -34,12 +37,12 @@ public class ShooterSubsystem extends SubsystemBase {
     private static final int QUEUE_MOTOR_ID = 10;
     private static final int BEAM_BREAK_SENSOR_PORT = 1;
 
-    private static final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT);
-    private static final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT);
-    private static final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID);
-    private static final WPI_TalonFX queueMotor = new WPI_TalonFX(QUEUE_MOTOR_ID);
-    private static final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_SENSOR_PORT);
-    private static final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kMXP);
+    private final WPI_TalonFX rightMotor = new WPI_TalonFX(RIGHT_MOTOR_PORT, "CANivore");
+    private final WPI_TalonFX leftMotor = new WPI_TalonFX(LEFT_MOTOR_PORT, "CANivore");
+    private final WPI_TalonFX hoodMotor = new WPI_TalonFX(HOOD_MOTOR_ID, "CANivore");
+    private final WPI_TalonFX queueMotor = new WPI_TalonFX(QUEUE_MOTOR_ID, "CANivore");
+    private final DigitalInput beamBreak = new DigitalInput(BEAM_BREAK_SENSOR_PORT);
+    private final ColorSensorV3 colorSensor = new ColorSensorV3(Port.kMXP);
 
     private static final Color kRed = new Color(1, 0, 0);
     private static final Color kBlue = new Color(0, 0, 1);
@@ -63,34 +66,23 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodMotor.configFactoryDefault();
         queueMotor.configFactoryDefault();
 
-        rightMotor.follow(leftMotor);
+        TalonFXConfiguration shooterConfig = getShooterConfig();
+        leftMotor.configAllSettings(shooterConfig);
+        rightMotor.configAllSettings(shooterConfig);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
-        leftMotor.setInverted(false);
-        rightMotor.setInverted(true);
-
-        rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-
-        leftMotor.config_kP(0, 0.3);
-        leftMotor.config_kI(0, 0);
-        leftMotor.config_kD(0, 0);
-        leftMotor.config_kF(0, 0.0475);
-        rightMotor.config_kP(0, 0.3);
-        rightMotor.config_kI(0, 0);
-        rightMotor.config_kD(0, 0);
-        rightMotor.config_kF(0, 0.0475);
-
+        leftMotor.setInverted(true);
+        rightMotor.setInverted(false);
         leftMotor.setNeutralMode(NeutralMode.Coast);
         rightMotor.setNeutralMode(NeutralMode.Coast);
+        setTalonStatusFrames(leftMotor);
+        setTalonStatusFrames(rightMotor);
+        rightMotor.follow(leftMotor);
 
-        hoodMotor.configAllSettings(getHoodConfig(HOOD_MIN_ANGLE, HOOD_MAX_ANGLE));
-        hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
+        hoodMotor.configAllSettings(getHoodConfig(HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, HOOD_RATIO));
         hoodMotor.setInverted(true);
         hoodMotor.setSensorPhase(false);
         hoodMotor.setNeutralMode(NeutralMode.Brake);
-        hoodMotor.configForwardSoftLimitThreshold((HOOD_MAX_ANGLE - HOOD_MIN_ANGLE) * HOOD_RATIO / FALCON_TICKS);
-        hoodMotor.configReverseSoftLimitThreshold(0);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
@@ -98,40 +90,6 @@ public class ShooterSubsystem extends SubsystemBase {
         colorMatch.addColorMatch(kRed);
         colorMatch.addColorMatch(kBlue);
         colorMatch.addColorMatch(kWhite);
-
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 50);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
-        leftMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
-        
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 50);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_MotionMagic, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 20);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
-        rightMotor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
-
-        rightMotor.follow(leftMotor);
     }
 
     /**
@@ -143,7 +101,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //SmartDashboard.putNumber("Shooter vel requested", speed);
         //SmartDashboard.putBoolean("Shooter mode velocity", true);
         leftMotor.set(ControlMode.Velocity,
-            FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
+            FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)) + 1000);
         SmartDashboard.putNumber("shooter speed", FLYWHEEL_RATIO * speed * (M / S) / FLYWHEEL_RADIUS * RAD / (FALCON_TICKS / (100 * MS)));
     }
 
@@ -157,6 +115,7 @@ public class ShooterSubsystem extends SubsystemBase {
         //SmartDashboard.putNumber("Shooter vel requested", percent);
         //SmartDashboard.putBoolean("Shooter mode velocity", false);
         leftMotor.set(ControlMode.PercentOutput, percent);
+        SmartDashboard.putNumber("shooter speed", percent);
     }
 
     /** Turns off the shooter */
@@ -206,13 +165,13 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Coasts the hood motor for easy manual actuation. */
     public void coastHood() {
-        //hoodMotor.setNeutralMode(NeutralMode.Coast);
-        //hoodMotor.set(ControlMode.PercentOutput, 0);
+        hoodMotor.setNeutralMode(NeutralMode.Coast);
+        hoodMotor.set(ControlMode.PercentOutput, 0);
     }
     /** Brakes the hood motor to passively resist slippage. */
     public void brakeHood() {
-        //hoodMotor.setNeutralMode(NeutralMode.Brake);
-        //hoodMotor.set(ControlMode.PercentOutput, 0);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
+        hoodMotor.set(ControlMode.PercentOutput, 0);
     }
 
     /**
@@ -231,7 +190,7 @@ public class ShooterSubsystem extends SubsystemBase {
     }
     /** Brakes the queue motor to passively resist slippage. */
     public void brakeQueue() {
-        queueMotor.setNeutralMode(NeutralMode.Coast);
+        queueMotor.setNeutralMode(NeutralMode.Brake);
         queueMotor.set(ControlMode.PercentOutput, 0);
     }
 
@@ -253,7 +212,7 @@ public class ShooterSubsystem extends SubsystemBase {
      */
     public double getVelocity() {
         double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
-        return rawVel * (FALCON_TICKS / (100 * MS)) / RAD * FLYWHEEL_RADIUS;
+        return rawVel * (FALCON_TICKS / (100 * MS)) / (RAD/S) * FLYWHEEL_RADIUS;
     }
 
     /**
