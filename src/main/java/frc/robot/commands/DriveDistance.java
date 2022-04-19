@@ -5,6 +5,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import frc.robot.subsystems.TranslationalDrivebase;
 
+import static frc.robot.Constants.Unit.*;
+
 public class DriveDistance extends CommandBase {
     private TranslationalDrivebase drive;
     private Translation2d offset;
@@ -66,6 +68,6 @@ public class DriveDistance extends CommandBase {
         double pre = lastPos.minus(offset).getNorm();
         double post = lastPos.plus(lastVel.times(2 * step)).minus(offset).getNorm();
         double dist = lastVel.getNorm() * 2 * step;
-        return pre - post < Math.max(dist - 1e-4, 1e-4);
+        return pre - post < Math.max(dist - 0.5*IN, 0.5*IN);
     }
 }
