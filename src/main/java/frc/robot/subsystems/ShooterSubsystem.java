@@ -66,6 +66,11 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodMotor.configFactoryDefault();
         queueMotor.configFactoryDefault();
 
+        hoodMotor.configAllSettings(getHoodConfig(HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, HOOD_RATIO));
+        hoodMotor.setInverted(true);
+        hoodMotor.setSensorPhase(false);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
+
         TalonFXConfiguration shooterConfig = getShooterConfig();
         leftMotor.configAllSettings(shooterConfig);
         rightMotor.configAllSettings(shooterConfig);
@@ -78,11 +83,6 @@ public class ShooterSubsystem extends SubsystemBase {
         setTalonStatusFrames(leftMotor);
         setTalonStatusFrames(rightMotor);
         rightMotor.follow(leftMotor);
-
-        hoodMotor.configAllSettings(getHoodConfig(HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, HOOD_RATIO));
-        hoodMotor.setInverted(true);
-        hoodMotor.setSensorPhase(false);
-        hoodMotor.setNeutralMode(NeutralMode.Brake);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
@@ -116,6 +116,11 @@ public class ShooterSubsystem extends SubsystemBase {
         //SmartDashboard.putBoolean("Shooter mode velocity", false);
         leftMotor.set(ControlMode.PercentOutput, percent);
         SmartDashboard.putNumber("shooter speed", percent);
+    }
+
+    public void runTicks(double ticks) {
+        leftMotor.set(ControlMode.Velocity, ticks);
+        SmartDashboard.putNumber("shooter speed", ticks);
     }
 
     /** Turns off the shooter */
@@ -211,8 +216,12 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return  The current measured velocity of the shooter in meters per second.
      */
     public double getVelocity() {
-        double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
+        double rawVel = getRawVelocity();
         return rawVel * (FALCON_TICKS / (100 * MS)) / (RAD/S) * FLYWHEEL_RADIUS;
+    }
+    public double getRawVelocity() {
+        double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
+        return rawVel;
     }
 
     /**
