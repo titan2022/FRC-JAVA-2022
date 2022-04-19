@@ -27,6 +27,7 @@ import frc.robot.commands.GetDriveInformationCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RotationalDriveCommand;
+import frc.robot.commands.ShootCommand2;
 import frc.robot.commands.ShootDistance;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TranslationalDriveCommand;
@@ -57,7 +58,7 @@ public class Robot extends TimedRobot {
   // Subsystems
   private final ShooterSubsystem shooter = new ShooterSubsystem();
   private final IntakeSubsystem intake = new IntakeSubsystem();
-  private final DriveSubsystem drivebase =
+  private final SwerveDriveSubsystem drivebase =
     new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(), getSwerveDriveTalonRotaryConfig());
   private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02);
   private final ClimbSubsystem climb = new ClimbSubsystem();
@@ -114,7 +115,7 @@ public class Robot extends TimedRobot {
     shooter.robotColor = CargoColor.BLUE;
     //new FirstAutoCommand(drivebase.getTranslational(), shooter, intake, climb).schedule();
     //new DriveDistance(drivebase.getTranslational(), 10, 3, 2).schedule();
-    new SequentialCommandGroup(
+    /*new SequentialCommandGroup(
       new InstantCommand(() -> shooter.runPercent(0.45)),
       new WaitCommand(1.0),
       new InstantCommand(() -> shooter.runQueue(1.0)),
@@ -124,6 +125,26 @@ public class Robot extends TimedRobot {
         () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 3)),
         () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0)),
         drivebase.getTranslational()).withTimeout(2)
+    ).schedule();*/
+    new SequentialCommandGroup(
+      new InstantCommand(() -> {shooter.runTicks(7000); shooter.setAngle(16.618 * DEG);}),
+      new WaitCommand(1.5),
+      new StartEndCommand(() -> shooter.runQueue(1.0), () -> {shooter.coast(); shooter.runQueue(0.0);}).withTimeout(2.0),
+      /*new StartEndCommand(
+        () -> {drivebase.getTranslational().setVelocity(new Translation2d(0, 3)); intake.spinIntake(1.0); intake.spinHopper(1.0);},
+        () -> {drivebase.getTranslational().setVelocity(new Translation2d(0, 0)); intake.spinIntake(0.0); intake.spinHopper(0.0);}
+      ).withTimeout(1.25),
+      new StartEndCommand(
+        () -> {drivebase.getTranslational().setVelocity(new Translation2d(0, -3));},
+        () -> {drivebase.getTranslational().setVelocity(new Translation2d(0, 0));}
+      ).withTimeout(1.275),
+      new InstantCommand(() -> {shooter.runTicks(7000); shooter.setAngle(11.235 * DEG);}),
+      new WaitCommand(1.5),
+      new StartEndCommand(() -> shooter.runQueue(1.0), () -> {shooter.coast(); shooter.runQueue(0.0);}).withTimeout(2.0),*/
+      new StartEndCommand(
+        () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 3)),
+        () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0))
+      ).withTimeout(1.25)
     ).schedule();
   }
 
@@ -137,7 +158,7 @@ public class Robot extends TimedRobot {
     enableRobot();
 
     drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 10.));
-    drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 4 * Math.PI));
+    drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 3 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
     new JoystickButton(xbox, Button.kX.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0.1)));
     new JoystickButton(xbox, Button.kY.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0.1, 0)));
@@ -150,62 +171,63 @@ public class Robot extends TimedRobot {
 
     xinmotek.downButton.or(new JoystickButton(xbox, Button.kRightBumper.value)).whileActiveOnce(
       new StartEndCommand(
-        () -> {intake.spinIntake(1.0); intake.spinHopper(1.0); intake.extend();},
-        () -> {intake.spinIntake(0.0); intake.spinHopper(0.0); intake.retract();},
+        () -> {intake.spinIntake(1.0); intake.spinHopper(1.0);},
+        () -> {intake.spinIntake(0.0); intake.spinHopper(0.0);},
         intake)
     );
-    xinmotek.upButton.or(new JoystickButton(xbox, Button.kLeftBumper.value))
-      .whileActiveOnce(new ShootDistance(shooter, 5*FT, 2*IN));
+    //new JoystickButton(xbox, Button.kLeftBumper.value)
+      //.whileActiveOnce(new ShootDistance(shooter, 7.3*FT, 2*IN));
+    //xinmotek.upButton.whenHeld(new StartEndCommand(() -> {shooter.runTicks(7000); shooter.setAngle(29.1676*Math.PI/180.0);}, () -> shooter.coast(), shooter));
+    //new JoystickButton(xbox, Button.kLeftBumper.value).whenHeld(new StartEndCommand(() -> {shooter.runTicks(6218); shooter.setAngle(29.1676*Math.PI/180.0);}, () -> shooter.coast(), shooter));
+    xinmotek.upButton.whenHeld(new ShootCommand2(shooter, drivebase.getRotational()));
     
-    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft).whenActive(() -> {
-      if(shooter.colorEnabled)
-        shooter.robotColor = CargoColor.NONE;
-      else
-        shooter.colorOverride = CargoColor.NONE;
-    });
-    xinmotek.leftPad.topLeft.and(xinmotek.leftPad.bottomLeft.negate()).whenActive(() -> {
-      if(shooter.colorEnabled)
-        shooter.robotColor = CargoColor.RED;
-      else
-        shooter.colorOverride = CargoColor.RED;
-    });
-    xinmotek.leftPad.bottomLeft.and(xinmotek.leftPad.topLeft.negate()).whenActive(() -> {
-      if(shooter.colorEnabled)
-        shooter.robotColor = CargoColor.BLUE;
-      else
-        shooter.colorOverride = CargoColor.BLUE;
-    });
-    xinmotek.leftPad.topRight.whenPressed(() -> {shooter.colorEnabled = false;});
-    xinmotek.leftPad.bottomRight.whenPressed(() -> {shooter.colorEnabled = true;});
+    xinmotek.leftPad.topLeft.whenHeld(new StartEndCommand(
+      () -> {shooter.runTicks(7000); shooter.setAngle(0);},  // against hub
+      () -> shooter.coast(), shooter));
+      xinmotek.leftPad.bottomLeft.whenHeld(new StartEndCommand(
+        () -> {shooter.runTicks(7000); shooter.setAngle(16.618 * DEG);},  // 76in (32in edge to bumper)
+        () -> shooter.coast(), shooter));
+      xinmotek.leftPad.topRight.whenHeld(new StartEndCommand(
+        () -> {shooter.runTicks(7000); shooter.setAngle(21.417 * DEG);},  // 108in (64in edge to bumper)
+        () -> shooter.coast(), shooter));
+      xinmotek.leftPad.bottomRight.whenHeld(new StartEndCommand(
+        () -> {shooter.runTicks(7000); shooter.setAngle(27.518 * DEG);},  // 94.5in edge to bumper
+        () -> shooter.coast(), shooter));
 
     xinmotek.middlePad.topLeft.whenHeld(new StartEndCommand(
-      () -> {intake.spinIntake(1.0); intake.spinHopper(1.0);},
-      () -> {intake.spinIntake(0.0); intake.spinHopper(0.0);},
+      () -> {/*intake.spinIntake(1.0);*/ intake.spinHopper(1.0);},
+      () -> {/*intake.spinIntake(0.0);*/ intake.spinHopper(0.0);},
       intake));
     xinmotek.middlePad.bottomLeft.whenHeld(new StartEndCommand(
-      () -> {intake.spinIntake(-1.0); intake.spinHopper(-1.0);},
-      () -> {intake.spinIntake(0.0); intake.spinHopper(0.0);},
+      () -> {/*intake.spinIntake(-1.0);*/ intake.spinHopper(-0.5);},
+      () -> {/*intake.spinIntake(0.0);*/ intake.spinHopper(0.0);},
       intake));
     xinmotek.middlePad.topRight.whenHeld(new StartEndCommand(
       () -> shooter.runQueue(0.5),
       () -> shooter.runQueue(0.0)));
     xinmotek.middlePad.bottomRight.whenHeld(new StartEndCommand(
-      () -> shooter.runQueue(-0.5),
+      () -> shooter.runQueue(-0.25),
       () -> shooter.runQueue(0.0)));
     
-    xinmotek.rightPad.topLeft.whenPressed(() -> {shooter.queueEnabled = false;});
-    xinmotek.rightPad.bottomLeft.whenPressed(() -> {shooter.queueEnabled = true;});
+    /*xinmotek.rightPad.topLeft.whenHeld(new StartEndCommand(
+      () -> {shooter.runTicks(12000); shooter.setAngle(37.882 * DEG);},  // 176in edge to bumper
+      () -> shooter.coast(), shooter));
+    xinmotek.rightPad.bottomLeft.whenHeld(new StartEndCommand(
+      () -> {shooter.runTicks(12000); shooter.setAngle(43.812 * DEG);},  // 208in edge to bumper
+      () -> shooter.coast(), shooter));*/
+    xinmotek.rightPad.topLeft.whenHeld(new StartEndCommand(() -> climb.runClimb(0.6), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.bottomLeft.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.4), () -> climb.runClimb(0.0), climb));
     //xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
     //xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(-0.2), () -> shooter.runPercent(0.0), shooter));
     //xinmotek.rightPad.topRight.whenHeld(new InstantCommand(() -> intake.extend()));
     //xinmotek.rightPad.bottomRight.whenHeld(new InstantCommand(() -> intake.retract()));
-    xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(0.25), () -> climb.runClimb(0.0), climb));
-    xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.25), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(0.27), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.27), () -> climb.runClimb(0.0), climb));
 
-    Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
+    //Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
     //Command rightClimbControl = new RunCommand(() -> climb.spinRight(0.65 * xinmotek.getRightY()));
-    new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride);//.cancelWhenActive(rightClimbControl);
-    new Trigger(() -> xinmotek.getRightX() < 0).cancelWhenActive(flywheelOverride);//.whenActive(rightClimbControl);
+    //new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride);//.cancelWhenActive(rightClimbControl);
+    //new Trigger(() -> xinmotek.getRightX() < 0).cancelWhenActive(flywheelOverride);//.whenActive(rightClimbControl);
 
     Command hoodOverride = new FunctionalCommand(
       () -> {shooter.hoodEnabled = false;},
@@ -214,12 +236,14 @@ public class Robot extends TimedRobot {
     //Command leftClimbControl = new RunCommand(() -> climb.spinLeft(0.65 * xinmotek.getLeftY()));
     new Trigger(() -> xinmotek.getLeftX() > 0).whenActive(hoodOverride);//.cancelWhenActive(leftClimbControl);
     new Trigger(() -> xinmotek.getLeftX() < 0).cancelWhenActive(hoodOverride);//.whenActive(leftClimbControl);
+    new Trigger(() -> xinmotek.getRightY() > 0).whenActive(() -> drivebase.setCurLimit(drivebase.getCurLimit() + 5));
+    new Trigger(() -> xinmotek.getRightY() < 0).whenActive(() -> drivebase.setCurLimit(drivebase.getCurLimit() - 5));
   }
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-    shooter.runQueue(xbox.getLeftTriggerAxis());
+    //shooter.runQueue(xbox.getLeftTriggerAxis());
   }
 
   @Override
