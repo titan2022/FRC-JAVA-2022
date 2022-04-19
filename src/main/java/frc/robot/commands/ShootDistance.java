@@ -30,8 +30,8 @@ public class ShootDistance extends CommandBase {
             double den = d*R*(d-R);
             double a = -(d*r + h*R) / den;
             double b = (d*d*r + 2*d*h*R - h*R*R) / den;
-            SmartDashboard.putNumber("a", a);
-            SmartDashboard.putNumber("b", b);
+            // SmartDashboard.putNumber("a", a);
+            // SmartDashboard.putNumber("b", b);
             double vx = Math.sqrt(-g / (2*a));
             double vy = b*vx;
             theta = new Rotation2d(vx, vy);
@@ -40,8 +40,8 @@ public class ShootDistance extends CommandBase {
 
         double getError(double r, double h) {
             double vy = vel * theta.getSin();
-            SmartDashboard.putNumber("vy", vy);
-            SmartDashboard.putNumber("sqrt of", vy*vy - 2*g*h);
+            //SmartDashboard.putNumber("vy", vy);
+            //SmartDashboard.putNumber("sqrt of", vy*vy - 2*g*h);
             double t = (Math.sqrt(vy*vy - 2*g*h) - vy) / g;
             Translation2d offset = new Translation2d(0, vel * theta.getCos()).times(t);
             return Math.hypot(offset.getX(), offset.getY() - r);
@@ -69,16 +69,16 @@ public class ShootDistance extends CommandBase {
         //SmartDashboard.putNumber("Error", error);
         //SmartDashboard.putBoolean("Error isNaN", Double.isNaN(error));
         //SmartDashboard.putNumber("Threshold", threshold);
-        SmartDashboard.putNumber("cur vel", shooter.getVelocity());
-        SmartDashboard.putNumber("cur theta", Math.toDegrees(Math.PI/2 - shooter.getAngle()));
-        SmartDashboard.putBoolean("Queue Running", error < threshold);
+        // SmartDashboard.putNumber("cur vel", shooter.getVelocity());
+        // SmartDashboard.putNumber("cur theta", Math.toDegrees(Math.PI/2 - shooter.getAngle()));
+        // SmartDashboard.putBoolean("Queue Running", error < threshold);
         //shooter.runQueue((error < threshold) ? 1.0 : 0.0);
         Trajectory target = new Trajectory(dist, h);
         double hoodAngle = Math.PI - target.theta.getRadians();
         shooter.run(target.vel);
         shooter.setAngle(Math.PI/2 - target.theta.getRadians());
-        SmartDashboard.putNumber("Tgt Angle", hoodAngle / DEG);
-        SmartDashboard.putNumber("Tgt Velocity", target.vel);
+        //SmartDashboard.putNumber("Tgt Angle", hoodAngle / DEG);
+        //SmartDashboard.putNumber("Tgt Velocity", target.vel);
         //shooter.sendDebug();
     }
 
