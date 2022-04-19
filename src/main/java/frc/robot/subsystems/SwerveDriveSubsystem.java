@@ -65,8 +65,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem
 
   // Physical limits of motors that create translational motion
   private static final double MAX_WHEEL_SPEED = 10 * M / S;
-  private static final int CONTINUOUS_CURRENT_LIMIT = 12;
-  private static final SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true,
+  private static final int CONTINUOUS_CURRENT_LIMIT = 30;
+  private static final SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(false,
       CONTINUOUS_CURRENT_LIMIT, 0, 0);
 
   public static class Module {
@@ -160,8 +160,18 @@ public class SwerveDriveSubsystem implements DriveSubsystem
     rotators[0].getAllConfigs(rotatorConfig);
 
     // Current limits
-    rotatorConfig.supplyCurrLimit = supplyCurrentLimit;
-    mainConfig.supplyCurrLimit = supplyCurrentLimit;
+    //rotatorConfig.supplyCurrLimit = supplyCurrentLimit;
+    //mainConfig.supplyCurrLimit = supplyCurrentLimit;
+    rotatorConfig.supplyCurrLimit.currentLimit = 12;
+    rotatorConfig.supplyCurrLimit.enable = true;
+    rotatorConfig.supplyCurrLimit.triggerThresholdCurrent = 12;
+    rotatorConfig.supplyCurrLimit.triggerThresholdTime = 0.0;
+    mainConfig.supplyCurrLimit.currentLimit = 20;
+    mainConfig.supplyCurrLimit.enable = true;
+    mainConfig.supplyCurrLimit.triggerThresholdCurrent = 20;
+    mainConfig.supplyCurrLimit.triggerThresholdTime = 0.00;
+    //mainConfig.closedloopRamp = 0.5;
+    SmartDashboard.putNumber("cur lim", 20);
 
     // Deadbands
     rotatorConfig.neutralDeadband = ROTATOR_DEADBAND;
@@ -231,6 +241,18 @@ public class SwerveDriveSubsystem implements DriveSubsystem
       motor.configFactoryDefault();
     for(WPI_TalonFX rotator : rotators)
       rotator.configFactoryDefault();
+  }
+
+  private double curLim = 20;
+  public void setCurLimit(double limit) {
+    SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration(true, limit, limit, 0.05);
+    for(WPI_TalonFX motor : motors)
+      motor.configSupplyCurrentLimit(currentLimit);
+    curLim = limit;
+    SmartDashboard.putNumber("cur lim", curLim);
+  }
+  public double getCurLimit() {
+    return curLim;
   }
 
   /**
