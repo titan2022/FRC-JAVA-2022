@@ -4,6 +4,7 @@ import com.ctre.phoenix.motorcontrol.ControlMode;
 import com.ctre.phoenix.motorcontrol.NeutralMode;
 import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.TalonFXFeedbackDevice;
+import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
 import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.revrobotics.ColorMatch;
 import com.revrobotics.ColorMatchResult;
@@ -18,6 +19,8 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 import static frc.robot.Constants.Unit.*;
 import static frc.robot.Constants.getHoodConfig;
+import static frc.robot.Constants.getShooterConfig;
+import static frc.robot.Constants.setTalonStatusFrames;
 
 public class ShooterSubsystem extends SubsystemBase {
     /** Gear ratio between the hood motor and hood rack */
@@ -74,30 +77,23 @@ public class ShooterSubsystem extends SubsystemBase {
         hoodMotor.configFactoryDefault();
         queueMotor.configFactoryDefault();
 
-        rightMotor.follow(leftMotor);
+        hoodMotor.configAllSettings(getHoodConfig(HOOD_MIN_ANGLE, HOOD_MAX_ANGLE, HOOD_RATIO));
+        hoodMotor.setInverted(true);
+        hoodMotor.setSensorPhase(false);
+        hoodMotor.setNeutralMode(NeutralMode.Brake);
+
+        TalonFXConfiguration shooterConfig = getShooterConfig();
+        leftMotor.configAllSettings(shooterConfig);
+        rightMotor.configAllSettings(shooterConfig);
         rightMotor.setSensorPhase(false);
         leftMotor.setSensorPhase(false);
-        leftMotor.setInverted(false);
-        rightMotor.setInverted(true);
-
-        rightMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        leftMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-
-        leftMotor.config_kP(0, 0.1);
-        leftMotor.config_kI(0, 0);
-        leftMotor.config_kD(0, 0);
-        rightMotor.config_kP(0, 0.1);
-        rightMotor.config_kI(0, 0);
-        rightMotor.config_kD(0, 0);
-
+        leftMotor.setInverted(true);
+        rightMotor.setInverted(false);
         leftMotor.setNeutralMode(NeutralMode.Coast);
         rightMotor.setNeutralMode(NeutralMode.Coast);
-
-        hoodMotor.configAllSettings(getHoodConfig());
-        hoodMotor.configSelectedFeedbackSensor(TalonFXFeedbackDevice.IntegratedSensor, 0, 0);
-        hoodMotor.setInverted(false);
-        hoodMotor.setSensorPhase(true);
-        hoodMotor.setNeutralMode(NeutralMode.Brake);
+        setTalonStatusFrames(leftMotor);
+        setTalonStatusFrames(rightMotor);
+        rightMotor.follow(leftMotor);
 
         queueMotor.setInverted(false);
         queueMotor.setNeutralMode(NeutralMode.Brake);
@@ -161,6 +157,12 @@ public class ShooterSubsystem extends SubsystemBase {
         // SmartDashboard.putNumber("Shooter vel requested", percent);
         // SmartDashboard.putBoolean("Shooter mode velocity", false);
         leftMotor.set(ControlMode.PercentOutput, percent);
+        SmartDashboard.putNumber("shooter speed", percent);
+    }
+
+    public void runTicks(double ticks) {
+        leftMotor.set(ControlMode.Velocity, ticks);
+        SmartDashboard.putNumber("shooter speed", ticks);
     }
 
     /** Turns off the shooter */
@@ -239,7 +241,7 @@ public class ShooterSubsystem extends SubsystemBase {
 
     /** Brakes the queue motor to passively resist slippage. */
     public void brakeQueue() {
-        queueMotor.setNeutralMode(NeutralMode.Coast);
+        queueMotor.setNeutralMode(NeutralMode.Brake);
         queueMotor.set(ControlMode.PercentOutput, 0);
     }
 
@@ -260,8 +262,13 @@ public class ShooterSubsystem extends SubsystemBase {
      * @return The current measured velocity of the shooter in meters per second.
      */
     public double getVelocity() {
+        double rawVel = getRawVelocity();
+        return rawVel * (FALCON_TICKS / (100 * MS)) / (RAD / S) * FLYWHEEL_RADIUS;
+    }
+
+    public double getRawVelocity() {
         double rawVel = (leftMotor.getSelectedSensorVelocity() + rightMotor.getSelectedSensorVelocity()) / 2;
-        return rawVel * (FALCON_TICKS / (100 * MS)) / RAD * FLYWHEEL_RADIUS;
+        return rawVel;
     }
 
     /**

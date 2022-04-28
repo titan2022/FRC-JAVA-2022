@@ -5,11 +5,12 @@
 package frc.robot;
 
 import com.ctre.phoenix.motorcontrol.FeedbackDevice;
+import com.ctre.phoenix.motorcontrol.StatusFrameEnhanced;
 import com.ctre.phoenix.motorcontrol.can.TalonFXConfiguration;
+import com.ctre.phoenix.motorcontrol.can.WPI_TalonFX;
 import com.ctre.phoenix.sensors.SensorInitializationStrategy;
 
 import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.util.Units;
 
@@ -88,13 +89,13 @@ public final class Constants {
     public static TalonFXConfiguration getSwerveDriveTalonRotaryConfig() {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 0.3;
-        talon.slot0.kI = 0;
+        talon.slot0.kP = 0.45;
+        talon.slot0.kI = 0.005;
         talon.slot0.kD = 0;
         talon.slot0.kF = 0;
-        talon.slot0.integralZone = 900;
-        talon.slot0.allowableClosedloopError = 20;// 217;
-        talon.slot0.maxIntegralAccumulator = 254.000000;
+        talon.slot0.integralZone = 75;
+        talon.slot0.allowableClosedloopError = 5;// 217;
+        talon.slot0.maxIntegralAccumulator = 5120;
         // talon.slot0.closedLoopPeakOutput = 0.869990; // Sets maximum output of the
         // PID controller
         // talon.slot0.closedLoopPeriod = 33; // Sets the hardware update rate of the
@@ -103,7 +104,7 @@ public final class Constants {
         return talon;
     }
 
-    public static TalonFXConfiguration getHoodConfig() {
+    public static TalonFXConfiguration getHoodConfig(double min, double max, double ratio) {
         TalonFXConfiguration hoodConfig = new TalonFXConfiguration();
         hoodConfig.initializationStrategy = SensorInitializationStrategy.BootToZero;
         hoodConfig.neutralDeadband = 0;
@@ -120,6 +121,45 @@ public final class Constants {
         hoodConfig.statorCurrLimit.enable = false;
         hoodConfig.supplyCurrLimit.currentLimit = 10;
         hoodConfig.supplyCurrLimit.enable = true;
+        hoodConfig.reverseSoftLimitEnable = true;
+        hoodConfig.reverseSoftLimitThreshold = 0;
+        hoodConfig.forwardSoftLimitEnable = true;
+        hoodConfig.forwardSoftLimitThreshold = (max - min) * ratio / Unit.FALCON_TICKS;
         return hoodConfig;
+    }
+
+    public static TalonFXConfiguration getShooterConfig() {
+        TalonFXConfiguration shooterConfig = new TalonFXConfiguration();
+        shooterConfig.primaryPID.selectedFeedbackSensor = FeedbackDevice.IntegratedSensor;
+        shooterConfig.slot0.kP = 0.3; // 0.3
+        shooterConfig.slot0.kI = 0;
+        shooterConfig.slot0.kD = 0;
+        shooterConfig.slot0.kF = 0.0475; // 0.0475
+        shooterConfig.slot0.allowableClosedloopError = 0;
+        shooterConfig.slot0.closedLoopPeriod = 1;
+        shooterConfig.slot0.integralZone = 300;
+        shooterConfig.slot0.maxIntegralAccumulator = 5000;
+        shooterConfig.supplyCurrLimit.currentLimit = 40;
+        shooterConfig.supplyCurrLimit.enable = false;
+        shooterConfig.supplyCurrLimit.triggerThresholdCurrent = 40;
+        shooterConfig.supplyCurrLimit.triggerThresholdTime = 0.1;
+        return shooterConfig;
+    }
+
+    public static void setTalonStatusFrames(WPI_TalonFX motor) {
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_1_General, 20);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_2_Feedback0, 20); // 20 for open loop
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_3_Quadrature, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_4_AinTempVbat, 100);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_6_Misc, 60);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_7_CommStatus, 50);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_8_PulseWidth, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_9_MotProfBuffer, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_10_Targets, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_11_UartGadgeteer, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_12_Feedback1, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_13_Base_PIDF0, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_14_Turn_PIDF1, 5000);
+        motor.setStatusFramePeriod(StatusFrameEnhanced.Status_15_FirmwareApiStatus, 5000);
     }
 }

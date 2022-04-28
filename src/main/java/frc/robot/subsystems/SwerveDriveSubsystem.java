@@ -48,9 +48,9 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
   private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 33;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 908;
-  private static final int BACK_LEFT_OFFSET = -909;
-  private static final int FRONT_RIGHT_OFFSET = -182;
+  private static final int FRONT_LEFT_OFFSET = 908; // -95
+  private static final int BACK_LEFT_OFFSET = -840;
+  private static final int FRONT_RIGHT_OFFSET = -182; // -1200
   private static final int BACK_RIGHT_OFFSET = 1287;
   private static final int[] OFFSETS = new int[] { FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET,
       BACK_RIGHT_OFFSET };
@@ -65,8 +65,8 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
 
   // Physical limits of motors that create translational motion
   private static final double MAX_WHEEL_SPEED = 10 * M / S;
-  private static final int CONTINUOUS_CURRENT_LIMIT = 12;
-  private static final SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(true,
+  private static final int CONTINUOUS_CURRENT_LIMIT = 30;
+  private static final SupplyCurrentLimitConfiguration supplyCurrentLimit = new SupplyCurrentLimitConfiguration(false,
       CONTINUOUS_CURRENT_LIMIT, 0, 0);
 
   public static class Module {
@@ -77,19 +77,19 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
   }
 
   // Physical Hardware
-  private static final WPI_TalonFX[] motors = new WPI_TalonFX[] {
+  private final WPI_TalonFX[] motors = new WPI_TalonFX[] {
       new WPI_TalonFX(LEFT_FRONT_MOTOR_PORT),
       new WPI_TalonFX(LEFT_BACK_MOTOR_PORT),
       new WPI_TalonFX(RIGHT_FRONT_MOTOR_PORT),
       new WPI_TalonFX(RIGHT_BACK_MOTOR_PORT)
   };
-  private static final WPI_TalonFX[] rotators = new WPI_TalonFX[] {
+  private final WPI_TalonFX[] rotators = new WPI_TalonFX[] {
       new WPI_TalonFX(LEFT_FRONT_MOTOR_ROTATOR_PORT),
       new WPI_TalonFX(LEFT_BACK_MOTOR_ROTATOR_PORT),
       new WPI_TalonFX(RIGHT_FRONT_MOTOR_ROTATOR_PORT),
       new WPI_TalonFX(RIGHT_BACK_MOTOR_ROTATOR_PORT)
   };
-  private static final CANCoder[] encoders = new CANCoder[] {
+  private final CANCoder[] encoders = new CANCoder[] {
       new CANCoder(LEFT_FRONT_ENCODER_ROTATOR_PORT),
       new CANCoder(LEFT_BACK_ENCODER_ROTATOR_PORT),
       new CANCoder(RIGHT_FRONT_ENCODER_ROTATOR_PORT),
@@ -159,8 +159,18 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
     rotators[0].getAllConfigs(rotatorConfig);
 
     // Current limits
-    rotatorConfig.supplyCurrLimit = supplyCurrentLimit;
-    mainConfig.supplyCurrLimit = supplyCurrentLimit;
+    // rotatorConfig.supplyCurrLimit = supplyCurrentLimit;
+    // mainConfig.supplyCurrLimit = supplyCurrentLimit;
+    rotatorConfig.supplyCurrLimit.currentLimit = 12;
+    rotatorConfig.supplyCurrLimit.enable = true;
+    rotatorConfig.supplyCurrLimit.triggerThresholdCurrent = 12;
+    rotatorConfig.supplyCurrLimit.triggerThresholdTime = 0.0;
+    mainConfig.supplyCurrLimit.currentLimit = 20;
+    mainConfig.supplyCurrLimit.enable = true;
+    mainConfig.supplyCurrLimit.triggerThresholdCurrent = 20;
+    mainConfig.supplyCurrLimit.triggerThresholdTime = 0.00;
+    // mainConfig.closedloopRamp = 0.5;
+    SmartDashboard.putNumber("cur lim", 20);
 
     // Deadbands
     rotatorConfig.neutralDeadband = ROTATOR_DEADBAND;
@@ -231,6 +241,20 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
       motor.configFactoryDefault();
     for (WPI_TalonFX rotator : rotators)
       rotator.configFactoryDefault();
+  }
+
+  private double curLim = 20;
+
+  public void setCurLimit(double limit) {
+    SupplyCurrentLimitConfiguration currentLimit = new SupplyCurrentLimitConfiguration(true, limit, limit, 0.05);
+    for (WPI_TalonFX motor : motors)
+      motor.configSupplyCurrentLimit(currentLimit);
+    curLim = limit;
+    SmartDashboard.putNumber("cur lim", curLim);
+  }
+
+  public double getCurLimit() {
+    return curLim;
   }
 
   /**

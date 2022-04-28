@@ -31,6 +31,8 @@ import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RMPMotionGenerationCommand;
 import frc.robot.commands.RMPMoveToPositionCommand;
 import frc.robot.commands.RotationalDriveCommand;
+import frc.robot.commands.ShootCommand2;
+import frc.robot.commands.ShootDistance;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TranslationalDriveCommand;
 import frc.robot.commands.intakeCommands.IntakeCargo;
@@ -70,7 +72,10 @@ public class Robot extends TimedRobot {
   private final DriveSubsystem drivebase = new SwerveDriveSubsystem(getSwerveDriveTalonDirectionalConfig(),
       getSwerveDriveTalonRotaryConfig());
   private final LocalizationSubsystem nav = new LocalizationSubsystem(0.02, 1.0);
-  private final GetDriveInformationCommand odometry = new GetDriveInformationCommand(nav, drivebase.getTranslational());
+  private final GetDriveInformationCommand odometry = new GetDriveInformationCommand(nav,
+      drivebase.getTranslational());
+  // private final Compressor compressor = new Compressor(41,
+  // PneumaticsModuleType.CTREPCM);
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -147,7 +152,6 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
-
   }
 
   /** This function is called periodically during operator control. */
