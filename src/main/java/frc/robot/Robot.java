@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
@@ -89,6 +90,7 @@ public class Robot extends TimedRobot {
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+    SmartDashboard.putNumber("heading", nav.getHeading().getDegrees());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -145,7 +147,9 @@ public class Robot extends TimedRobot {
         () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 3)),
         () -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0))
       ).withTimeout(1.25)
-    ).schedule();
+    );//.schedule();
+    nav.resetHeading();
+    new DriveDistance(drivebase.getTranslational(), nav, new Translation2d(-0.25, 0), 0.5, 5, 0.02).schedule();
   }
 
   /** This function is called periodically during autonomous. */
