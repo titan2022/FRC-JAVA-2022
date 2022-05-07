@@ -41,14 +41,18 @@ public class RMPMoveToPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        Translation2d pos = localization.getPred(0);
-        // Translation2d pos = new Translation2d(0, 0); // TEST
+        // Translation2d pos = localization.getPred(0);s
+        Translation2d pos = new Translation2d(0, 0); // TEST
         path = new LinearSegment(new Point(pos), new Point(goal));
         double P = 5, I = 0, A = 1, B = 0.5, K = 1, h = 0.5;
         pathFollowing = new PathFollowing("Path Following", root, path, v, P, I, A, B, K, h, maxAcc);
-        SimpleMatrix center = new SimpleMatrix(1, 2, false, new double[] { -1.350518, -5.146802 });
-        double r = 0.6096, epsilon = 1, alpha = 1, eta = 1;
-        hangarLegCA = new CollisionAvoidance("Hangar Leg Collision Avoidance", root, center, r, epsilon, alpha, eta);
+        // hangarLegCA = new CollisionAvoidance("Hangar Leg CA", root,
+        // new SimpleMatrix(1, 2, false, new double[] { 0, 15 }), 1, 1, 1, 1);
+        // SimpleMatrix center = new SimpleMatrix(1, 2, false, new double[] { -1.3505
+        // -5.146802 });
+        // double r = 0.6096, epsilon = 1, alpha = 1, eta = 1;
+        // hangarLegCA = new CollisionAvoidance("Hangar Leg Collision Avoidance", root,
+        // center, r, epsilon, alpha, eta);
     }
 
     // Called every time the scheduler runs while the command is scheduled.

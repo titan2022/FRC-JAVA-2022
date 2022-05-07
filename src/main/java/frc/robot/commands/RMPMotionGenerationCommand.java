@@ -15,8 +15,8 @@ public class RMPMotionGenerationCommand extends CommandBase {
     private RMPRoot root;
     private TranslationalDrivebase drivebase;
     private double deltaT;
-    // private Translation2d pos = new Translation2d(0, 0); // TEST
-    // private Translation2d vel = new Translation2d(0, 0); // TEST
+    private Translation2d pos = new Translation2d(0, 0); // TEST
+    private Translation2d vel = new Translation2d(0, 0); // TEST
 
     public RMPMotionGenerationCommand(LocalizationSubsystem localization, RMPRoot root,
             TranslationalDrivebase drivebase,
@@ -42,11 +42,11 @@ public class RMPMotionGenerationCommand extends CommandBase {
     @Override
     public void execute() {
 
-        Translation2d pos = localization.getPred(0);
-        Translation2d vel = localization.getPred(1);
-        // vel = drivebase.getVelocity(); // TEST
-        // pos = new Translation2d(pos.getX() + vel.getX() * 0.02, pos.getY() +
-        // vel.getY() * 0.02); // TEST
+        // Translation2d pos = localization.getPred(0);
+        // Translation2d vel = localization.getPred(1);
+        vel = drivebase.getVelocity(); // TEST
+        pos = new Translation2d(pos.getX() + vel.getX() * 0.02, pos.getY() +
+                vel.getY() * 0.02); // TEST
 
         SimpleMatrix x = new SimpleMatrix(1, 2, false, new double[] { pos.getX(), pos.getY() });
         SimpleMatrix x_dot = new SimpleMatrix(1, 2, false, new double[] { vel.getX(), vel.getY() });
