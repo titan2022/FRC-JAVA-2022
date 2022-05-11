@@ -149,7 +149,10 @@ public class Robot extends TimedRobot {
       ).withTimeout(1.25)
     );//.schedule();
     nav.resetHeading();
-    new DriveDistance(drivebase.getTranslational(), nav, new Translation2d(-0.25, 0), 0.5, 5, 0.02).schedule();
+    new DriveDistance(drivebase.getTranslational(), nav, new Translation2d(0, 2), 0.75, 5, 0.02).schedule();
+    new RunCommand(() -> {
+      drivebase.getRotational().setRotation(-nav.getRate());
+    }).schedule();
   }
 
   /** This function is called periodically during autonomous. */

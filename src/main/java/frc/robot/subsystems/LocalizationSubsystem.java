@@ -340,6 +340,9 @@ public class LocalizationSubsystem extends SubsystemBase {
   public Rotation2d getHeading() {
     return new Rotation2d(Math.PI/2).minus(getOrientation());
   }
+  public double getRate() {
+    return -imu.getRate() * Math.PI / 180.0;
+  }
 
   /**
    * Estimates the angle from the robot heading to the origin.
