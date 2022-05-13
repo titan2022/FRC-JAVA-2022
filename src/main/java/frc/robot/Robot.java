@@ -5,6 +5,8 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Compressor;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
@@ -159,13 +161,14 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {}
 
+  private NetworkTableEntry tx;
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts
     enableRobot();
 
     drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 10.));
-    drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, 3 * Math.PI));
+    drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, nav, 3 * Math.PI));
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
     new JoystickButton(xbox, Button.kX.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0.1)));
     new JoystickButton(xbox, Button.kY.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0.1, 0)));
@@ -186,20 +189,31 @@ public class Robot extends TimedRobot {
       //.whileActiveOnce(new ShootDistance(shooter, 7.3*FT, 2*IN));
     //xinmotek.upButton.whenHeld(new StartEndCommand(() -> {shooter.runTicks(7000); shooter.setAngle(29.1676*Math.PI/180.0);}, () -> shooter.coast(), shooter));
     //new JoystickButton(xbox, Button.kLeftBumper.value).whenHeld(new StartEndCommand(() -> {shooter.runTicks(6218); shooter.setAngle(29.1676*Math.PI/180.0);}, () -> shooter.coast(), shooter));
-    xinmotek.upButton.whenHeld(new ShootCommand2(shooter, drivebase.getRotational()));
+    //xinmotek.upButton.whenHeld(new ShootCommand2(shooter, drivebase.getRotational()));
+    tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx");
+    xinmotek.upButton.whenHeld(new RunCommand(() -> {
+      double x = tx.getDouble(90);
+      if(x > 1.5)
+        drivebase.getRotational().setRotation(Math.PI / 8);
+      else if(x < 1.5)
+        drivebase.getRotational().setRotation(-Math.PI / 8);
+      else
+        drivebase.getRotational().setRotation(0);
+    }, drivebase.getRotational())
+    .andThen(() -> drivebase.getRotational().setRotation(0)));
     
     xinmotek.leftPad.topLeft.whenHeld(new StartEndCommand(
-      () -> {shooter.runTicks(7000); shooter.setAngle(0);},  // against hub
+      () -> {shooter.runTicks(7000); shooter.setAngle(0);},  // [2.862ft] against hub
       () -> shooter.coast(), shooter));
-      xinmotek.leftPad.bottomLeft.whenHeld(new StartEndCommand(
-        () -> {shooter.runTicks(7000); shooter.setAngle(16.618 * DEG);},  // 76in (32in edge to bumper)
-        () -> shooter.coast(), shooter));
-      xinmotek.leftPad.topRight.whenHeld(new StartEndCommand(
-        () -> {shooter.runTicks(7000); shooter.setAngle(21.417 * DEG);},  // 108in (64in edge to bumper)
-        () -> shooter.coast(), shooter));
-      xinmotek.leftPad.bottomRight.whenHeld(new StartEndCommand(
-        () -> {shooter.runTicks(7000); shooter.setAngle(27.518 * DEG);},  // 94.5in edge to bumper
-        () -> shooter.coast(), shooter));
+    xinmotek.leftPad.bottomLeft.whenHeld(new StartEndCommand(
+      () -> {shooter.runTicks(7000); shooter.setAngle(16.618 * DEG);},  // 76in (32in edge to bumper)
+      () -> shooter.coast(), shooter));
+    xinmotek.leftPad.topRight.whenHeld(new StartEndCommand(
+      () -> {shooter.runTicks(7000); shooter.setAngle(21.417 * DEG);},  // 108in (64in edge to bumper)
+      () -> shooter.coast(), shooter));
+    xinmotek.leftPad.bottomRight.whenHeld(new StartEndCommand(
+      () -> {shooter.runTicks(7000); shooter.setAngle(27.518 * DEG);},  // 94.5in edge to bumper
+      () -> shooter.coast(), shooter));
 
     xinmotek.middlePad.topLeft.whenHeld(new StartEndCommand(
       () -> {/*intake.spinIntake(1.0);*/ intake.spinHopper(1.0);},
@@ -223,7 +237,7 @@ public class Robot extends TimedRobot {
       () -> {shooter.runTicks(12000); shooter.setAngle(43.812 * DEG);},  // 208in edge to bumper
       () -> shooter.coast(), shooter));*/
     xinmotek.rightPad.topLeft.whenHeld(new StartEndCommand(() -> climb.runClimb(0.6), () -> climb.runClimb(0.0), climb));
-    xinmotek.rightPad.bottomLeft.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.4), () -> climb.runClimb(0.0), climb));
+    xinmotek.rightPad.bottomLeft.whenHeld(new StartEndCommand(() -> climb.runClimb(0.5), () -> climb.runClimb(0.0), climb));
     //xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
     //xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(-0.2), () -> shooter.runPercent(0.0), shooter));
     //xinmotek.rightPad.topRight.whenHeld(new InstantCommand(() -> intake.extend()));

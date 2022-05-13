@@ -15,7 +15,7 @@ public class TranslationalDriveCommand extends CommandBase {
     private XboxController controller;
     private LocalizationSubsystem nav;
     private double maxVel;
-    private boolean isFieldOriented = true;
+    private boolean isFieldOriented = false;
 
     /**
      * Creates a new TranlationalDriveCommand with optional field orientation.

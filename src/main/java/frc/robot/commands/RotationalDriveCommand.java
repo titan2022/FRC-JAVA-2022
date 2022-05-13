@@ -5,12 +5,14 @@ import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
+import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.RotationalDrivebase;
 
 public class RotationalDriveCommand extends CommandBase {
     private RotationalDrivebase drive;
+    private LocalizationSubsystem nav;
     private XboxController controller;
-    private double maxRate;
+    private double maxRate, omega;
 
     /**
      * Controls the rotational velocity of the drivebase with a joystick. 
@@ -19,8 +21,9 @@ public class RotationalDriveCommand extends CommandBase {
      * @param xbox  The joystick controller to use.
      * @param turnRate  The maximum rotational velocity in radians per second.
      */
-    public RotationalDriveCommand(RotationalDrivebase drivebase, XboxController xbox, double turnRate) {
+    public RotationalDriveCommand(RotationalDrivebase drivebase, XboxController xbox, LocalizationSubsystem nav, double turnRate) {
         drive = drivebase;
+        this.nav = nav;
         controller = xbox;
         maxRate = turnRate;
         addRequirements(drivebase);
@@ -33,8 +36,8 @@ public class RotationalDriveCommand extends CommandBase {
      * @param drivebase  The drivebase to control.
      * @param xbox  The joystick controller to use.
      */
-    public RotationalDriveCommand(RotationalDrivebase drivebase, XboxController xbox) {
-        this(drivebase, xbox, 4 * Math.PI);
+    public RotationalDriveCommand(RotationalDrivebase drivebase, XboxController xbox, LocalizationSubsystem nav) {
+        this(drivebase, xbox, nav, 4 * Math.PI);
     }
 
     @Override
@@ -52,7 +55,8 @@ public class RotationalDriveCommand extends CommandBase {
     public void execute() {
         double joy = applyDeadband(controller.getRightX(), 0.1);
         //SmartDashboard.putNumber("joyOmega", joy);
-        double omega = -scaleVelocity(joy);
+        double drift = nav.getRate() - omega;
+        omega = -scaleVelocity(joy) - drift;
         //SmartDashboard.putNumber("omega", omega);
         drive.setRotation(omega);
     }
