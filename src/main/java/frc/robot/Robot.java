@@ -32,6 +32,7 @@ import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RotationalDriveCommand;
 import frc.robot.commands.ShootCommand2;
 import frc.robot.commands.ShootDistance;
+import frc.robot.commands.ShootDistance3;
 import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TranslationalDriveCommand;
 import frc.robot.commands.intakeCommands.IntakeCargo;
@@ -187,31 +188,13 @@ public class Robot extends TimedRobot {
     );
 
     // Xinmotek Up = aim
-    tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx");
-    xinmotek.upButton.whenHeld(new RunCommand(() -> {
-      double x = tx.getDouble(90);
-      if(x > 1.5)
-        drivebase.getRotational().setRotation(Math.PI / 8);
-      else if(x < 1.5)
-        drivebase.getRotational().setRotation(-Math.PI / 8);
-      else
-        drivebase.getRotational().setRotation(0);
-    }, drivebase.getRotational())
-    .andThen(() -> drivebase.getRotational().setRotation(0)));
+    xinmotek.upButton.whenHeld(new ShootDistance3(shooter, drivebase.getRotational()));
     
     // Xinmotek Left Panel = shoot from setpoints
-    xinmotek.leftPad.topLeft.whenHeld(new StartEndCommand(
-      () -> {shooter.runTicks(7000); shooter.setAngle(0);},  // [2.862ft] against hub
-      () -> shooter.coast(), shooter));
-    xinmotek.leftPad.bottomLeft.whenHeld(new StartEndCommand(
-      () -> {shooter.runTicks(7000); shooter.setAngle(16.618 * DEG);},  // 76in (32in edge to bumper)
-      () -> shooter.coast(), shooter));
-    xinmotek.leftPad.topRight.whenHeld(new StartEndCommand(
-      () -> {shooter.runTicks(7000); shooter.setAngle(21.417 * DEG);},  // 108in (64in edge to bumper)
-      () -> shooter.coast(), shooter));
-    xinmotek.leftPad.bottomRight.whenHeld(new StartEndCommand(
-      () -> {shooter.runTicks(7000); shooter.setAngle(27.518 * DEG);},  // 94.5in edge to bumper
-      () -> shooter.coast(), shooter));
+    xinmotek.leftPad.topLeft.whenHeld(new ShootDistance3(shooter, drivebase.getRotational(), 5*FT));
+    xinmotek.leftPad.bottomLeft.whenHeld(new ShootDistance3(shooter, drivebase.getRotational(), 8*FT));
+    xinmotek.leftPad.topRight.whenHeld(new ShootDistance3(shooter, drivebase.getRotational(), 11*FT));
+    xinmotek.leftPad.bottomRight.whenHeld(new ShootDistance3(shooter, drivebase.getRotational(), 14*FT));
 
     // Xinmotek Middle Panel = hopper and queue
     xinmotek.middlePad.topLeft.whenHeld(new StartEndCommand(
@@ -247,7 +230,7 @@ public class Robot extends TimedRobot {
     // Xinmotek Right Joy = Drive Current Limit
     new Trigger(() -> xinmotek.getRightY() > 0).whenActive(() -> drivebase.setCurLimit(drivebase.getCurLimit() + 5));
     new Trigger(() -> xinmotek.getRightY() < 0).whenActive(() -> drivebase.setCurLimit(drivebase.getCurLimit() - 5));
-    
+
     SmartDashboard.putNumber("Hub Distance", 10);
   }
 
