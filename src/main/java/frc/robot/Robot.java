@@ -167,29 +167,26 @@ public class Robot extends TimedRobot {
     // TODO: Makes sure the autonomous stops running when teleop starts
     enableRobot();
 
+    // XBox Left Joy = translational drive
     drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 10.));
+    // XBox Right Joy = rotational drive
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, nav, 3 * Math.PI));
+    // XBox A = reset field orientation to match current orientation
     new JoystickButton(xbox, Button.kA.value).whenPressed(() -> nav.resetHeading());
-    new JoystickButton(xbox, Button.kX.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0.1)));
-    new JoystickButton(xbox, Button.kY.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0.1, 0)));
-
-    /*new JoystickButton(xbox, Button.kLeftBumper.value).whenPressed(new StartEndCommand(
-      () -> {intake.spinIntake(1.0); intake.spinHopper(1.0); intake.extend();},
-      () -> {intake.spinIntake(0.0); intake.spinHopper(0.0); intake.retract();},
-      intake));
-    new Trigger(() -> xbox.getLeftTriggerAxis() > 0).whileActiveOnce(new InstantCommand(() -> intake.retract()));*/
-
+    // XBox B = toggle for intrinsic/extrinsic coordinates
+    // XBox X = orient wheels along x axis
+    new JoystickButton(xbox, Button.kX.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0.1, 0)));
+    // XBox Y = orient wheels along y axis
+    new JoystickButton(xbox, Button.kY.value).whenActive(() -> drivebase.getTranslational().setVelocity(new Translation2d(0, 0.1)));
+    // XBox Right Bumper or Xinmotek Down = full intake
     xinmotek.downButton.or(new JoystickButton(xbox, Button.kRightBumper.value)).whileActiveOnce(
       new StartEndCommand(
         () -> {intake.spinIntake(1.0); intake.spinHopper(1.0);},
         () -> {intake.spinIntake(0.0); intake.spinHopper(0.0);},
         intake)
     );
-    //new JoystickButton(xbox, Button.kLeftBumper.value)
-      //.whileActiveOnce(new ShootDistance(shooter, 7.3*FT, 2*IN));
-    //xinmotek.upButton.whenHeld(new StartEndCommand(() -> {shooter.runTicks(7000); shooter.setAngle(29.1676*Math.PI/180.0);}, () -> shooter.coast(), shooter));
-    //new JoystickButton(xbox, Button.kLeftBumper.value).whenHeld(new StartEndCommand(() -> {shooter.runTicks(6218); shooter.setAngle(29.1676*Math.PI/180.0);}, () -> shooter.coast(), shooter));
-    //xinmotek.upButton.whenHeld(new ShootCommand2(shooter, drivebase.getRotational()));
+
+    // Xinmotek Up = aim
     tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx");
     xinmotek.upButton.whenHeld(new RunCommand(() -> {
       double x = tx.getDouble(90);
@@ -202,6 +199,7 @@ public class Robot extends TimedRobot {
     }, drivebase.getRotational())
     .andThen(() -> drivebase.getRotational().setRotation(0)));
     
+    // Xinmotek Left Panel = shoot from setpoints
     xinmotek.leftPad.topLeft.whenHeld(new StartEndCommand(
       () -> {shooter.runTicks(7000); shooter.setAngle(0);},  // [2.862ft] against hub
       () -> shooter.coast(), shooter));
@@ -215,13 +213,14 @@ public class Robot extends TimedRobot {
       () -> {shooter.runTicks(7000); shooter.setAngle(27.518 * DEG);},  // 94.5in edge to bumper
       () -> shooter.coast(), shooter));
 
+    // Xinmotek Middle Panel = hopper and queue
     xinmotek.middlePad.topLeft.whenHeld(new StartEndCommand(
-      () -> {/*intake.spinIntake(1.0);*/ intake.spinHopper(1.0);},
-      () -> {/*intake.spinIntake(0.0);*/ intake.spinHopper(0.0);},
+      () -> {intake.spinHopper(1.0);},
+      () -> {intake.spinHopper(0.0);},
       intake));
     xinmotek.middlePad.bottomLeft.whenHeld(new StartEndCommand(
-      () -> {/*intake.spinIntake(-1.0);*/ intake.spinHopper(-0.5);},
-      () -> {/*intake.spinIntake(0.0);*/ intake.spinHopper(0.0);},
+      () -> {intake.spinHopper(-0.5);},
+      () -> {intake.spinHopper(0.0);},
       intake));
     xinmotek.middlePad.topRight.whenHeld(new StartEndCommand(
       () -> shooter.runQueue(0.5),
@@ -230,35 +229,26 @@ public class Robot extends TimedRobot {
       () -> shooter.runQueue(-0.25),
       () -> shooter.runQueue(0.0)));
     
-    /*xinmotek.rightPad.topLeft.whenHeld(new StartEndCommand(
-      () -> {shooter.runTicks(12000); shooter.setAngle(37.882 * DEG);},  // 176in edge to bumper
-      () -> shooter.coast(), shooter));
-    xinmotek.rightPad.bottomLeft.whenHeld(new StartEndCommand(
-      () -> {shooter.runTicks(12000); shooter.setAngle(43.812 * DEG);},  // 208in edge to bumper
-      () -> shooter.coast(), shooter));*/
+    // Xinmotek Right Panel = climb
     xinmotek.rightPad.topLeft.whenHeld(new StartEndCommand(() -> climb.runClimb(0.6), () -> climb.runClimb(0.0), climb));
     xinmotek.rightPad.bottomLeft.whenHeld(new StartEndCommand(() -> climb.runClimb(0.5), () -> climb.runClimb(0.0), climb));
-    //xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(0.4), () -> shooter.runPercent(0.0), shooter));
-    //xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> shooter.runPercent(-0.2), () -> shooter.runPercent(0.0), shooter));
-    //xinmotek.rightPad.topRight.whenHeld(new InstantCommand(() -> intake.extend()));
-    //xinmotek.rightPad.bottomRight.whenHeld(new InstantCommand(() -> intake.retract()));
     xinmotek.rightPad.topRight.whenHeld(new StartEndCommand(() -> climb.runClimb(0.27), () -> climb.runClimb(0.0), climb));
     xinmotek.rightPad.bottomRight.whenHeld(new StartEndCommand(() -> climb.runClimb(-0.27), () -> climb.runClimb(0.0), climb));
-
-    //Command flywheelOverride = new ManualShooterCommand(shooter, xinmotek);
-    //Command rightClimbControl = new RunCommand(() -> climb.spinRight(0.65 * xinmotek.getRightY()));
-    //new Trigger(() -> xinmotek.getRightX() > 0).whenActive(flywheelOverride);//.cancelWhenActive(rightClimbControl);
-    //new Trigger(() -> xinmotek.getRightX() < 0).cancelWhenActive(flywheelOverride);//.whenActive(rightClimbControl);
-
+    
+    // Xinmotek Left Joy = Hood Override
     Command hoodOverride = new FunctionalCommand(
       () -> {shooter.hoodEnabled = false;},
       () -> shooter.spinHood(xinmotek.getLeftY()),
-      (interrupted) -> {shooter.hoodEnabled = true;}, () -> false);
-    //Command leftClimbControl = new RunCommand(() -> climb.spinLeft(0.65 * xinmotek.getLeftY()));
-    new Trigger(() -> xinmotek.getLeftX() > 0).whenActive(hoodOverride);//.cancelWhenActive(leftClimbControl);
-    new Trigger(() -> xinmotek.getLeftX() < 0).cancelWhenActive(hoodOverride);//.whenActive(leftClimbControl);
+      (interrupted) -> {shooter.hoodEnabled = true;},
+      () -> false);
+    new Trigger(() -> xinmotek.getLeftX() > 0).whenActive(hoodOverride);
+    new Trigger(() -> xinmotek.getLeftX() < 0).cancelWhenActive(hoodOverride);
+
+    // Xinmotek Right Joy = Drive Current Limit
     new Trigger(() -> xinmotek.getRightY() > 0).whenActive(() -> drivebase.setCurLimit(drivebase.getCurLimit() + 5));
     new Trigger(() -> xinmotek.getRightY() < 0).whenActive(() -> drivebase.setCurLimit(drivebase.getCurLimit() - 5));
+    
+    SmartDashboard.putNumber("Hub Distance", 10);
   }
 
   /** This function is called periodically during operator control. */
