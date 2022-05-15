@@ -25,7 +25,7 @@ public class SwerveDriveSubsystem implements DriveSubsystem {
   public static final double ROBOT_TRACK_WIDTH = 23.5 * IN; // 0.672; // meters (30 in)
   public static final double ROBOT_LENGTH = 26 * IN; // 0.672; // meter
   public static final double WHEEL_RADIUS = 2 * IN; // 0.0508; // meters (2 in)
-  public static final double GEAR_RATIO = 6.86;
+  public static final double GEAR_RATIO = 8.16;
   public static final double METERS_PER_TICKS = WHEEL_RADIUS * 2 * Math.PI / FALCON_CPR / GEAR_RATIO;
 
   // Deadbands

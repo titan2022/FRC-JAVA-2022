@@ -20,7 +20,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
     TranslationalDrivebase drivebase;
     private RMPRoot root;
     private PathFollowing pathFollowing;
-    private CollisionAvoidance hangarLegCA;
+    private CollisionAvoidance obs1;
     private Translation2d goal;
     private LocalizationSubsystem localization;
     private LinearSegment path;
@@ -41,7 +41,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
 
     @Override
     public void initialize() {
-        // Translation2d pos = localization.getPred(0);s
+        // Translation2d pos = localization.getPred(0);
         Translation2d pos = new Translation2d(0, 0); // TEST
         path = new LinearSegment(new Point(pos), new Point(goal));
         double P = 5, I = 0, A = 1, B = 0.5, K = 1, h = 0.5;
@@ -53,6 +53,9 @@ public class RMPMoveToPositionCommand extends CommandBase {
         // double r = 0.6096, epsilon = 1, alpha = 1, eta = 1;
         // hangarLegCA = new CollisionAvoidance("Hangar Leg Collision Avoidance", root,
         // center, r, epsilon, alpha, eta);
+        double r = 0.3302, epsilon = 0.2, alpha = 1e-5, eta = 0.0;
+        SimpleMatrix center = new SimpleMatrix(1, 2, false, new double[] { 0, 3 });
+        obs1 = new CollisionAvoidance("Obstacle 1 Collision Avoidance", root, center, r, epsilon, alpha, eta);
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -64,7 +67,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
     @Override
     public void end(boolean interrupted) {
         root.unlinkChild(pathFollowing);
-        root.unlinkChild(hangarLegCA);
+        // root.unlinkChild(hangarLegCA);
         drivebase.setVelocity(new Translation2d(0, 0));
     }
 

@@ -135,8 +135,8 @@ public class Robot extends TimedRobot {
     nav.translateTo(new Translation2d(0, 0));
     nav.resetHeading();
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(0, 5);
-    double v = 8;
+    Translation2d goal = new Translation2d(0, 3);
+    double v = 1;
     double tolerance = 0.1;
     double maxAcc = 2;
     new ParallelRaceGroup(new RMPMoveToPositionCommand(drivebase.getTranslational(), root, goal, nav, v,
