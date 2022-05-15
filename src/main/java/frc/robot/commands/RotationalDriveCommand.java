@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.RotationalDrivebase;
+import static frc.robot.Constants.Unit.*;
 
 public class RotationalDriveCommand extends CommandBase {
     private RotationalDrivebase drive;
@@ -54,10 +55,7 @@ public class RotationalDriveCommand extends CommandBase {
     @Override
     public void execute() {
         double joy = applyDeadband(controller.getRightX(), 0.1);
-        //SmartDashboard.putNumber("joyOmega", joy);
-        double drift = nav.getRate() - omega;
-        omega = -scaleVelocity(joy) - drift;
-        //SmartDashboard.putNumber("omega", omega);
+        omega = -scaleVelocity(joy);
         drive.setRotation(omega);
     }
 
