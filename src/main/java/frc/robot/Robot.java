@@ -5,10 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.networktables.NetworkTableEntry;
-import edu.wpi.first.networktables.NetworkTableInstance;
-import edu.wpi.first.wpilibj.Compressor;
-import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.XboxController.Button;
@@ -18,26 +14,16 @@ import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.FunctionalCommand;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.RunCommand;
-import edu.wpi.first.wpilibj2.command.ScheduleCommand;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import edu.wpi.first.wpilibj2.command.StartEndCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.JoystickButton;
 import frc.robot.commands.DriveDistance;
-import frc.robot.commands.DriveToCommand;
-import frc.robot.commands.FirstAutoCommand;
-import frc.robot.commands.GetDriveInformationCommand;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-import frc.robot.commands.ManualShooterCommand;
 import frc.robot.commands.RotationalDriveCommand;
-import frc.robot.commands.ShootCommand2;
-import frc.robot.commands.ShootDistance;
 import frc.robot.commands.ShootDistance3;
-import frc.robot.commands.ShooterCommand;
 import frc.robot.commands.TranslationalDriveCommand;
-import frc.robot.commands.intakeCommands.IntakeCargo;
 import frc.robot.subsystems.ClimbSubsystem;
-import frc.robot.subsystems.DriveSubsystem;
 import frc.robot.subsystems.IntakeSubsystem;
 import frc.robot.subsystems.LocalizationSubsystem;
 import frc.robot.subsystems.ShooterSubsystem;
@@ -162,7 +148,6 @@ public class Robot extends TimedRobot {
   @Override
   public void autonomousPeriodic() {}
 
-  private NetworkTableEntry tx;
   @Override
   public void teleopInit() {
     // TODO: Makes sure the autonomous stops running when teleop starts

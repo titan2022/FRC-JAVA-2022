@@ -73,7 +73,9 @@ public class TranslationalDriveCommand extends CommandBase {
     }
 
     @Override
-    public void initialize() {}
+    public void initialize() {
+        SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
+    }
 
     private static double applyDeadband(double joy, double deadband) {
         return Math.abs(joy) < deadband ? 0 : joy;
@@ -85,9 +87,10 @@ public class TranslationalDriveCommand extends CommandBase {
 
     @Override
     public void execute() {
-        if(controller.getBButtonPressed())
+        if(controller.getBButtonPressed()){
             isFieldOriented = !isFieldOriented;
-        //SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
+            SmartDashboard.putBoolean("isFieldOriented", isFieldOriented);
+        }
         double joyX = applyDeadband(controller.getLeftX(), 0.1);
         double joyY = applyDeadband(-controller.getLeftY(), 0.1);
         //SmartDashboard.putNumber("joyX", joyX);

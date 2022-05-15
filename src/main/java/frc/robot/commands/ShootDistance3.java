@@ -16,6 +16,7 @@ public class ShootDistance3 extends CommandBase {
     private double setPoint = 0;
     private double distance = 0;
     private NetworkTableEntry tx = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tx");
+    private NetworkTableEntry tv = NetworkTableInstance.getDefault().getTable("limelight").getEntry("tv");
 
     public ShootDistance3(ShooterSubsystem shooter, RotationalDrivebase drive, double distance) {
         this.shooter = shooter;
@@ -45,10 +46,12 @@ public class ShootDistance3 extends CommandBase {
 
     @Override
     public void execute() {
-        double x = tx.getDouble(80);
+        double x = -(tv.getDouble(0) != 0 ? tx.getDouble(0) : 80);
+        double angleErr = shooter.getAngle() - angle;
+        double velErr = shooter.getRawVelocity() - vel;
         if(Math.tan(Math.toRadians(x)) * distance < 1*FT
-           && Math.abs(shooter.getAngle() - angle) < 1*DEG
-           && Math.abs(shooter.getRawVelocity() - vel) < 200){
+           && Math.abs(angleErr) < 1*DEG
+           && Math.abs(velErr) < 200){
             drive.setRotation(0);
             shooter.runQueue(1.0);
         }
@@ -61,12 +64,15 @@ public class ShootDistance3 extends CommandBase {
             else
                 drive.setRotation(0);
         }
-        SmartDashboard.putNumber("Hub Angle", x);
+        SmartDashboard.putNumber("Hub Angle", -x);
+        SmartDashboard.putNumber("Angle Err", angleErr / DEG);
+        SmartDashboard.putNumber("Vel Err", velErr);
     }
 
     @Override
     public void end(boolean interrupted) {
         shooter.coast();
         drive.setRotation(0);
+        shooter.runQueue(0);
     }
 }
