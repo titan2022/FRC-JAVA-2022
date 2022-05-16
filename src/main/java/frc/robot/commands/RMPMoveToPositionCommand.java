@@ -54,7 +54,7 @@ public class RMPMoveToPositionCommand extends CommandBase {
         // hangarLegCA = new CollisionAvoidance("Hangar Leg Collision Avoidance", root,
         // center, r, epsilon, alpha, eta);
         double r = 0.3302, epsilon = 0.2, alpha = 1e-5, eta = 0.0;
-        SimpleMatrix center = new SimpleMatrix(1, 2, false, new double[] { 0, 3 });
+        SimpleMatrix center = new SimpleMatrix(1, 2, false, new double[] { 0, 1 + 0.381 });
         obs1 = new CollisionAvoidance("Obstacle 1 Collision Avoidance", root, center, r, epsilon, alpha, eta);
     }
 

@@ -135,7 +135,7 @@ public class Robot extends TimedRobot {
     nav.translateTo(new Translation2d(0, 0));
     nav.resetHeading();
     RMPRoot root = new RMPRoot("root");
-    Translation2d goal = new Translation2d(0, 3);
+    Translation2d goal = new Translation2d(0, 2.5);
     double v = 1;
     double tolerance = 0.1;
     double maxAcc = 2;
