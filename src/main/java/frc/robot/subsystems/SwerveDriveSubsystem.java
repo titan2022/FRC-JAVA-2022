@@ -23,8 +23,8 @@ import static frc.robot.Constants.Unit.*;
 public class SwerveDriveSubsystem implements DriveSubsystem
 {
   // Physical parameters
-  public static final double ROBOT_TRACK_WIDTH = 23.5 * IN; // 0.672; // meters (30 in)
-  public static final double ROBOT_LENGTH = 26 * IN; // 0.672; // meter 
+  public static final double ROBOT_TRACK_WIDTH = 18.5 * IN; // 0.672; // meters (30 in)
+  public static final double ROBOT_LENGTH = 18.5 * IN; // 0.672; // meter 
   public static final double WHEEL_RADIUS = 2 * IN; // 0.0508; // meters (2 in)
   public static final double GEAR_RATIO = 8.16;
   public static final double METERS_PER_TICKS = WHEEL_RADIUS * 2 * Math.PI / FALCON_CPR / GEAR_RATIO;
@@ -34,25 +34,25 @@ public class SwerveDriveSubsystem implements DriveSubsystem
   private static final double ROTATOR_DEADBAND = 0.001;
     
   // CAN ID numbers
-  private static final int LEFT_FRONT_MOTOR_PORT = 7;
-  private static final int LEFT_BACK_MOTOR_PORT = 2;
-  private static final int RIGHT_FRONT_MOTOR_PORT = 6;
-  private static final int RIGHT_BACK_MOTOR_PORT = 4;
-  private static final int LEFT_FRONT_MOTOR_ROTATOR_PORT = 8;
-  private static final int LEFT_BACK_MOTOR_ROTATOR_PORT = 1;
-  private static final int RIGHT_FRONT_MOTOR_ROTATOR_PORT = 5;
-  private static final int RIGHT_BACK_MOTOR_ROTATOR_PORT = 3;
+  private static final int LEFT_FRONT_MOTOR_PORT = 6;
+  private static final int LEFT_BACK_MOTOR_PORT = 4;
+  private static final int RIGHT_FRONT_MOTOR_PORT = 2;
+  private static final int RIGHT_BACK_MOTOR_PORT = 7;
+  private static final int LEFT_FRONT_MOTOR_ROTATOR_PORT = 5;
+  private static final int LEFT_BACK_MOTOR_ROTATOR_PORT = 3;
+  private static final int RIGHT_FRONT_MOTOR_ROTATOR_PORT = 1;
+  private static final int RIGHT_BACK_MOTOR_ROTATOR_PORT = 8;
 
-  private static final int LEFT_FRONT_ENCODER_ROTATOR_PORT = 37;
-  private static final int LEFT_BACK_ENCODER_ROTATOR_PORT = 31;
-  private static final int RIGHT_FRONT_ENCODER_ROTATOR_PORT = 35;
-  private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 33;
+  private static final int LEFT_FRONT_ENCODER_ROTATOR_PORT = 35;
+  private static final int LEFT_BACK_ENCODER_ROTATOR_PORT = 33;
+  private static final int RIGHT_FRONT_ENCODER_ROTATOR_PORT = 31;
+  private static final int RIGHT_BACK_ENCODER_ROTATOR_PORT = 37;
 
   // Rotator encoder offsets
-  private static final int FRONT_LEFT_OFFSET = 908; // -95
-  private static final int BACK_LEFT_OFFSET = -840;
-  private static final int FRONT_RIGHT_OFFSET = -182; // -1200
-  private static final int BACK_RIGHT_OFFSET = 1287;
+  private static final int FRONT_LEFT_OFFSET = -208+1024;//908-1024+2048; // -95
+  private static final int BACK_LEFT_OFFSET = -747+1024;//-840;
+  private static final int FRONT_RIGHT_OFFSET = 192+1024;//-182+1024+512+1024+2048; // -1200
+  private static final int BACK_RIGHT_OFFSET = 1925+1024;//1287-512-1024+2048;
   private static final int[] OFFSETS = new int[]{FRONT_LEFT_OFFSET, BACK_LEFT_OFFSET, FRONT_RIGHT_OFFSET, BACK_RIGHT_OFFSET};
 
   // Motor inversions
