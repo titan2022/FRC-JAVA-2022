@@ -51,12 +51,12 @@ public class ShootDistance3 extends CommandBase {
         double velErr = shooter.getRawVelocity() - vel;
         if(Math.tan(Math.toRadians(x)) * distance < 1*FT
            && Math.abs(angleErr) < 1*DEG
-           && Math.abs(velErr) < 200){
+           && Math.abs(velErr) < 20){
             drive.setRotation(0);
-            shooter.runQueue(1.0);
+            //shooter.runQueue(1.0);
         }
         else{
-            shooter.runQueue(0);
+            //shooter.runQueue(0);
             if(Math.abs(x) > 3)
                 drive.setRotation(Math.copySign(Math.PI / 8, x));
             else if(Math.abs(x) > 1.5)
