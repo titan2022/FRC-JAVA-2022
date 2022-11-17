@@ -154,7 +154,7 @@ public class Robot extends TimedRobot {
     enableRobot();
 
     // XBox Left Joy = translational drive
-    drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 10.));
+    drivebase.getTranslational().setDefaultCommand(new TranslationalDriveCommand(drivebase.getTranslational(), xbox, nav, 5.));
     // XBox Right Joy = rotational drive
     drivebase.getRotational().setDefaultCommand(new RotationalDriveCommand(drivebase.getRotational(), xbox, nav, 3 * Math.PI));
     // XBox A = reset field orientation to match current orientation

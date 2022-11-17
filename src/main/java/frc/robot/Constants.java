@@ -83,8 +83,8 @@ public final class Constants {
     {
         TalonFXConfiguration talon = new TalonFXConfiguration();
         // Add configs here:
-        talon.slot0.kP = 0.45;
-        talon.slot0.kI = 0.005;
+        talon.slot0.kP = 0.319;
+        talon.slot0.kI = 0;
         talon.slot0.kD = 0;
         talon.slot0.kF = 0;
         talon.slot0.integralZone = 75;
